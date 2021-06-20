@@ -1,4 +1,4 @@
-# [...]
+# Breksta's Cat
 
 This repo is part of [HomebrewOwl.GB](https://github.com/NotImplementedLife/HomebrewOwl.GB "HomebrewOwl") projects collection.
 
@@ -9,7 +9,7 @@ This repo is part of [HomebrewOwl.GB](https://github.com/NotImplementedLife/Home
 ## How to build
 
 ```
-git clone https://github.com/NotImplementedLife/[...] --recursive
+git clone https://github.com/NotImplementedLife/brekstascat --recursive
 make
 ```
 Make sure RGBDS is installed and exists in your `%PATH%`.

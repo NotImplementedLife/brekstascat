@@ -10,10 +10,10 @@ PADVALUE := 0xFF
 VERSION := 0
 
 # 4-ASCII letter game ID
-GAMEID := HOTP
+GAMEID := BRKC
 
 # Game title, up to 11 ASCII chars
-TITLE := HOTEMPLATE
+TITLE := BREKSTASCAT
 
 # New licensee, 2 ASCII chars
 # Homebrew games FTW! | HomebrewOwl
@@ -34,7 +34,7 @@ MBC := 0x00
 SRAMSIZE := 0x00
 
 # ROM name
-ROMNAME := hotemplate
+ROMNAME := brekstascat_1_${VERSION}
 ROMEXT  := gb
 
 

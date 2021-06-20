@@ -13,4 +13,4 @@ EntryPoint:
 	call CopyDMARoutine
 	ei
 	vBlankInit
-	jp @
+	jp Start
