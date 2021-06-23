@@ -10,6 +10,10 @@ This repo is part of [HomebrewOwl.GB](https://github.com/NotImplementedLife/Home
 
 ```
 git clone https://github.com/NotImplementedLife/brekstascat --recursive
+```
+
+```
+cd brekstascat
 make
 ```
 Make sure RGBDS is installed and exists in your `%PATH%`.
