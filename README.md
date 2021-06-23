@@ -26,3 +26,7 @@ Make sure RGBDS is installed and exists in your `%PATH%`.
 
 ...
 
+## Linked
+
+- [HomebrewOwl.GB](https://github.com/NotImplementedLife/HomebrewOwl.GB "HomebrewOwl.GB") - check out my other Gameboy projects
+
