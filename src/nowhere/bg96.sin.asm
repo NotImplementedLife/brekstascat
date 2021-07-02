@@ -1,7 +1,10 @@
-SECTION "Precomputed sin values for BG96", ROMX, BANK[1]
+SECTION "Precomputed sin values for BG96", ROMX, BANK[1], ALIGN[4]
 
 PSin::
-	DB -7, -4, -3, -1, 0, 1, 3, 4, 7, 4, 3, 1, 0, -1, -3, -4
+	DB 48+0, 48+1, 48+3, 48+4, 48+7, 48+4, 48+3, 48+1, 48+0, 48-1, 48-3, 48-4, 48-7, 48-4, 48-3, 48-1
 
-SECTION "PSin Indexes for lines 0-95", ROMX, BANK[1]
+SECTION "PSin Indexes for lines 0-95", WRAM0
+	
+LSin::
+	DS 96
 

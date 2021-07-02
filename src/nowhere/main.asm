@@ -13,6 +13,17 @@ MACRO burn
 ENDM
 	
 Nowhere_Main::
+	; init LSin
+	ld hl, LSin
+	ld b, 96
+	xor a
+.loadLSin
+	ld [hli], a
+	inc a
+	dec b
+	jr nz, .loadLSin
+
+
 	xor a
 	ld [rBGP], a
 	
@@ -41,65 +52,131 @@ Nowhere_Main::
 	; "nowhere" main loop
 .loop
 
-	; wait for hBlank 
-.line0
+	; wait for hBlank to reach line 0
+.line0_1
 	wait_vram
 	ldh a, [rLY]
 	cp a, 0
-	jr nz, .line0
-	burn 17
-.line0b
+	jr nz, .line0_1
+	burn 17  ; wait HBlank to completely pass
+.line0_2
 	wait_vram
 	ldh a, [rLY]
 	cp a, 0
-	jr nz, .line0b
+	jr nz, .line0_2
 	
-	REPT($60)
-		wait_vram	
-		;ld b,b
-		burn 17
-	ENDR
+	; prepare for bg96 sinus loop
+	ld hl, LSin
+	ld bc, $60 * 256 + LOW(PSin)
+	ld d, HIGH(PSin)
+	; for line = 0..95 do 
+	;     SCX [ line ] = PSin [ LSin [ line ] ]
+	;     LSin [ line ] = (LSin [ line ] + 1) & $0F <-- keep in 0-15 range
+.bg96Loop            
+	wait_vram
+	inc [hl]         ; 3 |  3 cyc
+	ld a, [hli]      ; 2 |  5 cyc
+	and $0F          ; 2 |  7 cyc
+	or c             ; 1 |  8 cyc
+	ld e, a          ; 1 |  9 cyc
+	ld a, [de]       ; 2 | 11 cyc
+	ldh [rSCX], a    ; 3 | 14 cyc
+	burn 10          ; burn loop
+	dec b	
+	jr nz, .bg96Loop
 	
+	; Now we are reafy to enter in the bottom part of the screen (lines 96-114)
+	; change the tile data bit in LCDC to display the dialog box
 	wait_vram	
 	ldh a, [rLCDC]
 	xor LCDCF_BG8000
-	ldh [rLCDC], a	
+	ldh [rLCDC], a		
+	; clear the mess after PSin, we don't want a misaligned dialog box :))
+	ld a, 48            
+	ldh [rSCX], a
 	burn 17
 	
-	REPT(144 - $60)
-		wait_vram		
-		burn 17
-	ENDR
-	;ld b,b
+	; dialog loop (just burn hblanks)
+
+	ld b, 144 - $60
+.dialLoop
+	wait_vram
+	burn 17
+	dec b
+	jr nz, .dialLoop
 	
+	; now we set the tile data bit back, to render the next frame
+	ldh a, [rLCDC]
+	xor LCDCF_BG8000	
+	ldh [rLCDC], a	
+	
+	burn 17
+	
+	;jp .loop
+	
+	; render one more frame, but now without updating LSin
+	
+	; wait for hBlank to reach line 0 (again)
+.line0_1_noUpdate
+	wait_vram
+	ldh a, [rLY]
+	cp a, 0
+	jr nz, .line0_1_noUpdate
+	burn 17  ; wait HBlank to completely pass
+.line0_2_noUpdate
+	wait_vram
+	ldh a, [rLY]
+	cp a, 0
+	jr nz, .line0_2_noUpdate
+	
+	
+	; prepare for bg96 sinus loop
+	ld hl, LSin
+	ld bc, $60 * 256 + LOW(PSin)
+	ld d, HIGH(PSin)
+	; for line = 0..95 do 
+	;     SCX [ line ] = PSin [ LSin [ line ] ]
+	;     don't increment LSin
+.bg96Loop_noUpdate           
+	wait_vram
+	ld a, [hli]      ; 2 |  2 cyc
+	and $0F          ; 2 |  4 cyc
+	or c             ; 1 |  5 cyc
+	ld e, a          ; 1 |  6 cyc
+	ld a, [de]       ; 2 |  8 cyc
+	ldh [rSCX], a    ; 3 | 11 cyc
+	burn 11          ; burn loop
+	dec b	
+	jr nz, .bg96Loop_noUpdate
+	
+	; Now we are reafy to enter in the bottom part of the screen (lines 96-114)
+	; change the tile data bit in LCDC to display the dialog box
+	wait_vram	
 	ldh a, [rLCDC]
 	xor LCDCF_BG8000
-	;and ($FF ^ LCDCF_BG8000)
+	ldh [rLCDC], a		
+	; clear the mess after PSin, we don't want a misaligned dialog box :))
+	ld a, 48            
+	ldh [rSCX], a
+	burn 17
+	
+	ld b, 144 - $60
+.dialLoop_noUpdate
+	wait_vram
+	burn 17
+	dec b
+	jr nz, .dialLoop_noUpdate
+	
+	; now we set the tile data bit back, to render the next frame
+	ldh a, [rLCDC]
+	xor LCDCF_BG8000	
 	ldh [rLCDC], a	
 	
 	burn 17
-	
-	
 	
 	jp .loop
 	
-	ldh a, [rLY]
-	cp a, $5F
-	jr nz, .skipLCDC	
-	
-	ldh a, [rLCDC]
-	or LCDCF_BG8000
-	ldh [rLCDC], a	
-.skipLCDC:
-	ldh a, [rLY]
-	cp a, 143
-	jr nz, .skipLCDCres
-	ldh a, [rLCDC]
-	and ($FF ^ LCDCF_BG8000)
-	ldh [rLCDC], a	
-.skipLCDCres:
-	;jr .loop
-	
+
 	
 	
 	
