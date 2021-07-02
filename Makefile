@@ -41,7 +41,8 @@ LDFLAGS  = -p $(PADVALUE)
 FIXFLAGS = -p $(PADVALUE) -v -i "$(GAMEID)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(MBC) -n $(VERSION) -r $(SRAMSIZE) -t $(TITLE)
 
 # The list of "root" ASM files that RGBASM will be invoked on
-SRCS = $(wildcard $(SRCDIR)/*.asm) $(wildcard $(SRCDIR)/HomebrewOwl.GB/*.asm)
+SRCS = $(wildcard $(SRCDIR)/*.asm)         $(wildcard $(SRCDIR)/HomebrewOwl.GB/*.asm) \
+	   $(wildcard $(SRCDIR)/nowhere/*.asm)
 
 ## Project-specific configuration
 # Use this to override the above
