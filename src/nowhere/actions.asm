@@ -16,20 +16,32 @@ actionPaletteChange::
 	dec a
 	ld [Cooldown], a 
 	ret nz
-	ld a, 15
+	ld a, 3
 	ld [Cooldown], a
-	ldh a, [rBGP]
-	rlca
-	;adc a,0
-	rlca
-	;adc a,0	
+	
+	ld a, [aPaletteIndex]
+	ld hl, HbOwlPalettes	
+	or l
+	ld l, a
+	inc a
+	and 7
+	ld [aPaletteIndex], a
+	ld a, [hl]
 	ldh [rBGP], a
+	ld a, [aPaletteIndex]
+	cp 7
+	ret nz
+	xor a
+	ld [PendingAction], a
 	ret
 
 	
 SECTION "ACTION VARS", WRAM0
 
 PendingAction::
+	DS 1
+	
+aPaletteIndex::
 	DS 1
 	
 Cooldown::

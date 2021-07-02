@@ -27,8 +27,11 @@ Nowhere_Main::
 	ld a, 1
 	ld [PendingAction], a
 
-	ld a, 20
+	ld a, 5
 	ld [Cooldown], a
+	
+	xor a
+	ld [aPaletteIndex], a	
 
 	xor a
 	ld [rBGP], a
@@ -52,8 +55,8 @@ Nowhere_Main::
 	ld a, LCDCF_ON | LCDCF_BGON; | LCDCF_BG8000
 	ldh [rLCDC], a
 	
-	ld a, %11100100
-	ld [rBGP], a
+	;ld a, %11100100
+	;ld [rBGP], a
 	
 	; "nowhere" main loop
 .loop
