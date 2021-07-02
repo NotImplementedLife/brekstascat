@@ -22,7 +22,13 @@ Nowhere_Main::
 	inc a
 	dec b
 	jr nz, .loadLSin
+	
+	; init Action variables
+	ld a, 1
+	ld [PendingAction], a
 
+	ld a, 20
+	ld [Cooldown], a
 
 	xor a
 	ld [rBGP], a
@@ -94,7 +100,14 @@ Nowhere_Main::
 	; clear the mess after PSin, we don't want a misaligned dialog box :))
 	ld a, 48            
 	ldh [rSCX], a
-	burn 17
+	
+	; if palette is changed, we don't want it to affect the dialog box
+	ldh a, [rBGP]
+	ld [BackupPalette], a
+	ld a, %11100100
+	ldh [rBGP], a
+	
+	burn 15
 	
 	; dialog loop (just burn hblanks)
 
@@ -109,8 +122,11 @@ Nowhere_Main::
 	ldh a, [rLCDC]
 	xor LCDCF_BG8000	
 	ldh [rLCDC], a	
+	; restore palette
+	ld a, [BackupPalette]
+	ldh [rBGP], a
 	
-	burn 17
+	burn 16
 	
 	;jp .loop
 	
@@ -144,7 +160,7 @@ Nowhere_Main::
 	or c             ; 1 |  5 cyc
 	ld e, a          ; 1 |  6 cyc
 	ld a, [de]       ; 2 |  8 cyc
-	ldh [rSCX], a    ; 3 | 11 cyc
+	ldh [rSCX], a    ; 3 | 11 cyc	
 	burn 11          ; burn loop
 	dec b	
 	jr nz, .bg96Loop_noUpdate
@@ -158,7 +174,14 @@ Nowhere_Main::
 	; clear the mess after PSin, we don't want a misaligned dialog box :))
 	ld a, 48            
 	ldh [rSCX], a
-	burn 17
+	
+	; if palette is changed, we don't want it to affect the dialog box
+	ldh a, [rBGP]
+	ld [BackupPalette], a
+	ld a, %11100100
+	ldh [rBGP], a
+	
+	burn 15
 	
 	ld b, 144 - $60
 .dialLoop_noUpdate
@@ -171,8 +194,25 @@ Nowhere_Main::
 	ldh a, [rLCDC]
 	xor LCDCF_BG8000	
 	ldh [rLCDC], a	
+	; restore palette
+	ld a, [BackupPalette]
+	ldh [rBGP], a
 	
-	burn 17
+	burn 16
+	
+	; Ah, finally, vBlank :)))
+	
+	ld d, HIGH(ActionsHub)
+	ld a, [PendingAction]
+	sla a	
+	ld e, a
+	ld a, [de]
+	inc de
+	ld l, a
+	ld a, [de]
+	ld h, a	
+	call CallHL	
+	
 	
 	jp .loop
 	
