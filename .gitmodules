@@ -1,6 +1,4 @@
-[submodule "src/include/hardware.inc"]
-	path = src/include/hardware.inc
-	url = https://github.com/gbdev/hardware.inc.git
 [submodule "src/HomebrewOwl.GB"]
 	path = src/HomebrewOwl.GB
 	url = https://github.com/NotImplementedLife/HomebrewOwl.GB
+	branch = src
