@@ -13,6 +13,7 @@ MACRO burn
 ENDM
 	
 Nowhere_Main::
+
 	; init LSin
 	ld hl, LSin
 	ld b, 96
@@ -44,7 +45,8 @@ Nowhere_Main::
 	ld [rSCY], a
 	
 	; load font
-	loadVRAM_DOUBLE $8000, Chars              , Chars_End	
+	;loadVRAM_DOUBLE $8000, Chars              , Chars_End	
+	call DialogInit
 	
 	; load BG96 tileset & tilemap
 	loadVRAM_DOUBLE $9000, BG96_TILESET       , BG96_TILESET + $800
@@ -55,6 +57,12 @@ Nowhere_Main::
 	ld a, LCDCF_ON | LCDCF_BGON; | LCDCF_BG8000
 	ldh [rLCDC], a
 	
+	ld hl, $8000
+	ld bc, Chars
+	ld d, 0
+	ld e, 5
+	call waitForVBlank
+	call DialogCopyPartialTile
 	;ld a, %11100100
 	;ld [rBGP], a
 	
