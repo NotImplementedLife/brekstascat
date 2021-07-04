@@ -1,4 +1,5 @@
 INCLUDE "src/include/macros.inc"
+INCLUDE "src/include/charmap.inc"
 
 SECTION "Nowhere logic", ROMX, BANK[1]
 
@@ -57,7 +58,13 @@ Nowhere_Main::
 	ldh [rLCDC], a
 	
 	call waitForVBlank
-	ld a, 15
+	ld a, "."
+	call DialogPutChar
+	call waitForVBlank
+	ld a, ","
+	call DialogPutChar
+	call waitForVBlank
+	ld a, ","
 	call DialogPutChar
 	;ld hl, $8002
 	;ld de, D_9

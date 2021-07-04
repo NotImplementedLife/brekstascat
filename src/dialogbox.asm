@@ -123,10 +123,13 @@ DialogPutChar::
 	ld c, a
 	and 7
 	xor 7               ; now a = # of pixels remained in current tile
+	inc a
+	ld b,b
 	cp a, b             ; if b<=a (char fits in tile)
 	jr nc, .affectSingleTile 
 	
 .affectTwoTiles
+	pop de
 	
 	ret
 .affectSingleTile
@@ -143,6 +146,12 @@ DialogPutChar::
 	ld a, d
 	and 7
 	ld c, a
+	
+	ldh a, [CharWidth]
+	add d
+	ldh [OffsetX], a
+	;ld b,b
+	
 	pop de              ; retrieve char tile
 	;ld b, b
 	call CopyCharLeft
