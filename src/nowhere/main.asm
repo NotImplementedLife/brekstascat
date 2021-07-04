@@ -13,7 +13,6 @@ MACRO burn
 ENDM
 	
 Nowhere_Main::
-
 	; init LSin
 	ld hl, LSin
 	ld b, 96
@@ -57,12 +56,17 @@ Nowhere_Main::
 	ld a, LCDCF_ON | LCDCF_BGON; | LCDCF_BG8000
 	ldh [rLCDC], a
 	
-	ld hl, $8000
-	ld bc, Chars
-	ld d, 0
-	ld e, 5
 	call waitForVBlank
-	call DialogCopyPartialTile
+	ld a, 15
+	call DialogPutChar
+	;ld hl, $8002
+	;ld de, D_9
+	;ld c, 5
+	;call CopyCharLeft
+	;ld hl, $8012
+	;ld de, D_9
+	;ld c, 3
+	;call CopyCharRight
 	;ld a, %11100100
 	;ld [rBGP], a
 	

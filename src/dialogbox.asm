@@ -22,129 +22,89 @@ DialogInit::
 	ldh [Iterator], a
 	ret
 
-
-; hl = destination tile
-; bc = source tile
-; d  = destination offset  (0..7)
-; e  = source offset (0..7)
-; copies graphics data from bc to hl as follows:
-; 
-; Let Di = d7d6d5...d0 be a line from hl
-; and Si = s7s6s5...s0 be a line from bc
+; hl = destination tile + 2
+; de = source tile     
+; c  = offset (left margin-c)
 ;
-;   destination offset (d)       8 - d
-; <------------------------><------------->
-; |                        |
-; | d7   d6   d5   d4   d3 | d2   d1   d0 |
-;           | s7   s6   s5 |(s4   s3   s2)| s1   s0
-;           |   ignored    |this is copied| ^-- what remains in the
-;           <-------------->                    right is discarded
-;           source offset (e)
-;
-; Formulae:
-;      (1) Di &= (1<<(9-d)) - 1   // zero the right part
-;      (2) Di |= (Si << e)        // get rid of what's not needed
-;                    >> d         // align with the destination offset
-
-DialogCopyPartialTile::
-	; Optimization: save d
-	ld a, d
-	ldh [SaveD], a
-	; Compute d = (1<<(9 - d)) - 1
-	dec d
-	ld a, d
-	xor $FF
-	add 9
-	ld d, a
-	; up to this point, d = 9 - d
-	ld a, 1
-	inc d
-	dec d
-	jr z, .skip_sla
-.sla_loop
-	sla a
-	dec d
-	jr nz, .sla_loop
-.skip_sla:
-	dec a
-	ld d, a
+; Cycles : 460
+CopyCharLeft::
+	ld a, 7                    ; 2 
+.loop
+	ldh [Iterator], a          ; 3
 	
-	; Hope everything is correct and d is what it should be :))
+	; load source byte
+	ld a, [de]                 ; 2
+	inc de                     ; 2
 	
-	; now, our formulae become:
-	; (1) Di &= d
-	; (2) Di |= (Si << e)
-	; let's finish this
+	ld b, a                    ; 1
+	ld a, c                    ; 1
+	push hl                    ; 4
+	call ShiftRightBA          ; 6 + 28
+	pop hl                     ; 3
+	push af                    ; 4
+	or a, [hl]                 ; 2
+	ld [hli], a                ; 2
+	pop af                     ; 3
+	or a, [hl]                 ; 2
+	ld [hli], a                ; 2
 	
-	ld a, 16  ; there're 16 bytes per tile, right?
-	;ld b,b
+	ldh a, [Iterator]          ; 3
+	dec a                      ; 1
+	jr nz, .loop               ; 3 | 2
+	ret                        ; 4
+	
+; hl = destination tile + 2
+; de = source tile 
+; c  = offset (left margin-c)
+CopyCharRight::
+	ld a, 7
 .loop
 	ldh [Iterator], a
 	
-	ld a, d
-	and a, [hl]
-	ld [hl], a   ; temporary store after (1)
+	; load source byte
+	ld a, [de]
+	inc de
 	
-	push de
-	
-	ldh a, [SaveD]
-	ld d, a
-	
-	ld a, [bc]   ; load source
-	inc bc
-	push bc
-	
-	ld b, e     
-	inc b
-	dec b
-	jr z, .skip_sla_src
-.sla_src_loop    ; do Si << e
-	sla a
-	dec b
-	jr nz, .sla_src_loop
-.skip_sla_src:
-
-	ld b, d
-	inc b
-	dec b
-	jr z, .skip_srl_src
-
-.srl_src_loop    ; do Si >> d
-	srl a
-	dec b
-	jr nz, .srl_src_loop
-.skip_srl_src:
-
-	pop bc
-	pop de
-	
-	or a, [hl]
-	ld [hli], a  ; aaand that should do the trick
+	ld b, a
+	ld a, c
+	push hl
+	call ShiftLeftBA 
+	pop hl
+	push af                    ; 4
+	or a, [hl]                 ; 2
+	ld [hli], a                ; 2
+	pop af                     ; 3
+	or a, [hl]                 ; 2
+	ld [hli], a                ; 2
 	
 	ldh a, [Iterator]
 	dec a
 	jr nz, .loop
-	
 	ret
-	
+
+
 ; a = id of mapped character
 DialogPutChar::
 	; save id for later [3 cyc]
 	ldh [CharId], a
-	; get char tile [13 cyc]
-	; bc = a*16
-	swap a       ; 2
-	ld b, a      ; 1
-	and $F0      ; 1
-	ld c, a      ; 1
-	ld a, b      ; 1
-	and $0F      ; 1
-	ld b,a       ; 1
+	; get char tile [12 cyc]
+	; bc = a*8
+	ld c, a   ; 1 
+	swap a    ; 1
+	and $0F   ; 2
+	sra a     ; 2
+	ld b, a   ; 1
+	ld a, c   ; 1
+	add a, a  ; 1
+	add a, a  ; 1
+	add a, a  ; 1
+	ld c, a   ; 1
+	
 	; hl = Chars + bc
 	ld hl, Chars ; 3
 	add hl, bc   ; 2
 	
-	; push char tile (need it later)
+	; push char graphics address (need it later)
 	push hl
 	
 	; get char width [16 cyc]
@@ -171,20 +131,27 @@ DialogPutChar::
 	ret
 .affectSingleTile
 	; hl = Position where char should be drawn
-	; = $8000 + 
+	; = $8000 + (OffsetX div 8)*16
 	ld hl, $8000
 	ldh a, [OffsetX]
-	ld c, a
-	ld b, 0
-	add hl, bc
 	
+	ld d, a ; backup
+	add a, a
+	and a, $F0
+	ld l, a
+	
+	ld a, d
+	and 7
+	ld c, a
 	pop de              ; retrieve char tile
+	;ld b, b
+	call CopyCharLeft
+	
 	ret
 	
 SECTION "Dialog HVars", HRAM
 
 Iterator : DS 1
-SaveD: DS 1
 
 CharId: DS 1
 CharWidth: DS 1
