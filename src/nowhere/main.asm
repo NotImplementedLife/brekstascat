@@ -44,6 +44,9 @@ Nowhere_Main::
 	xor a
 	ld [rSCY], a
 	
+	xor a
+	ld [StrAddr], a
+	
 	; load font
 	;loadVRAM_DOUBLE $8000, Chars              , Chars_End	
 	call DialogInit
@@ -57,27 +60,16 @@ Nowhere_Main::
 	ld a, LCDCF_ON | LCDCF_BGON; | LCDCF_BG8000
 	ldh [rLCDC], a
 	
+	ld hl, String
+	push hl
 	call waitForVBlank
 	ld a, "."
 	call DialogPutChar
 	call waitForVBlank
 	ld a, ","
 	call DialogPutChar
-	call waitForVBlank
-	ld a, ","
-	call DialogPutChar
-	;ld hl, $8002
-	;ld de, D_9
-	;ld c, 5
-	;call CopyCharLeft
-	;ld hl, $8012
-	;ld de, D_9
-	;ld c, 3
-	;call CopyCharRight
-	;ld a, %11100100
-	;ld [rBGP], a
-	
-	; "nowhere" main loop
+	call waitForVBlank	
+	; "nowhere" main loop	
 .loop
 
 	; wait for hBlank to reach line 0
@@ -223,22 +215,48 @@ Nowhere_Main::
 	burn 16
 	
 	; Ah, finally, vBlank :)))
+	call NextChar
 	
-	ld d, HIGH(ActionsHub)
-	ld a, [PendingAction]
-	sla a	
-	ld e, a
-	ld a, [de]
-	inc de
-	ld l, a
-	ld a, [de]
-	ld h, a	
-	call CallHL	
+	;ld d, HIGH(ActionsHub)
+	;ld a, [PendingAction]
+	;sla a	
+	;ld e, a
+	;ld a, [de]
+	;inc de
+	;ld l, a
+	;ld a, [de]
+	;ld h, a	
+	;call CallHL	
 	
 	
 	jp .loop
 	
 
+SECTION "Test string", ROMX, BANK[1], ALIGN[8]
+
+String:
+DB "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20", $FF
+
+NextChar:
+	ld h, HIGH(String)
+	ld a, [StrAddr]
+	ld l, a
+	ld a, [hl]
+	cp $FF
+	ret z
+	ld b, a
+	inc l
+	ld a, l
+	ld [StrAddr], a
+	ld a, b
+	call DialogPutChar
+	ret
+
+SECTION "Test string adress", WRAM0
+
+StrAddr:
+	DS 1
 	
+
 	
 	

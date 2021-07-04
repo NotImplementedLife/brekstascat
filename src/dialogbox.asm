@@ -41,13 +41,10 @@ CopyCharLeft::
 	push hl                    ; 4
 	call ShiftRightBA          ; 6 + 28
 	pop hl                     ; 3
-	push af                    ; 4
+	inc hl                     ; 2
 	or a, [hl]                 ; 2
 	ld [hli], a                ; 2
-	pop af                     ; 3
-	or a, [hl]                 ; 2
-	ld [hli], a                ; 2
-	
+
 	ldh a, [Iterator]          ; 3
 	dec a                      ; 1
 	jr nz, .loop               ; 3 | 2
@@ -70,10 +67,7 @@ CopyCharRight::
 	push hl
 	call ShiftLeftBA 
 	pop hl
-	push af                    ; 4
-	or a, [hl]                 ; 2
-	ld [hli], a                ; 2
-	pop af                     ; 3
+	inc hl	
 	or a, [hl]                 ; 2
 	ld [hli], a                ; 2
 	
@@ -116,32 +110,87 @@ DialogPutChar::
 	add hl, bc               ; 2
 	ld a, [hl]               ; 2
 	ldh [CharWidth], a       ; 3
+	          
 	
-	; 
 	ld b, a             ; b = # of pixels needed by character
 	ldh a, [OffsetX]
+	
+	; test if character can be drawn on current line
+	add b	
+	cp 128
+	jr c, .skipChangeY
+	ld a, 1
+	ldh [OffsetY], a
+	xor a
+	ldh [OffsetX], a
+.skipChangeY
+	sub b
 	ld c, a
 	and 7
 	xor 7               ; now a = # of pixels remained in current tile
 	inc a
-	ld b,b
 	cp a, b             ; if b<=a (char fits in tile)
 	jr nc, .affectSingleTile 
 	
 .affectTwoTiles
+
+	; hl = Position where char should be drawn
+	; = $8000 + (OffsetX div 8)*16
+	ld h, $80 
+	ldh a, [OffsetY]
+	add a, h
+	ld h, a
+	ldh a, [OffsetX]
+	
+	ld d, a ; backup
+	; build _l
+	add a, a
+	and a, $F0
+	ld l, a
+	inc l
+	inc l
+
+	; a = 8-(OffsetX % 8)
+	ld a, d
+	and 7	             
+	ld c, a	
+	
+	ldh a, [CharWidth]
+	add d
+	ldh [OffsetX], a
+	
+	pop de              ; retrieve char tile
+	push de             ; pop back for later use
+	call CopyCharLeft	
+	
+	ld a, c
+	dec a
+	xor $FF
+	add 8
+	ld c, a
+	
+	inc hl
+	inc hl
+	
 	pop de
+	call CopyCharRight
 	
 	ret
 .affectSingleTile
 	; hl = Position where char should be drawn
 	; = $8000 + (OffsetX div 8)*16
-	ld hl, $8000
-	ldh a, [OffsetX]
+	ld h, $80 
+	ldh a, [OffsetY]
+	add a, h
+	ld h, a
+	ldh a, [OffsetX]	
 	
 	ld d, a ; backup
 	add a, a
 	and a, $F0
 	ld l, a
+	inc l
+	inc l
 	
 	ld a, d
 	and 7
@@ -165,7 +214,7 @@ Iterator : DS 1
 CharId: DS 1
 CharWidth: DS 1
 
-OffsetX: DS 1
+OffsetX:: DS 1
 OffsetY: DS 1
 
 
