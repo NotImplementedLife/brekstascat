@@ -82,21 +82,14 @@ DialogPutChar::
 	; save id for later [3 cyc]
 	ldh [CharId], a
 	; get char tile [12 cyc]
-	; bc = a*8
-	ld c, a   ; 1 
-	swap a    ; 1
-	and $0F   ; 2
-	sra a     ; 2
-	ld b, a   ; 1
-	ld a, c   ; 1
-	add a, a  ; 1
-	add a, a  ; 1
-	add a, a  ; 1
-	ld c, a   ; 1
-	
-	; hl = Chars + bc
-	ld hl, Chars ; 3
-	add hl, bc   ; 2
+	; hl = Chars + a*8	
+	ld h, 0
+	ld l, a
+	add hl, hl
+	add hl, hl
+	add hl, hl
+	ld bc, Chars
+	add hl, bc
 	
 	; push char graphics address (need it later)
 	push hl
@@ -119,10 +112,10 @@ DialogPutChar::
 	add b	
 	cp 128
 	jr c, .skipChangeY
-	ld a, 1
-	ldh [OffsetY], a
 	xor a
 	ldh [OffsetX], a
+	inc a
+	ldh [OffsetY], a	
 .skipChangeY
 	sub b
 	ld c, a
@@ -164,18 +157,15 @@ DialogPutChar::
 	call CopyCharLeft	
 	
 	ld a, c
-	dec a
-	xor $FF
-	add 8
+	cpl
+	add 9
 	ld c, a
 	
 	inc hl
 	inc hl
 	
 	pop de
-	call CopyCharRight
-	
-	ret
+	jr CopyCharRight
 .affectSingleTile
 	; hl = Position where char should be drawn
 	; = $8000 + (OffsetX div 8)*16
@@ -203,9 +193,9 @@ DialogPutChar::
 	
 	pop de              ; retrieve char tile
 	;ld b, b
-	call CopyCharLeft
+	jp CopyCharLeft
 	
-	ret
+	;ret
 	
 SECTION "Dialog HVars", HRAM
 
@@ -215,7 +205,7 @@ CharId: DS 1
 CharWidth: DS 1
 
 OffsetX:: DS 1
-OffsetY: DS 1
+OffsetY:: DS 1
 
 
 SECTION "Dialog Resources", ROM0

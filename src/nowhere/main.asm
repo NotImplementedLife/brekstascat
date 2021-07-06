@@ -35,7 +35,13 @@ Nowhere_Main::
 	ld [aPaletteIndex], a	
 
 	xor a
+	;ld a, %11100100
 	ld [rBGP], a
+	
+	ld a, HIGH(String)
+	ld [StrAddr  ], a
+	ld a, LOW(String)
+	ld [StrAddr+1], a
 	
 	; Center horizontally
 	ld a, 48
@@ -43,9 +49,6 @@ Nowhere_Main::
 	
 	xor a
 	ld [rSCY], a
-	
-	xor a
-	ld [StrAddr], a
 	
 	; load font
 	;loadVRAM_DOUBLE $8000, Chars              , Chars_End	
@@ -60,14 +63,6 @@ Nowhere_Main::
 	ld a, LCDCF_ON | LCDCF_BGON; | LCDCF_BG8000
 	ldh [rLCDC], a
 	
-	ld hl, String
-	push hl
-	call waitForVBlank
-	ld a, "."
-	call DialogPutChar
-	call waitForVBlank
-	ld a, ","
-	call DialogPutChar
 	call waitForVBlank	
 	; "nowhere" main loop	
 .loop
@@ -140,9 +135,10 @@ Nowhere_Main::
 	ld a, [BackupPalette]
 	ldh [rBGP], a
 	
-	burn 16
+	;burn 5
 	
-	;jp .loop
+	; Ah, finally, vBlank :)))
+	call NextChar
 	
 	; render one more frame, but now without updating LSin
 	
@@ -214,48 +210,116 @@ Nowhere_Main::
 	
 	burn 16
 	
-	; Ah, finally, vBlank :)))
-	call NextChar
+	; another vBlank
 	
-	;ld d, HIGH(ActionsHub)
-	;ld a, [PendingAction]
-	;sla a	
-	;ld e, a
-	;ld a, [de]
-	;inc de
-	;ld l, a
-	;ld a, [de]
-	;ld h, a	
-	;call CallHL	
+	ld d, HIGH(ActionsHub)
+	ld a, [PendingAction]
+	add a, a
+	ld e, a
+	ld a, [de]
+	inc de
+	ld l, a
+	ld a, [de]
+	ld h, a	
+	call CallHL	
 	
 	
 	jp .loop
 	
 
-SECTION "Test string", ROMX, BANK[1], ALIGN[8]
+SECTION "Test string", ROMX, BANK[1]
 
 String:
-DB "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20", $FF
+DB "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20", $F0, $F1, "1234567890,A,B", $FF
 
 NextChar:
-	ld h, HIGH(String)
-	ld a, [StrAddr]
-	ld l, a
+	ld hl, StrAddr
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
 	ld a, [hl]
-	cp $FF
-	ret z
+	cp a, $F0
+	jr nc, .processFlags
+	
 	ld b, a
-	inc l
-	ld a, l
-	ld [StrAddr], a
+	ld hl, StrAddr+1
+	inc [hl]
+	ld hl, StrAddr
+	xor a
+	adc a, [hl]
+	ld [hl], a
 	ld a, b
-	call DialogPutChar
+	jp DialogPutChar
+.processFlags
+	ld hl, DialogOpTable
+	ld bc, 3
+	; find the <a> code in DialogOpTable
+.loop
+	cp a, [hl]
+	jr z, .end
+	add hl, bc
+	jr .loop
+.end
+	inc hl
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a 
+	call CallHL
+	
+	ld hl, StrAddr
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+	inc hl
+	ld a, h
+	ld [StrAddr  ], a
+	ld a, l
+	ld [StrAddr+1], a
+	ret
+	
+DialogOpTable:
+	
+;DB $FE, dialog_wait
+DB $F0
+DW dialog_clear_0
+DB $F1
+DW dialog_clear_1
+DB $FF
+DW dialog_stop
+
+dialog_clear_0:
+	ld hl, $8000
+	xor a
+	REPT(256)
+	ld [hli], a
+	ENDR
+	ret
+
+dialog_clear_1:
+	ld hl, $8100
+	xor a
+	REPT(256)
+	ld [hli], a
+	ENDR
+	ldh [OffsetX], a
+	ldh [OffsetY], a
+	ret
+	
+dialog_stop:
+	ld hl, StrAddr
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+	dec hl
+	ld a, h
+	ld [StrAddr  ], a
+	ld a, l
+	ld [StrAddr+1], a
 	ret
 
 SECTION "Test string adress", WRAM0
 
-StrAddr:
-	DS 1
+StrAddr: DS 2
 	
 
 	

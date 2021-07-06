@@ -2,26 +2,24 @@
 
 SECTION "Shift", ROM0
 
-; Do a = b << a [(13 + a) cycles]
+; Do a = b << a [(12 + a) cycles]
 ShiftLeftBA::
-	dec a                      ; 1
-	xor $FF                    ; 1
-	add 8                      ; 2
+	cpl                        ; 1
+	add 9                      ; 2
 	ld l, a	                   ; 1
 	ld h, HIGH(ShiftLeftBlock) ; 2
 	ld a, b                    ; 1
 	jp hl                      ; 1
 	
-; Do a = b >> a
+; Do a = b >> a [(13 + 2*a) cycles]
 ShiftRightBA::
-	dec a
-	xor $FF
-	add 8
-	add a, a
-	ld l, a
-	ld h, HIGH(ShiftRightBlock)
-	ld a, b
-	jp hl
+	cpl                          ; 1
+	add 9                        ; 2
+	add a, a                     ; 1
+	ld l, a                      ; 1
+	ld h, HIGH(ShiftRightBlock)  ; 2
+	ld a, b                      ; 1
+	jp hl                        ; 1
 	
 	
 SECTION "ShiftL Block", ROM0, ALIGN[8]
@@ -35,4 +33,4 @@ ShiftRightBlock:
 REPT(8)
 	srl a
 ENDR
-	ret
+	ret                      ; 4
