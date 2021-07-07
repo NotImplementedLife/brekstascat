@@ -1,15 +1,4 @@
 INCLUDE "src/include/macros.inc"
-INCLUDE "src/include/charmap.inc"
-
-DLG_CLR0 EQU $F0
-DLG_CLR1 EQU $F1
-DLG_LINE EQU $F2
-DLG_WKEY EQU $F3
-DLG_STOP EQU $FF ; debug
-
-MACRO DIALOG_LINE
-	DB \1, DLG_WKEY, DLG_CLR0, DLG_CLR1
-ENDM
 
 SECTION "Nowhere logic", ROMX, BANK[1]
 
@@ -48,9 +37,9 @@ Nowhere_Main::
 	;ld a, %11100100
 	ld [rBGP], a
 	
-	ld a, HIGH(String)
+	ld a, HIGH(NowhereDialog)
 	ld [StrAddr  ], a
-	ld a, LOW(String)
+	ld a, LOW(NowhereDialog)
 	ld [StrAddr+1], a
 	
 	; Center horizontally
@@ -235,122 +224,6 @@ Nowhere_Main::
 	
 	
 	jp .loop
-	
-
-SECTION "Test string", ROMX, BANK[1]
-
-String:
-DIALOG_LINE "Hello there!"
-DB "My name is Oak and welcome&nl;to the world of Poke...", DLG_WKEY, DLG_CLR0, DLG_CLR1, "0,1,2,3,4,5,6,7,8,9,10,11,12",$FF
-
-NextChar:
-	ld hl, StrAddr
-	ld a, [hli]
-	ld l, [hl]
-	ld h, a
-	ld a, [hl]
-	cp a, $F0
-	jr nc, .processFlags
-	
-	ld b, a
-	ld hl, StrAddr+1
-	inc [hl]
-	ld hl, StrAddr
-	xor a
-	adc a, [hl]
-	ld [hl], a
-	ld a, b
-	jp DialogPutChar
-.processFlags
-	ld hl, DialogOpTable
-	ld bc, 3
-	; find the <a> code in DialogOpTable
-.loop
-	cp a, [hl]
-	jr z, .end
-	add hl, bc
-	jr .loop
-.end
-	inc hl
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a 
-	call CallHL
-	
-	ld hl, StrAddr
-	ld a, [hli]
-	ld l, [hl]
-	ld h, a
-	inc hl
-	ld a, h
-	ld [StrAddr  ], a
-	ld a, l
-	ld [StrAddr+1], a
-	ret	
-
-DialogOpTable:
-	
-DB DLG_CLR0
-DW dialog_clear_0
-
-DB DLG_CLR1
-DW dialog_clear_1
-
-DB DLG_LINE
-DW dialog_newline
-
-DB DLG_WKEY
-DW dialog_waitkey
-
-DB DLG_STOP
-DW dialog_stop
-
-dialog_clear_0:
-	ld hl, $8000
-	xor a
-.clearRow
-	REPT(256)
-	ld [hli], a
-	ENDR
-	ret
-
-dialog_clear_1:
-	ld hl, $8100
-	xor a
-	ldh [OffsetX], a
-	ldh [OffsetY], a
-	jp dialog_clear_0.clearRow
-	ret
-
-dialog_newline:
-	ld a, 1
-	ldh [OffsetY], a
-	xor a
-	ldh [OffsetX], a
-	ret
-	
-dialog_waitkey:
-	call updateJoypadState
-	ld   a, [wJoypadPressed]
-	and a, PADF_A
-	jr z, dialog_stop
-	ret
-
-dialog_stop:
-	ld hl, StrAddr
-	ld a, [hli]
-	ld l, [hl]
-	ld h, a
-	dec hl
-	ld a, h
-	ld [StrAddr  ], a
-	ld a, l
-	ld [StrAddr+1], a
-	ret
-
-SECTION "Test string adress", WRAM0
-
-StrAddr: DS 2
 	
 
 	
