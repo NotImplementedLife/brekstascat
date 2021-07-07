@@ -1,6 +1,16 @@
 INCLUDE "src/include/macros.inc"
 INCLUDE "src/include/charmap.inc"
 
+DLG_CLR0 EQU $F0
+DLG_CLR1 EQU $F1
+DLG_LINE EQU $F2
+DLG_WKEY EQU $F3
+DLG_STOP EQU $FF ; debug
+
+MACRO DIALOG_LINE
+	DB \1, DLG_WKEY, DLG_CLR0, DLG_CLR1
+ENDM
+
 SECTION "Nowhere logic", ROMX, BANK[1]
 
 
@@ -230,7 +240,8 @@ Nowhere_Main::
 SECTION "Test string", ROMX, BANK[1]
 
 String:
-DB "0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20", $F0, $F1, "1234567890,A,B", $FF
+DIALOG_LINE "Hello there!"
+DB "My name is Oak and welcome&nl;to the world of Poke...", DLG_WKEY, DLG_CLR0, DLG_CLR1, "0,1,2,3,4,5,6,7,8,9,10,11,12",$FF
 
 NextChar:
 	ld hl, StrAddr
@@ -275,21 +286,29 @@ NextChar:
 	ld [StrAddr  ], a
 	ld a, l
 	ld [StrAddr+1], a
-	ret
-	
+	ret	
+
 DialogOpTable:
 	
-;DB $FE, dialog_wait
-DB $F0
+DB DLG_CLR0
 DW dialog_clear_0
-DB $F1
+
+DB DLG_CLR1
 DW dialog_clear_1
-DB $FF
+
+DB DLG_LINE
+DW dialog_newline
+
+DB DLG_WKEY
+DW dialog_waitkey
+
+DB DLG_STOP
 DW dialog_stop
 
 dialog_clear_0:
 	ld hl, $8000
 	xor a
+.clearRow
 	REPT(256)
 	ld [hli], a
 	ENDR
@@ -298,13 +317,25 @@ dialog_clear_0:
 dialog_clear_1:
 	ld hl, $8100
 	xor a
-	REPT(256)
-	ld [hli], a
-	ENDR
 	ldh [OffsetX], a
 	ldh [OffsetY], a
+	jp dialog_clear_0.clearRow
+	ret
+
+dialog_newline:
+	ld a, 1
+	ldh [OffsetY], a
+	xor a
+	ldh [OffsetX], a
 	ret
 	
+dialog_waitkey:
+	call updateJoypadState
+	ld   a, [wJoypadPressed]
+	and a, PADF_A
+	jr z, dialog_stop
+	ret
+
 dialog_stop:
 	ld hl, StrAddr
 	ld a, [hli]

@@ -24,3 +24,15 @@ UCHAR = UCHAR + 1
 ENDR
 
 CHARMAP " ", $2A
+
+LOWER_BASE EQU $30
+
+LCHARS equs "abcdefghijklmnopqrstuvwxyz"
+LCHAR = 0
+REPT STRLEN("{LCHARS}")
+	charmap STRSUB("{LCHARS}", LCHAR + 1, 1), LOWER_BASE + LCHAR
+LCHAR = LCHAR + 1
+ENDR
+
+
+CHARMAP "&nl;", $F2
