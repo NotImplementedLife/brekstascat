@@ -36,3 +36,4 @@ ENDR
 
 
 CHARMAP "&nl;", $F2
+CHARMAP "&key;", $F3
