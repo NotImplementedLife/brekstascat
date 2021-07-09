@@ -31,11 +31,9 @@ Nowhere_Main::
 	ld [Cooldown], a
 	
 	xor a
-	ld [aPaletteIndex], a	
-
-	xor a
-	;ld a, %11100100
+	ld [aPaletteIndex], a
 	ld [rBGP], a
+	ld [DownArr], a
 	
 	ld a, HIGH(NowhereDialog)
 	ld [StrAddr  ], a

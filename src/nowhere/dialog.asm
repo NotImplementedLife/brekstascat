@@ -110,10 +110,23 @@ dialog_newline:
 	ret
 	
 dialog_waitkey:
+	ld a, [DownArr]
+	inc a
+	ld [DownArr], a
+	and 15
+	srl a
+	srl a
+	jr z, .skipArrowUpdate
+	add $27
+	ld [$99F8], a
+.skipArrowUpdate
 	call updateJoypadState
 	ld   a, [wJoypadPressed]
 	and a, PADF_A
-	jr z, dialog_stop
+	jr z, dialog_stop ; if no key was pressed, pause dialog iteration
+	
+	ld a, $26
+	ld [$99F8], a
 	ret
 
 dialog_stop:
@@ -128,6 +141,8 @@ dialog_stop:
 	ld [StrAddr+1], a
 	ret
 
-SECTION "Dialog poiner", WRAM0
+SECTION "Dialog vars", WRAM0
 
 StrAddr:: DS 2
+DownArr:: DS 1
+
