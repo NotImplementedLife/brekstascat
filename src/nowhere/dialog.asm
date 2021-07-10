@@ -13,7 +13,7 @@ ENDM
 
 SECTION "Dialog string", ROMX, BANK[2]
 
-;NowhereDialog::
+NowhereDialog::
 DB "                                           ", DLG_CLR0, DLG_CLR1 ; spaces for artificial delay
 DB "Hello there!", DLG_WKEY, DLG_CLR0, DLG_CLR1
 DB "My name is Oak and welcome&nl;to the amazing world of Poke...                ", DLG_WKEY, DLG_CLR0, DLG_CLR1
@@ -32,7 +32,6 @@ DB "                            ", DLG_CLR0, DLG_CLR1
 DB "\"In this place, identity does&nl;not matter.\" &nl;&key;", DLG_CLR0, DLG_CLR1
 DB "\"There is no who, as there&nl; is no why.\" &nl;&key;", DLG_CLR0, DLG_CLR1
 ; make the cat sprite appear
-NowhereDialog::
 DB "\"But to facilitate your under-&nl;standing, I shall tell you that\"&key;", DLG_CLR0, DLG_CLR1
 DB "\"people form ancient times&nl;used to call me Valnyssa.\"&key;", DLG_CLR0, DLG_CLR1
 DB "\"There isn't much time left, so&nl;.......\"&key;", DLG_CLR0, DLG_CLR1
