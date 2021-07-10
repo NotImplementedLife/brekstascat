@@ -1,6 +1,6 @@
 INCLUDE "src/include/macros.inc"
 
-SECTION "ACTIONS", ROMX, BANK[1], ALIGN[8]
+SECTION "ACTIONS", ROMX, BANK[2], ALIGN[8]
 
 ActionsHub::
 

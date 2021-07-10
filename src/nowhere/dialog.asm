@@ -11,34 +11,54 @@ MACRO DIALOG_LINE
 	DB \1, DLG_WKEY, DLG_CLR0, DLG_CLR1
 ENDM
 
-SECTION "Dialog string", ROMX, BANK[1]
+SECTION "Dialog string", ROMX, BANK[2]
 
-NowhereDialog::
+;NowhereDialog::
+DB "                                           ", DLG_CLR0, DLG_CLR1 ; spaces for artificial delay
 DB "Hello there!", DLG_WKEY, DLG_CLR0, DLG_CLR1
-DB "My name is Oak and welcome&nl;to the amazing world of Poke...", DLG_WKEY, DLG_CLR0, DLG_CLR1
-DB "Oh, wait... Wrong line! Then... &nl;", DLG_WKEY, "Lemme...", DLG_WKEY, " Ahem!", DLG_WKEY, DLG_CLR0, DLG_CLR1
+DB "My name is Oak and welcome&nl;to the amazing world of Poke...                ", DLG_WKEY, DLG_CLR0, DLG_CLR1
+DB "Oh, wait... Wrong line!&key; Alright... &nl;&key;Now...&key; Then...&key; Hmmmm... &key; What...&key;", DLG_CLR0, DLG_CLR1
+DB "What was I about to say?&key;", DLG_CLR0, DLG_CLR1
+DB "That aside, where am I?&key;", DLG_CLR0, DLG_CLR1
+DB ". . . . . . . . . . . . . . . . . .                            &nl;&key;", DLG_CLR0, DLG_CLR1
+DB "                                           ", DLG_CLR0, DLG_CLR1
+DB "\"Of no significance is where&nl;you are, nor how you got here\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"All that matters is that you are a living one. You are\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"given the mission to protect&nl;the holy world of Ethereal.\"&key;", DLG_CLR0, DLG_CLR1
+DB "                                           ", DLG_CLR0, DLG_CLR1
+DB "HUH???&key; A mission??&key;", DLG_CLR0, DLG_CLR1
+DB "Such a...&key; lifeless...&key; voice...&key;&nl;Who is speaking? &nl;&key;", DLG_CLR0, DLG_CLR1 
+DB "                            ", DLG_CLR0, DLG_CLR1
+DB "\"In this place, identity does&nl;not matter.\" &nl;&key;", DLG_CLR0, DLG_CLR1
+DB "\"There is no who, as there&nl; is no why.\" &nl;&key;", DLG_CLR0, DLG_CLR1
+; make the cat sprite appear
+NowhereDialog::
+DB "\"But to facilitate your under-&nl;standing, I shall tell you that\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"people form ancient times&nl;used to call me Valnyssa.\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"There isn't much time left, so&nl;.......\"&key;", DLG_CLR0, DLG_CLR1
+
 
 DB $FF
 
-SECTION "NextChar", ROMX, BANK[1]
+SECTION "NextChar", ROMX, BANK[2]
 NextChar::
 	ld hl, StrAddr
 	ld a, [hli]
 	ld l, [hl]
 	ld h, a
 	ld a, [hl]
+	;ld b,b
 	cp a, $F0
 	jr nc, .processFlags
 	
 	ld b, a
-	ld hl, StrAddr+1
-	inc [hl]
-	ld hl, StrAddr
-	xor a
-	adc a, [hl]
-	ld [hl], a
+	inc hl
+	ld a, h
+	ld [StrAddr  ], a
+	ld a, l
+	ld [StrAddr+1], a
 	ld a, b
-	jp DialogPutChar
+	jp DialogPutChar;
 .processFlags
 	ld hl, DialogOpTable
 	ld bc, 3
@@ -66,7 +86,7 @@ NextChar::
 	ld [StrAddr+1], a
 	ret	
 
-SECTION "Dialog Operations Table", ROMX, BANK[1]
+SECTION "Dialog Operations Table", ROMX, BANK[2]
 	
 DialogOpTable:
 	

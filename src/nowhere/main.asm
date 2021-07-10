@@ -1,6 +1,6 @@
 INCLUDE "src/include/macros.inc"
 
-SECTION "Nowhere logic", ROMX, BANK[1]
+SECTION "Nowhere logic", ROMX, BANK[2]
 
 
 ; 3*(n+1) cycles, where n = number of steps (\1)
