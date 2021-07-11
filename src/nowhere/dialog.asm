@@ -34,7 +34,43 @@ DB "\"There is no who, as there&nl; is no why.\" &nl;&key;", DLG_CLR0, DLG_CLR1
 ; make the cat sprite appear
 DB "\"But to facilitate your under-&nl;standing, I shall tell you that\"&key;", DLG_CLR0, DLG_CLR1
 DB "\"people form ancient times&nl;used to call me Valnyssa.\"&key;", DLG_CLR0, DLG_CLR1
-DB "\"There isn't much time left, so&nl;.......\"&key;", DLG_CLR0, DLG_CLR1
+
+DB "\"There isn't much time left, so&nl;I shall fill you in on what you \"&key;", DLG_CLR0, DLG_CLR1
+DB "\"will soon have to deal with in&nl;order to fulfill your purpose.\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"Ethereal is the core of the&nl;infinite dimension of existence.\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"It provides the energy to&nl;power up the real world.\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"It is also the one that models&nl;the subconscious cerebral \"&key;", DLG_CLR0, DLG_CLR1
+DB "\"waves.That makes it possible&nl;for humans to dream and to\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"have thoughts.\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"However, Ethereal is in dan-&nl;ger due to unknown evil forces&key;", DLG_CLR0, DLG_CLR1
+DB "which affect the elemental&nl;entities of this world. \"&key;", DLG_CLR0, DLG_CLR1
+DB "\"Therefore, gods are unable&nl;to do something in this regard\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"Paradoxically, you, weak&nl;ontological being, can't be\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"touched by something meant&nl;to destroy a deity. That's why&key;", DLG_CLR0, DLG_CLR1
+DB "I shall put my faith in you, the&nl;one who can restore the \"&key;", DLG_CLR0, DLG_CLR1
+DB "\"millennial order of Ethereal.\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"But, there is a problem...&nl;&key;Being a living one, you can't \"&key;", DLG_CLR0, DLG_CLR1
+DB "\"directly interact with the&nl;existential matter.\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"Even so, there is no need to&nl;worry.\"&key;", DLG_CLR0, DLG_CLR1
+
+DB "\"I can sandbox a part of&nl;Ethereal directly in your mind\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"into a shape you are familiar&nl;with. For that, you'll feel like\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"everything will be just an&nl; illusion, but keep in mind - \"&key;", DLG_CLR0, DLG_CLR1
+DB "\"each step you do in this&nl;world, will have direct\"&key;", DLG_CLR0, DLG_CLR1
+DB "consequences over Ethereal.\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"Calm down, you won't slay&nl;demons - as if you'd have\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"the capacity to see them.\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"Deep into your subconscious,&nl;you'll have the impression\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"you solve puzzles.&key; However,&nl;don't take it easy.\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"The grater the evil, the&nl;harder the puzzle you'll have\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"to deal with.\"&key;", DLG_CLR0, DLG_CLR1
+
+DB " . . . . . . . . . &key;", DLG_CLR0, DLG_CLR1
+DB "          ", DLG_CLR0, DLG_CLR1
+DB "\"Oh, no!&key; It's too late.&key; I'm&nl;not even sure if I can safely\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"clone Ethereal into your mind.&nl;&key; Now, hurry up!\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"I shall put all my faith in you\"&key;", DLG_CLR0, DLG_CLR1
+
 
 
 DB $FF
