@@ -62,7 +62,7 @@ DB "\"Calm down, you won't slay&nl;demons - as if you'd have\"&key;", DLG_CLR0, 
 DB "\"the capacity to see them.\"&key;", DLG_CLR0, DLG_CLR1
 DB "\"Deep into your subconscious,&nl;you'll have the impression\"&key;", DLG_CLR0, DLG_CLR1
 DB "\"you solve puzzles.&key; However,&nl;don't take it easy.\"&key;", DLG_CLR0, DLG_CLR1
-DB "\"The grater the evil, the&nl;harder the puzzle you'll have\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"The greater the evil, the&nl;harder the puzzle you'll have\"&key;", DLG_CLR0, DLG_CLR1
 DB "\"to deal with.\"&key;", DLG_CLR0, DLG_CLR1
 
 DB " . . . . . . . . . &key;", DLG_CLR0, DLG_CLR1
