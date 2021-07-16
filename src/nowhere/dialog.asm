@@ -172,7 +172,7 @@ dialog_waitkey:
 	srl a
 	srl a
 	jr z, .skipArrowUpdate
-	add $27
+	add $30
 	ld [$99F8], a
 .skipArrowUpdate
 	call updateJoypadState
@@ -180,7 +180,7 @@ dialog_waitkey:
 	and a, PADF_A
 	jr z, dialog_stop ; if no key was pressed, pause dialog iteration
 	
-	ld a, $26
+	ld a, $30
 	ld [$99F8], a
 	ret
 
