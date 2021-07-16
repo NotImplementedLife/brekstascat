@@ -56,8 +56,10 @@ Nowhere_Main::
 	loadVRAM_DOUBLE $8800, BG96_TILESET + $800, BG96_TILESET_End		
 	loadVRAM_DOUBLE $9800, BG96_TILEMAP       , BG96_TILEMAP_End
 	
+	call ValnyssaLoad
+	
 	call waitForVBlank
-	ld a, LCDCF_ON | LCDCF_BGON; | LCDCF_BG8000
+	ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON | LCDCF_OBJ16; | LCDCF_BG8000
 	ldh [rLCDC], a
 	
 	call waitForVBlank	
