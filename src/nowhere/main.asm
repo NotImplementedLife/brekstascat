@@ -59,7 +59,7 @@ Nowhere_Main::
 	call ValnyssaLoad
 	
 	call waitForVBlank
-	ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJON | LCDCF_OBJ16; | LCDCF_BG8000
+	ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJ16; | LCDCF_OBJON
 	ldh [rLCDC], a
 	
 	call waitForVBlank	

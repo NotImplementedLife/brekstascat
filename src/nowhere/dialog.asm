@@ -5,6 +5,7 @@ DLG_CLR0 EQU $F0
 DLG_CLR1 EQU $F1
 DLG_LINE EQU $F2
 DLG_WKEY EQU $F3
+DLG_EXEC EQU $F4
 DLG_STOP EQU $FF ; debug
 
 MACRO DIALOG_LINE
@@ -21,7 +22,7 @@ DB "Oh, wait... Wrong line!&key; Alright... &nl;&key;Now...&key; Then...&key; Hm
 DB "What was I about to say?&key;", DLG_CLR0, DLG_CLR1
 DB "That aside, where am I?&key;", DLG_CLR0, DLG_CLR1
 DB ". . . . . . . . . . . . . . . . . .                            &nl;&key;", DLG_CLR0, DLG_CLR1
-DB "                                           ", DLG_CLR0, DLG_CLR1
+DB "                                    ", DLG_CLR0, DLG_CLR1
 DB "\"Of no significance is where&nl;you are, nor how you got here\"&key;", DLG_CLR0, DLG_CLR1
 DB "\"All that matters is that you are a living one. You are\"&key;", DLG_CLR0, DLG_CLR1
 DB "\"given the mission to protect&nl;the holy world of Ethereal.\"&key;", DLG_CLR0, DLG_CLR1
@@ -32,7 +33,22 @@ DB "                            ", DLG_CLR0, DLG_CLR1
 DB "\"In this place, identity does&nl;not matter.\" &nl;&key;", DLG_CLR0, DLG_CLR1
 DB "\"There is no who, as there&nl; is no why.\" &nl;&key;", DLG_CLR0, DLG_CLR1
 ; make the cat sprite appear
-DB "\"But to facilitate your under-&nl;standing, I shall tell you that\"&key;", DLG_CLR0, DLG_CLR1
+DB DLG_EXEC
+DW ValnyssaFadeIn_1
+DB "      ", DLG_CLR0, DLG_CLR1
+DB DLG_EXEC
+DW ValnyssaFadeIn_2
+DB "But to"
+DB DLG_EXEC
+DW ValnyssaFadeIn_3
+DB "facili"
+DB DLG_EXEC
+DW ValnyssaFadeIn_4
+DB "tate y"
+DB DLG_EXEC
+DW ValnyssaFadeIn_5
+
+DB "our under-&nl;standing, I shall tell you that\"&key;", DLG_CLR0, DLG_CLR1
 DB "\"people form ancient times&nl;used to call me Valnyssa.\"&key;", DLG_CLR0, DLG_CLR1
 
 DB "\"There isn't much time left, so&nl;I shall fill you in on what you \"&key;", DLG_CLR0, DLG_CLR1
@@ -67,6 +83,19 @@ DB "\"to deal with.\"&key;", DLG_CLR0, DLG_CLR1
 
 DB " . . . . . . . . . &key;", DLG_CLR0, DLG_CLR1
 DB "          ", DLG_CLR0, DLG_CLR1
+
+REPT(4)
+DB DLG_EXEC
+DW ValnyssaShake_1
+DB DLG_EXEC
+DW ValnyssaShake_2
+DB DLG_EXEC
+DW ValnyssaShake_2
+DB DLG_EXEC
+DW ValnyssaShake_1
+ENDR
+
+
 DB "\"Oh, no!&key; It's too late.&key; I'm&nl;not even sure if I can safely\"&key;", DLG_CLR0, DLG_CLR1
 DB "\"clone Ethereal into your mind.&nl;&key; Now, hurry up!\"&key;", DLG_CLR0, DLG_CLR1
 DB "\"I shall put all my faith in you\"&key;", DLG_CLR0, DLG_CLR1
@@ -137,6 +166,9 @@ DW dialog_newline
 DB DLG_WKEY
 DW dialog_waitkey
 
+DB DLG_EXEC
+DW dialog_execute
+
 DB DLG_STOP
 DW dialog_stop
 
@@ -194,6 +226,25 @@ dialog_stop:
 	ld [StrAddr  ], a
 	ld a, l
 	ld [StrAddr+1], a
+	ret
+	
+dialog_execute:
+	ld hl, StrAddr
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+	inc hl
+	push hl
+	inc hl
+	ld a, h
+	ld [StrAddr  ], a
+	ld a, l
+	ld [StrAddr+1], a
+	pop hl
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	call CallHL
 	ret
 
 SECTION "Dialog vars", WRAM0

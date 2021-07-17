@@ -13,18 +13,75 @@ ValnyssaLoad::
 	loadVRAM $8600, Valnyssa_8600,            Valnyssa_8600 + 16 * 16
 	loadVRAM $8700, Valnyssa_8700,            Valnyssa_8700 + 16 * 16
 	
-	ld a, %00100100
+	xor a
+	;ld a, %00100100
 	ldh [rOBP0], a
 	
-	ld a, %11000000
+	;ld a, %11000000
 	ldh [rOBP1], a
 	
 	call waitForVBlank
 	initOAM Valnyssa_SpriteData
-	
+	;ldh a, [rLCDC]
+	;or LCDCF_OBJON 
+	;ldh [rLCDC], a
 	ret
 
+ValnyssaFadeIn_1::
+	ldh a, [rLCDC]
+	xor LCDCF_OBJON 
+	ldh [rLCDC], a
+	ld a, %01000000
+	ldh [rOBP1], a
+	ret
+	
+ValnyssaFadeIn_2::
+	ld a, %10000000
+	ldh [rOBP1], a
+	ret
+	
+ValnyssaFadeIn_3::
+	ld a, %11000000
+	ldh [rOBP1], a
+	ld a, %00010000
+	ldh [rOBP0], a
+	ret
+	
+ValnyssaFadeIn_4::
+	ld a, %00010100
+	ldh [rOBP0], a
+	ret
+	
+ValnyssaFadeIn_5::
+	ld a, %00100100
+	ldh [rOBP0], a
+	ret
 
+ValnyssaShake_1::
+	ld bc, 4
+	ld hl, $FE01
+	
+	REPT(40)
+	inc [hl]
+	inc [hl]
+	inc [hl]
+	add hl, bc
+	ENDR
+	
+	ret
+	
+ValnyssaShake_2::
+	ld bc, 4
+	ld hl, $FE01
+	
+	REPT(40)
+	dec [hl]
+	dec [hl]
+	dec [hl]
+	add hl, bc
+	ENDR
+	
+	ret
 
 SECTION "Valnyssa OAM", ROMX, ALIGN[8], BANK[2]
 
