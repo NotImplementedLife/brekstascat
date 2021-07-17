@@ -1,11 +1,14 @@
 INCLUDE "src/include/macros.inc"
 
+Valnyssa_MY EQU $30
+
 SECTION "ACTIONS", ROMX, BANK[2], ALIGN[8]
 
 ActionsHub::
 
-DW  actionNothing       ; 0
-DW  actionPaletteChange ; 1
+DW  actionNothing           ; 0
+DW  actionPaletteChange     ; 1
+DW  actionCageAnimate       ; 2
 
 
 actionNothing::
@@ -35,6 +38,23 @@ actionPaletteChange::
 	ld [PendingAction], a
 	ret
 
+actionCageAnimate::
+	ld hl, $FE00
+	ld bc, 1
+REPT(15)
+	inc [hl]
+	add hl, bc
+	add hl, bc
+	add hl, bc
+	add hl, bc
+ENDR	
+	inc [hl]
+	ld a, [hl]
+	cp Valnyssa_MY + 24
+	ret nz
+	xor a
+	ld [PendingAction], a
+	ret
 	
 SECTION "ACTION VARS", WRAM0
 

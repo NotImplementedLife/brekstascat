@@ -41,14 +41,14 @@ DW ValnyssaFadeIn_2
 DB "But to"
 DB DLG_EXEC
 DW ValnyssaFadeIn_3
-DB "facili"
+DB " facil"
 DB DLG_EXEC
 DW ValnyssaFadeIn_4
-DB "tate y"
+DB "itate "
 DB DLG_EXEC
 DW ValnyssaFadeIn_5
 
-DB "our under-&nl;standing, I shall tell you that\"&key;", DLG_CLR0, DLG_CLR1
+DB "your under-&nl;standing, I shall tell you that\"&key;", DLG_CLR0, DLG_CLR1
 DB "\"people form ancient times&nl;used to call me Valnyssa.\"&key;", DLG_CLR0, DLG_CLR1
 
 DB "\"There isn't much time left, so&nl;I shall fill you in on what you \"&key;", DLG_CLR0, DLG_CLR1
@@ -95,12 +95,111 @@ DB DLG_EXEC
 DW ValnyssaShake_1
 ENDR
 
-
 DB "\"Oh, no!&key; It's too late.&key; I'm&nl;not even sure if I can safely\"&key;", DLG_CLR0, DLG_CLR1
 DB "\"clone Ethereal into your mind.&nl;&key; Now, hurry up!\"&key;", DLG_CLR0, DLG_CLR1
-DB "\"I shall put all my faith in you\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"I shall...&key; put...&key; all my...&key;&nl;faith...&key; in you...\"&key;", DLG_CLR0, DLG_CLR1	
 
+REPT(4)
+DB DLG_EXEC
+DW ValnyssaFlash_1
+DB "      "
+DB DLG_EXEC
+DW ValnyssaFlash_2
+DB "    "
+ENDR
+DB DLG_EXEC
+DW ValnyssaNegative
+DB "         "
+REPT(8)
+DB DLG_EXEC
+DW ValnyssaShake_1
+DB DLG_EXEC
+DW ValnyssaShake_2
+DB DLG_EXEC
+DW ValnyssaShake_2
+DB DLG_EXEC
+DW ValnyssaShake_1
+ENDR
+DB DLG_EXEC
+DW ValnyssaAllBlack
+REPT(13)
+DB DLG_EXEC
+DW ValnyssaDarkBg
+DB "   "
+DB DLG_EXEC
+DW ValnyssaNormBg
+ENDR
+DB DLG_EXEC
+DW ValnyssaBlackBg
+DB DLG_EXEC
+DW ValnyssaMiniLoadTiles_1
+DB DLG_EXEC
+DW ValnyssaMiniLoadTiles_2
+DB DLG_EXEC
+DW ValnyssaMiniLoadTiles_3
+DB DLG_EXEC
+DW ValnyssaMiniLoadTiles_4
+DB DLG_EXEC
+DW ValnyssaMiniLoadTiles_5
+DB DLG_EXEC
+DW ValnyssaMiniLoadTiles_6
+DB DLG_EXEC
+DW ValnyssaMiniLoadTiles_7
+DB DLG_EXEC
+DW ValnyssaMiniLoadTiles_8
 
+DB DLG_EXEC
+DW ValnyssaCageLoad_1
+DB DLG_EXEC
+DW ValnyssaCageLoad_2
+DB DLG_EXEC
+DW ValnyssaCageLoad_3
+
+DB DLG_EXEC
+DW ValnyssaMiniLoadOAM
+
+DB "                "
+
+REPT(3)
+DB"          "
+DB DLG_EXEC
+DW ValnyssaMiniFlip
+ENDR
+
+DB DLG_EXEC
+DW ValnyssaNormBg
+DB "                    "
+
+REPT(2)
+DB"          "
+DB DLG_EXEC
+DW ValnyssaMiniFlip
+ENDR
+
+DB DLG_CLR0, DLG_CLR1
+DB ". . . . . . . .&nl;meow?&key;"
+
+DB DLG_EXEC
+DW ValnyssaCageShow
+DB DLG_EXEC
+DW ValnyssaCageAnimateAction
+; reserve time to execute action:
+DB "                                                                           "
+DB DLG_CLR0, DLG_CLR1
+DB "Valnyssa was captured by a&nl;demon force.&key;", DLG_CLR0, DLG_CLR1
+
+DB "       "
+DB DLG_EXEC
+DW ValnyssaFadeOut_1
+DB "      "
+DB DLG_EXEC
+DW ValnyssaFadeOut_2
+DB "      "
+DB DLG_EXEC
+DW ValnyssaFadeOut_3
+DB "      "
+DB DLG_EXEC
+DW ValnyssaFadeOut_4
 
 DB $FF
 
