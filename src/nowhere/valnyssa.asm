@@ -272,7 +272,10 @@ ValnyssaFadeOut_4::
 	xor a
 	ldh [rOBP1], a
 	ret
-	
+
+ValnyssaNowhereExit::
+	jp NowhereEnd
+
 SECTION "Valnyssa OAM", ROMX, ALIGN[8], BANK[2]
 
 Valnyssa_SpriteData::

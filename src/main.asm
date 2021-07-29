@@ -12,6 +12,20 @@ Start::
 	ld [wJoypadState], a
 	ld [wJoypadPressed], a
 	
+	call SRAM_CheckWritten
+	
+	ld a, [sNowhereIntroComplete]
+	or a
+	jr nz, .playIntroEnd
+	
 	; Run Nowhere Intro
 	setBank NOWHERE_BANK
 	jp Nowhere_Main
+	
+.playIntroEnd::
+	
+	setBank LOGO_BANK
+	jp Logo_Main
+	
+	jr @
+	

@@ -155,6 +155,8 @@ DW ValnyssaCageLoad_2
 DB DLG_EXEC
 DW ValnyssaCageLoad_3
 
+DB "                                             "
+
 DB DLG_EXEC
 DW ValnyssaMiniLoadOAM
 
@@ -186,7 +188,7 @@ DW ValnyssaCageAnimateAction
 ; reserve time to execute action:
 DB "                                                                           "
 DB DLG_CLR0, DLG_CLR1
-DB "Valnyssa was captured by a&nl;demon force.&key;", DLG_CLR0, DLG_CLR1
+DB "Valnyssa was captured by a&nl;demonic force.&key;", DLG_CLR0, DLG_CLR1
 
 DB "       "
 DB DLG_EXEC
@@ -200,6 +202,9 @@ DW ValnyssaFadeOut_3
 DB "      "
 DB DLG_EXEC
 DW ValnyssaFadeOut_4
+
+DB DLG_EXEC
+DW ValnyssaNowhereExit
 
 DB $FF
 

@@ -99,7 +99,7 @@ Nowhere_Main::
 	dec b	
 	jr nz, .bg96Loop
 	
-	; Now we are reafy to enter in the bottom part of the screen (lines 96-114)
+	; Now we are ready to enter in the bottom part of the screen (lines 96-114)
 	; change the tile data bit in LCDC to display the dialog box
 	wait_vram	
 	ldh a, [rLCDC]
@@ -137,7 +137,7 @@ Nowhere_Main::
 	;burn 5
 	
 	; Ah, finally, vBlank :)))
-	call NextChar
+	call NextChar ; update dialog
 	
 	; render one more frame, but now without updating LSin
 	
@@ -221,9 +221,8 @@ Nowhere_Main::
 	ld a, [de]
 	ld h, a	
 	call CallHL	
-	
-	
 	jp .loop
+	
 	
 
 	
