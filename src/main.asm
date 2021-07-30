@@ -3,6 +3,11 @@ INCLUDE "src/include/macros.inc"
 SECTION "Main", ROM0
 
 Start::
+	; "Zero" Shadow OAM 
+	ld hl, ShadowOAM
+	ld bc, 160
+	call fillMemory0
+	
 	; Enable SRAM
 	ld a, $0A
 	ld [$0000], a	

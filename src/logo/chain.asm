@@ -5,6 +5,15 @@ DB $6d, $92, $6d ; tile 1 (line 2, line 3, line 4)
 DB $b6, $49, $b6 ; tile 2 (line 2, line 3, line 4)
 DB $db, $24, $db ; tile 3 (line 2, line 3, line 4)
 
+
+SECTION "Chain Vertical Tiles", ROMX, BANK[3]
+
+ChainVerticalTiles:
+DB $40, $40, $a0, $a0, $a0, $a0, $40, $40, $a0, $a0, $a0, $a0, $40, $40, $a0, $a0
+DB $a0, $a0, $40, $40, $a0, $a0, $a0, $a0, $40, $40, $a0, $a0, $a0, $a0, $40, $40
+DB $a0, $a0, $a0, $a0, $40, $40, $a0, $a0, $a0, $a0, $40, $40, $a0, $a0, $a0, $a0
+
+
 SECTION "Chain W", WRAM0, ALIGN[8]
 
 wChainModel:: 
@@ -282,3 +291,10 @@ ChainMoveCircularHelper:
 	ld h, a
 	
 	ret
+
+	
+ChainVerticalLoadTiles::
+	ld hl, $9020
+	ld de, ChainVerticalTiles
+	ld bc, ChainVerticalTiles + 3*16
+	jp loadMemoryDOUBLE

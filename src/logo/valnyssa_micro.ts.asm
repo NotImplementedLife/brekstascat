@@ -1,4 +1,5 @@
-SECTION "Valnyssa Micro Tiles", ROMX, BANK[3]
+; not bank 3, maybe I'll use this sometime later
+SECTION "Valnyssa Micro Tiles", ROM0
 
 ValnyssaMicroCat_Tiles::
 ; micro cat
@@ -11,3 +12,19 @@ ValnyssaMicroCage_Tiles::
 ; micro cage
 DB $0f, $0f, $12, $12, $22, $22, $22, $22, $52, $52, $52, $52, $52, $52, $52, $52 ; top half
 DB $52, $52, $52, $52, $52, $52, $52, $52, $52, $52, $52, $52, $52, $52, $ff, $ff ; bottom half
+
+
+SECTION "Valnyssa Micro Tiles Loader", ROMX, BANK[3]
+
+ValnyssaMicroLoadTiles::
+	ld hl, $8000
+	ld de, ValnyssaMicroCat_Tiles
+	ld bc, ValnyssaMicroCat_Tiles + 4*16
+	call loadMemoryDOUBLE
+	
+	ld hl, $8040
+	ld de, ValnyssaMicroCage_Tiles
+	ld bc, ValnyssaMicroCage_Tiles + 2*16
+	call loadMemoryDOUBLE
+	ret
+
