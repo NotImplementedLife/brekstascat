@@ -5,23 +5,30 @@ SECTION "Logo Background Tiles", ROMX, BANK[3]
 LogoBackground_Tiles::
 
 ; chain platform
-.chainPlatorm
-DB $00, $00, $00, $00, $fe, $00, $fe, $00, $00, $ff, $00, $ff, $00, $ff, $00, $ff
-DB $00, $00, $00, $00, $7f, $00, $7f, $00, $00, $ff, $00, $ff, $00, $ff, $00, $ff
+.chainPlatorm::
+DB $00, $00, $00, $00, $fe, $00, $fe, $00, $00, $ff, $00, $ff, $00, $ff, $00, $ff ; 30
+DB $00, $00, $00, $00, $7f, $00, $7f, $00, $00, $ff, $00, $ff, $00, $ff, $00, $ff ; 31
+DB $00, $00, $00, $00, $fe, $00, $fe, $00, $00, $ff, $00, $ff, $00, $ff, $00, $ff ; 32
+DB $00, $00, $00, $00, $7f, $00, $7f, $00, $00, $ff, $00, $ff, $00, $ff, $00, $ff ; 33
 
-DB $00, $00, $00, $00, $fe, $00, $fe, $00, $00, $ff, $00, $ff, $00, $ff, $00, $f8
+DB $00, $00, $00, $00, $fe, $00, $fe, $00, $00, $ff, $00, $ff, $00, $ff, $00, $f8 ; 34
 
-DB $00, $00, $00, $00, $7f, $00, $7f, $00, $00, $ff, $00, $ff, $00, $ff, $00, $00
-DB $00, $00, $00, $00, $fe, $00, $fe, $00, $00, $ff, $00, $ff, $00, $ff, $00, $00
+DB $00, $00, $00, $00, $7f, $00, $7f, $00, $00, $ff, $00, $ff, $00, $ff, $00, $00 ; 35
+DB $00, $00, $00, $00, $fe, $00, $fe, $00, $00, $ff, $00, $ff, $00, $ff, $00, $00 ; 36
+DB $00, $00, $00, $00, $7f, $00, $7f, $00, $00, $ff, $00, $ff, $00, $ff, $00, $00 ; 37
+DB $00, $00, $00, $00, $fe, $00, $fe, $00, $00, $ff, $00, $ff, $00, $ff, $00, $00 ; 38
 
-DB $00, $00, $00, $00, $7f, $00, $7f, $00, $00, $ff, $00, $ff, $00, $ff, $00, $00
+DB $00, $00, $00, $00, $7f, $00, $7f, $00, $00, $ff, $00, $ff, $00, $ff, $00, $00 ; 39
 
-DB $00, $00, $00, $00, $fe, $00, $fe, $00, $00, $ff, $00, $ff, $00, $00, $00, $00
-DB $00, $00, $00, $00, $7f, $00, $7f, $00, $00, $ff, $00, $ff, $00, $00, $00, $00
+DB $00, $00, $00, $00, $fe, $00, $fe, $00, $00, $ff, $00, $ff, $00, $00, $00, $00 ; 3A
+DB $00, $00, $00, $00, $7f, $00, $7f, $00, $00, $ff, $00, $ff, $00, $00, $00, $00 ; 3B
+
+DB $00, $00, $00, $00, $fe, $00, $fe, $00, $00, $ff, $00, $ff, $00, $00, $00, $00 ; 3C
+DB $00, $00, $00, $00, $7f, $00, $7f, $00, $00, $ff, $00, $ff, $00, $00, $00, $00 ; 3D
 
 ; the wheel
-DB $00, $00, $0c, $0c, $7f, $0b, $7b, $15, $1f, $fa, $06, $ff, $00, $00, $00, $00
-DB $00, $00, $06, $06, $7f, $1a, $7b, $15, $0f, $fb, $0c, $ff, $00, $00, $00, $00
+DB $00, $00, $0c, $0c, $ff, $0b, $fb, $15, $1e, $fa, $06, $fe, $00, $00, $00, $00 ; 0E
+DB $00, $00, $06, $06, $fe, $1a, $fb, $15, $0f, $fb, $0c, $fe, $00, $00, $00, $00 ; 0F (behaves like 0E)
 
 .chainPlatormEnd
 
@@ -38,7 +45,7 @@ DB $00, $00, $00, $00, $fe, $00, $fe, $00, $fe, $00, $00, $fe, $00, $00, $00, $0
 DB $00, $00, $00, $00, $7f, $00, $7f, $00, $7f, $00, $00, $7f, $00, $00, $00, $00
 
 LogoBackground_ChainPlatform:
-DB $02, $03, $02, $03, $04, $05, $06, $05, $06, $07, $08, $09, $08, $09
+DB $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $3A, $3B, $3C, $3D, $3E
 LogoBackground_ChainPlatformEnd:
 
 SECTION "Logo Background Logic", ROMX, BANK[3]
@@ -60,7 +67,7 @@ LogoBackground_InitVRAM::
 	ld bc, LogoBackground_Tiles.genericWall + 96
 	call loadMemoryDOUBLE
 	
-	ld hl, $9020
+	ld hl, $9300
 	ld de, LogoBackground_Tiles.chainPlatorm
 	ld bc, LogoBackground_Tiles.chainPlatormEnd
 	call loadMemoryDOUBLE
@@ -97,11 +104,7 @@ ENDR
 	;ld b,b
 	ld hl, $9860
 	ld de, LogoBackground_ChainPlatform
-	ld bc, LogoBackground_ChainPlatform + 14
-	call loadMemoryDOUBLE
-	
-	ld hl, $986D
-	ld [hl], $0A ; the wheel
-	
+	ld bc, LogoBackground_ChainPlatformEnd
+	call loadMemorySTAT
 	
 	ret	
