@@ -1,3 +1,5 @@
+INCLUDE "src/include/macros.inc"
+
 SECTION "Chain Sample 5", ROMX, BANK[3], ALIGN[8]
 
 ChainSample::
@@ -19,11 +21,18 @@ SECTION "Chain W", WRAM0, ALIGN[8]
 wChainModel:: 
 	DS 9    ; here chain movement will be computed
 wChainPlatform24:: 
-	DS 16*3 ; here the chain will be rendered
+	DS 16*6 ; here the chain will be rendered
 
 SECTION "Chain Sample Logic", ROMX, BANK[3]
 
 ChainModelInit::
+	; vertical chain data
+	xor a
+	ld [wTi], a
+	ld [wVStep], a
+	ld a, 6
+	ld [wTg], a
+	; now horizontal
 	ld hl, wChainModel
 	ld de, ChainSample
 	ld bc, 9
@@ -293,8 +302,270 @@ ChainMoveCircularHelper:
 	ret
 
 	
+; this part corrupes the graphics if not put in a separate section (why??)
+SECTION "Chain Vertical Logic", ROMX, BANK[3]
+	
 ChainVerticalLoadTiles::
-	ld hl, $9020
+	ld hl, $8060
 	ld de, ChainVerticalTiles
 	ld bc, ChainVerticalTiles + 3*16
 	jp loadMemoryDOUBLE
+
+ChainVerticalUpdate_Phase1::
+	ld a, [wTg]
+	ld l, a
+	swap l
+	ld h, $80 ; now hl=$8060, $8070 or $8080
+	ld bc, $8090 ; tampon sprite resource
+
+	ld a, [wVStep]
+	ld e, a
+	swap e
+	ld d, HIGH(TamponSpriteMask)
+	
+	; the idea: TileAt[bc] = TileAt[hl] & MaskAt[de]
+	
+	ld a, 16
+.loop
+	push af
+	
+	ld a, [de]
+	and [hl]
+	ld [bc], a
+	inc hl
+	inc de
+	inc bc
+	
+	pop af
+	dec a
+	jr nz, .loop
+	
+	; if wWStep = 0, define tampon sprite in OAM
+	ld a, [wVStep]
+	or a
+	call z, DefineTamponInOAM
+	
+	; if wWStep = 4, reset counter and go to the next tampon
+	ld a, [wVStep]
+	cp 3
+	call z, NextTampon
+	
+	ld hl, wVStep
+	inc [hl]
+	
+	; move all sprites down 2 px
+	
+	ld hl, ShadowOAM
+	ld bc, 4
+	
+	ld a, 40
+.loopP
+	push af
+	
+	inc [hl]
+	inc [hl]
+	add hl, bc
+	
+	pop af
+	dec a
+	jr nz, .loopP
+
+	; cage down separate
+	ld hl, ShadowOAM + 32*4
+	ld bc, 4
+
+.skipDown
+	initOAM ShadowOAM
+	
+	ret
+	
+DefineTamponInOAM:
+	ld a, [wTi] ; get tile index
+	sla a
+	sla a ; a*=4
+	ld l, a
+	ld h, HIGH(ShadowOAM)
+	ld a, $23
+	ld [hli], a
+	ld a, $7E
+	ld [hli], a
+	ld a, $09
+	ld [hli], a
+	ld a, %00010000
+	ld [hli], a
+	ret
+
+NextTampon:
+	ld a, $FF ; because there will be a vWStep++ later to become 0
+	ld [wVStep], a
+	
+	; set permanent tile 06..08
+	ld a, [wTi] ; get tile index
+	sla a
+	sla a ; a*=4
+	inc a
+	inc a
+	ld l, a
+	ld h, HIGH(ShadowOAM)
+	ld a, [wTg]
+	ld [hl], a
+	
+	ld hl, wTi
+	inc [hl]
+	
+	ld hl, wTg
+	ld a, [hl]
+	inc a
+	cp 9
+	jr nz, .skipResetG
+	ld a, 6
+.skipResetG
+	ld [hl], a
+	
+	ret
+
+SECTION "Vertical Chains Phase 2", ROMX, BANK[3]	
+
+ChainVerticalUpdate_Phase2::
+	; add vertical chains till the top of the screen
+	ld a, [wTg]
+	ld l, a
+	swap l
+	ld h, $80 ; now hl=$8060, $8070 or $8080
+	ld bc, $8090 ; tampon sprite resource
+
+	ld a, [wVStep]
+	ld e, a
+	swap e
+	ld d, HIGH(TamponSpriteMask)
+	
+	; the idea: TileAt[bc] = TileAt[hl] & MaskAt[de]
+	
+	ld a, 16
+.loop
+	push af
+	
+	ld a, [de]
+	and [hl]
+	ld [bc], a
+	inc hl
+	inc de
+	inc bc
+	
+	pop af
+	dec a
+	jr nz, .loop
+	
+	; if wWStep = 0, define tampon sprite in OAM
+	ld a, [wVStep]
+	or a
+	call z, DefineTamponInOAM_2
+	
+	; if wWStep = 4, reset counter and go to the next tampon
+	ld a, [wVStep]
+	cp 3
+	call z, NextTampon_2
+	
+	ld hl, wVStep
+	inc [hl]
+	
+	; don't move sprites anymore
+	initOAM ShadowOAM
+	
+	ret
+	
+DefineTamponInOAM_2:
+	ld a, [wTi] ; get tile index
+	sla a
+	sla a ; a*=4
+	ld l, a
+	ld h, HIGH(ShadowOAM)
+	; use the previous sprite position to compute current tampon Y coordinate
+	REPT(4)
+	dec l
+	ENDR
+	ld a, [hl]
+	sub 8
+	REPT(4)
+	inc l
+	ENDR
+	ld [hli], a
+	ld a, $7E
+	ld [hli], a
+	ld a, $09
+	ld [hli], a
+	ld a, %00010000
+	ld [hli], a
+	ret
+
+NextTampon_2:
+	ld a, $FF ; because there will be a vWStep++ later to become 0
+	ld [wVStep], a
+	
+	; set permanent tile 06..08
+	ld a, [wTi] ; get tile index
+	sla a
+	sla a ; a*=4
+	inc a
+	inc a
+	ld l, a
+	ld h, HIGH(ShadowOAM)
+	ld a, [wTg]
+	ld [hl], a
+	
+	ld hl, wTi
+	inc [hl]
+	
+	ld hl, wTg
+	ld a, [hl]
+	inc a
+	cp 9
+	jr nz, .skipResetG
+	ld a, 6
+.skipResetG
+	ld [hl], a
+	
+	ret
+	
+SECTION "Chains Clear Logic", ROMX, BANK[3]
+
+; this gets called only once
+ChainsClearBg::
+	ld a, $20
+	ld hl, $9860
+	
+	REPT(15)
+	ld [hli], a
+	xor 1
+	ENDR
+	
+	ld hl, wCagePhase3Counter
+	inc [hl] ; must be 1
+	ret
+
+	
+SECTION "Vertical Chain Progressive Construction Vars", WRAM0
+
+; Tampon Sprite Index in OAM (00..##)
+wTi:      
+	DS 1 
+; Tampon Sprite Graphics [Tile #] (06..08)
+wTg:
+	DS 1
+; Vertical "step" (0..3) - just to know how to treat the tampon sprite
+wVStep: 
+	DS 1
+
+SECTION "Vertical Chain Tampon Sprite Masks", ROMX, BANK[3], ALIGN[8]
+
+TamponSpriteMask:
+; wVStep = 0
+;DB $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00 
+; wVStep = 1
+DB $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $FF, $FF, $FF, $FF 
+; wVStep = 2
+DB $00, $00, $00, $00, $00, $00, $00, $00, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
+; wVStep = 3
+DB $00, $00, $00, $00, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
+; wVStep = 4
+DB $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
