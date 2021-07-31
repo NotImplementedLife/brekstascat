@@ -223,7 +223,6 @@ DiEn_HIDE_Helper3:
 ;--------------------------------------------------------------
 DiEn_ENDF:
 ;--------------------------------------------------------------
-	ld b,b
 	ld a, 1
 	ld [wEndFlag], a
 	ret
@@ -264,6 +263,6 @@ DB _WAIT, 40
 DB _SHOW, HIGH(DiEn_NILPresents), LOW(DiEn_NILPresents)
 DB _WAIT, 55
 DB _HIDE
-DB _WAIT, 30
+DB _WAIT, 38
 DB _ENDF
 

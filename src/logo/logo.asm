@@ -8,7 +8,7 @@ LogoInit::
 	ret
 	
 LogoLoadTM::
-	ld hl, $9842
+	ld hl, $9A82
 	ld bc, BCTM
 	
 	REPT(12)
@@ -17,7 +17,7 @@ LogoLoadTM::
 	ld [hli], a
 	ENDR
 	
-	ld hl, $9862
+	ld hl, $9AA2
 	
 	REPT(12)
 	ld a, [bc]
@@ -25,7 +25,7 @@ LogoLoadTM::
 	ld [hli], a
 	ENDR
 	
-	ld hl, $9882
+	ld hl, $9AC2
 	
 	REPT(12)
 	ld a, [bc]
@@ -33,7 +33,7 @@ LogoLoadTM::
 	ld [hli], a
 	ENDR
 	
-	ld hl, $98A2
+	ld hl, $9AE2
 	
 	REPT(12)
 	ld a, [bc]
@@ -41,7 +41,7 @@ LogoLoadTM::
 	ld [hli], a
 	ENDR
 	
-	ld hl, $98C2
+	ld hl, $9B02
 	
 	REPT(12)
 	ld a, [bc]
@@ -49,7 +49,7 @@ LogoLoadTM::
 	ld [hli], a
 	ENDR
 	
-	ld hl, $98E2
+	ld hl, $9B22
 	
 	REPT(12)
 	ld a, [bc]

@@ -527,6 +527,122 @@ NextTampon_2:
 	
 	ret
 	
+SECTION "Vertical Chains Phase 5", ROMX, BANK[3]
+
+ChainVerticalUpdate_Phase5::
+	ld a, [wTg]
+	ld l, a
+	swap l
+	ld h, $80 ; now hl=$8060, $8070 or $8080
+	ld bc, $8090 ; tampon sprite resource
+
+	ld a, [wVStep]
+	ld e, a
+	swap e
+	ld d, HIGH(TamponSpriteMask)
+	
+	; the idea: TileAt[bc] = TileAt[hl] & MaskAt[de]
+	
+	ld a, 16
+.loop
+	push af
+	
+	ld a, [de]
+	and [hl]
+	ld [bc], a
+	inc hl
+	inc de
+	inc bc
+	
+	pop af
+	dec a
+	jr nz, .loop
+	
+	; if wWStep = 0, define tampon sprite in OAM
+	ld a, [wVStep]
+	or a
+	call z, DefineTamponInOAM_5
+	
+	; if wWStep = 4, reset counter and go to the next tampon
+	ld a, [wVStep]
+	cp 3
+	call z, NextTampon_5
+	
+	ld hl, wVStep
+	inc [hl]
+	
+	; move all sprites down 2 px
+	
+	ld hl, ShadowOAM
+	ld bc, 4
+	
+	ld a, 40
+.loopP
+	push af
+	
+	inc [hl]
+	inc [hl]
+	add hl, bc
+	
+	pop af
+	dec a
+	jr nz, .loopP
+
+	; cage down separate
+	ld hl, ShadowOAM + 32*4
+	ld bc, 4
+
+.skipDown
+	initOAM ShadowOAM
+	
+	ret
+	
+DefineTamponInOAM_5:
+	ld a, [wTi] ; get tile index
+	sla a
+	sla a ; a*=4
+	ld l, a
+	ld h, HIGH(ShadowOAM)
+	ld a, $03
+	ld [hli], a
+	ld a, $7E
+	ld [hli], a
+	ld a, $09
+	ld [hli], a
+	ld a, %00010000
+	ld [hli], a
+	ret
+
+NextTampon_5:
+	ld a, $FF ; because there will be a vWStep++ later to become 0
+	ld [wVStep], a
+	
+	; set permanent tile 06..08
+	ld a, [wTi] ; get tile index
+	sla a
+	sla a ; a*=4
+	inc a
+	inc a
+	ld l, a
+	ld h, HIGH(ShadowOAM)
+	ld a, [wTg]
+	ld [hl], a
+	
+	ld hl, wTi
+	inc [hl]
+	
+	ld hl, wTg
+	ld a, [hl]
+	inc a
+	cp 9
+	jr nz, .skipResetG
+	ld a, 6
+.skipResetG
+	ld [hl], a
+	
+	ret
+	
+
 SECTION "Chains Clear Logic", ROMX, BANK[3]
 
 ; this gets called only once

@@ -179,7 +179,8 @@ SECTION "Logo Main Logic 2", ROMX, BANK[3]
 
 LML2:
 .endloopPhase3:
-
+	xor a
+	ld [wCagePhase4Counter], a
 .loopPhase4:
 	ld hl, rSCY
 	call waitForVBlank
@@ -193,9 +194,104 @@ LML2:
 	ld [hl], a
 .skipResScY2
 	call waitForVBlank
+	ld hl, wCagePhase4Counter
+	inc [hl]
+	ld a, [wCagePhase4Counter]
+	cp a, 46
+	jr z, .endloopPhase4
 	call waitForVBlank
 	call waitForVBlank
 	jr .loopPhase4
+	
+.endloopPhase4:
+	xor a
+	ld [wCagePhase5Counter], a
+.loopPhase5:
+	call waitForVBlank
+	ld hl, wCagePhase5Counter
+	inc [hl]
+	ld a, [wCagePhase5Counter]
+	;ld b,b
+	cp a, 55
+	jr z, .endloopPhase5
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call ChainVerticalUpdate_Phase5
+	call waitForVBlank
+	call ChainDraw
+	jr .loopPhase5
+	
+.endloopPhase5
+	
+	call waitForVBlank
+	call ChainVerticalUpdate_Phase5
+	call waitForVBlank
+	call ChainDraw
+	call waitForVBlank
+	ld a, %10010000
+	ldh [rBGP], a
+	call waitForVBlank
+	call waitForVBlank
+	
+	call waitForVBlank
+	call ChainVerticalUpdate_Phase5
+	call waitForVBlank
+	call ChainDraw
+	call waitForVBlank
+	ld a, %01000000
+	ldh [rBGP], a
+	call waitForVBlank
+	call waitForVBlank
+	
+	call waitForVBlank
+	call ChainVerticalUpdate_Phase5
+	call waitForVBlank
+	call ChainDraw
+	call waitForVBlank
+	xor a
+	ldh [rBGP], a
+	call waitForVBlank
+	call waitForVBlank
+	
+	call waitForVBlank
+	call ChainVerticalUpdate_Phase5
+	call waitForVBlank
+	call ChainDraw
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	
+	call waitForVBlank
+	call ChainVerticalUpdate_Phase5
+	call waitForVBlank
+	call ChainDraw
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	
+	call waitForVBlank
+	call ChainVerticalUpdate_Phase5
+	call waitForVBlank
+	call ChainDraw
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	
+	ld a, %10010000
+	ldh [rOBP1], a
+	wait6vBlanks
+	wait6vBlanks
+	
+	ld a, %01000000
+	ldh [rOBP1], a
+	wait6vBlanks
+	wait6vBlanks
+	
+	ld a, %00000000
+	ldh [rOBP1], a
+	wait6vBlanks
+	wait6vBlanks
 	
 .introTerminate:
 	jr @
@@ -209,4 +305,10 @@ wCagePhase2Counter:
 	DS 1
 	
 wCagePhase3Counter::
+	DS 1
+	
+wCagePhase4Counter::
+	DS 1
+	
+wCagePhase5Counter::
 	DS 1
