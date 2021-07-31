@@ -30,6 +30,11 @@ Logo_Main::
 	call ChainVerticalLoadTiles
 	call ValnyssaMicroLoadTiles
 	
+	call DiEnResInit
+	call DiEn_Init
+	
+	call LogoInit
+	
 	call LoadCatCageSprite
 	
 	ld a, [rLCDC]
@@ -71,7 +76,7 @@ Logo_Main::
 	wait6vBlanks
 	ld a, %11100100
 	ld [rBGP], a
-	ld a, %11111111
+	ld a, %11100100
 	ld [rOBP1], a
 	
 	call ChainMoveCircular
@@ -153,7 +158,6 @@ Logo_Main::
 	call waitForVBlank
 	inc [hl]
 	ld a, [hl]
-	;ld b,b
 	cp $67
 	jr nz, .skipResScY
 	ld a, $07
@@ -161,8 +165,39 @@ Logo_Main::
 .skipResScY
 	call waitForVBlank
 	call waitForVBlank
+	call DiEn_LoadNext
 	call waitForVBlank
+	ld a, [wEndFlag]
+	cp 1
+	push af
+	call z, LogoLoadTM
+	pop af
+	jp z, LML2.endloopPhase3
 	jr .loopPhase3
+	
+SECTION "Logo Main Logic 2", ROMX, BANK[3]
+
+LML2:
+.endloopPhase3:
+
+.loopPhase4:
+	ld hl, rSCY
+	call waitForVBlank
+	inc [hl]
+	call waitForVBlank
+	inc [hl]
+	ld a, [hl]
+	cp $67
+	jr nz, .skipResScY2
+	ld a, $07
+	ld [hl], a
+.skipResScY2
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	jr .loopPhase4
+	
+.introTerminate:
 	jr @
 	
 SECTION "Logo Scene Vars", WRAM0
