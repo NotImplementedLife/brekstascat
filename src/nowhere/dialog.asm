@@ -49,7 +49,7 @@ DB DLG_EXEC
 DW ValnyssaFadeIn_5
 
 DB "your under-&nl;standing, I shall tell you that\"&key;", DLG_CLR0, DLG_CLR1
-DB "\"people form ancient times&nl;used to call me Valnyssa.\"&key;", DLG_CLR0, DLG_CLR1
+DB "\"people from ancient times&nl;used to call me Valnyssa.\"&key;", DLG_CLR0, DLG_CLR1
 
 DB "\"There isn't much time left, so&nl;I shall fill you in on what you \"&key;", DLG_CLR0, DLG_CLR1
 DB "\"will soon have to deal with in&nl;order to fulfill your purpose.\"&key;", DLG_CLR0, DLG_CLR1

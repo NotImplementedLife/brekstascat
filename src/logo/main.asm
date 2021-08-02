@@ -37,9 +37,15 @@ Logo_Main::
 	
 	call LoadCatCageSprite
 	
+	xor a
+	ld [rSCX], a
+	inc a
+	ld [rSCY], a
+	
 	ld a, [rLCDC]
 	res 2, a ; OBJ_8
 	set 1, a ; OBJ_ON
+	res 4, a ; tile set data $8800
 	ld [rLCDC], a
 	
 	xor a
