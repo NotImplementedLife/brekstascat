@@ -278,7 +278,7 @@ SECTION "Valnyssa metasprite logic Exit", ROM0
 ValnyssaNowhereExit::
 	setBank LOGO_BANK
 	pop af ; simulate ret
-	jp Logo_Main
+	jp Logo_Main	
 
 SECTION "Valnyssa OAM", ROMX, ALIGN[8], BANK[2]
 
