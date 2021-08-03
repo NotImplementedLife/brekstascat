@@ -1,2 +1,11 @@
+; ROMX Banks
+
 NOWHERE_BANK EQU 2
 LOGO_BANK EQU 3
+MAPS_BANK EQU 4
+
+
+; TileMap List Indices
+
+iMAP_Lobby EQU 0
+

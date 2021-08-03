@@ -28,8 +28,7 @@ Start::
 	jp Nowhere_Main
 	
 .playIntroEnd::
-
-	ld b,b
-	
+	setBank MAPS_BANK
+	jp Maps_Main	
 	jr @
 	

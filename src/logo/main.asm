@@ -16,7 +16,7 @@ Logo_Main::
 	call waitForVBlank
 	
 	xor a
-	ld [rBGP], a
+	ldh [rBGP], a
 	
 	ld a, %10000111
 	ldh [rOBP0], a
