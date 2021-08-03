@@ -19,6 +19,8 @@ Maps_Main::
 	ld bc, MapsGeneralTilesetEnd
 	call loadMemoryDOUBLE
 	
+	call MC_LoadTiles
+	
 	ld a, iMAP_Lobby
 	call TileMap_Load
 	
