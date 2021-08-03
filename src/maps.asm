@@ -62,10 +62,10 @@ hMapStartX::
 hMapStartY::
 	DS 1
 
-; MC position
-hMCY::
+; MC position on map
+hMMCY::
 	DS 1
-hMCX::
+hMMCX::
 	DS 1
 	
 ; the metaposition MC is faced to
@@ -80,6 +80,19 @@ TileMapsList::
 	DW MAP_Lobby  ;  iMAP_Lobby
 	
 ; Now let's write some code
+
+SECTION "Tile map initializer", ROM0
+
+TileMap_Init::
+	xor a
+	ldh [hMapIndex], a
+	ldh [hMapStartX], a
+	ldh [hMapStartY], a
+	ldh [hMMCX], a
+	ldh [hMMCY], a
+	ldh [hFaceToX], a
+	ldh [hFaceToY], a
+	ret
 
 SECTION "Tilemap Loader", ROM0
 
@@ -164,7 +177,11 @@ TileMap_Load::
 	
 	ret
 
+SECTION "Tilemap Executer", ROM0
+
+TileMap_Execute::
 	
+	ret
 	
 	
 

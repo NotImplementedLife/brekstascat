@@ -6,6 +6,8 @@ Maps_Main::
 	call waitForVBlank	
 	xor a
 	ldh [rBGP], a
+	ldh [rSCY], a
+	ldh [rSCX], a
 	
 	ld a, [rLCDC]
 	;res 2, a ; OBJ_8
@@ -23,5 +25,9 @@ Maps_Main::
 	
 	ld a, iMAP_Lobby
 	call TileMap_Load
+	
+	call waitForVBlank
+	ld a, %11100100
+	ldh [rBGP], a
 	
 	jr @

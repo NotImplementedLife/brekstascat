@@ -8,6 +8,9 @@ Start::
 	ld bc, 160
 	call fillMemory0
 	
+	; init map engine
+	call TileMap_Init
+	
 	; Enable SRAM
 	ld a, $0A
 	ld [$0000], a	
