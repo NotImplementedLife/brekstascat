@@ -1,8 +1,8 @@
 INCLUDE "src/include/macros.inc"
 
-SECTION "Nowhere end", ROMX, BANK[2]
+SECTION "Logo end", ROMX, BANK[3]
 
-NowhereEnd::
+LogoEnd::
 
 	; Save progress
 	ld a, 1

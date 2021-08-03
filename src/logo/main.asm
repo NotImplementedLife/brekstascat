@@ -300,6 +300,14 @@ LML2:
 	wait6vBlanks
 	
 .introTerminate:
+	
+	; This is the end of the intro
+	
+	; Save progress
+	ld a, 1
+	ld [sNowhereIntroComplete], a
+	
+	jp Start.playIntroEnd ; jp back to ROM0	
 	jr @
 	
 SECTION "Logo Scene Vars", WRAM0

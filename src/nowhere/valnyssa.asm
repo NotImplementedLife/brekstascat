@@ -273,8 +273,12 @@ ValnyssaFadeOut_4::
 	ldh [rOBP1], a
 	ret
 
+; this instruction in ROM0 because it changes the bank
+SECTION "Valnyssa metasprite logic Exit", ROM0
 ValnyssaNowhereExit::
-	jp NowhereEnd
+	setBank LOGO_BANK
+	pop af ; simulate ret
+	jp Logo_Main
 
 SECTION "Valnyssa OAM", ROMX, ALIGN[8], BANK[2]
 

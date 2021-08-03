@@ -28,9 +28,8 @@ Start::
 	jp Nowhere_Main
 	
 .playIntroEnd::
-	
-	setBank LOGO_BANK
-	jp Logo_Main
+
+	ld b,b
 	
 	jr @
 	
