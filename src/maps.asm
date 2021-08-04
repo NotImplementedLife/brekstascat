@@ -9,8 +9,8 @@ SECTION "Scroll map Metadata", WRAM0, ALIGN[8]
 ; byte at offset 16*y+x tells the following about the position (x,y)
 ; bit 0 : 0 = barrier, 1 = can walk on
 ; bit 1 : 0 = free, 1 = occupied by an NPC
-; bit 2 : not used
-; bits 3-7 : the last 5 bits of an address pointing to an action to be executed on A button press (wMActions)
+; bit 2 : event launch method (0=on tile step, 1 = on key A pressed)
+; bits 3-7 : the last 5 bits of an address pointing to an action/event (wMActions)
 ; 
 ; IMPORTANT: metatiles are not aligned with the visual 8x8 tiles. Metaposition (x=0,y=0) covers the 
 ; tiles (1,0),(2,0),(1,1),(2,1) on the tilemap. Everything is shifted right by one tile. Therefore,
@@ -61,17 +61,29 @@ hMapStartX::
 	DS 1
 hMapStartY::
 	DS 1
+hMapStartO::
+	DS 1
 
 ; MC position on map
+; these will be checked in order to fire events
 hMMCY::
 	DS 1
 hMMCX::
+	DS 1
+hMMCO::
 	DS 1
 	
 ; the metaposition MC is faced to
 hFaceToY::
 	DS 1
 hFaceToX::
+	DS 1
+	
+; MC pixel position on map
+; used in rendering
+hPMCY::
+	DS 1
+hPMCX::
 	DS 1
 
 SECTION "TileMap Index", ROM0, ALIGN[5]
@@ -84,14 +96,25 @@ TileMapsList::
 SECTION "Tile map initializer", ROM0
 
 TileMap_Init::
+	; set Lobby as the default map
 	xor a
 	ldh [hMapIndex], a
-	ldh [hMapStartX], a
+	; set map metaposition
+	ldh [hMapStartO], a ; facing front
+	ld a, 3
 	ldh [hMapStartY], a
+	;ld a, 7
+	ld a, 4
+	ldh [hMapStartX], a
+	; init the rest of the variables, they will be 
+	; updated on render
+	xor a
 	ldh [hMMCX], a
 	ldh [hMMCY], a
 	ldh [hFaceToX], a
 	ldh [hFaceToY], a
+	ldh [hPMCX], a
+	ldh [hPMCY], a
 	ret
 
 SECTION "Tilemap Loader", ROM0
@@ -175,13 +198,153 @@ TileMap_Load::
 
 	; load NPCs etc...
 	
+	; load pixel position & orientation
+	ldh a, [hMapStartY]
+	swap a
+	ldh [hPMCY], a
+	ldh a, [hMapStartX]
+	swap a
+	add 8
+	ldh [hPMCX], a
+	ldh a, [hMapStartO]
+	ldh [hMMCO], a
+	
+	
 	ret
 
 SECTION "Tilemap Executer", ROM0
 
+; steps to execute per frame
 TileMap_Execute::
+	; get MC position
+	call waitForVBlank
+	; solve for screenY coordinate
+	ldh a, [hPMCY]
+	cp 64
+	push af
+	call c, TileMap_SolveForYUnder64
+	pop af
+	push af
+	call nc, TileMap_SolveForYOver64
+	pop af
+	cp 178
+	call nc, TileMap_SolveForYOver178
+	
+	;solve for screenX coordinate
+	ldh a, [hPMCX]
+	cp 72
+	push af
+	call c, TileMap_SolveForXUnder72
+	pop af
+	push af
+	call nc, TileMap_SolveForXOver72
+	pop af
+	cp 168
+	call nc, TileMap_SolveForXOver194
+	
+	
+	call waitForVBlank
+	call MC_Display
+	call waitForVBlank
+	call updateJoypadState
+	ld a, [wJoypadState]
+	and a, PADF_DOWN
+	call nz, TM_incMMCY
+	ld a, [wJoypadState]
+	and a, PADF_UP
+	call nz, TM_decMMCY
+	ld a, [wJoypadState]
+	and a, PADF_LEFT
+	call nz, TM_decMMCX
+	ld a, [wJoypadState]
+	and a, PADF_RIGHT
+	call nz, TM_incMMCX
 	
 	ret
 	
+TM_incMMCY:
+	ldh a,[hPMCY]
+	inc a
+	inc a
+	cp 256-16
+	ret z
+	ldh [hPMCY], a
+	ret
 	
+TM_decMMCY:
+	ldh a,[hPMCY]
+	dec a
+	dec a
+	cp $FE
+	ret z
+	ldh [hPMCY], a
+	ret
+	
+TM_incMMCX:
+	ldh a,[hPMCX]
+	inc a
+	inc a
+	cp 256-16
+	ret z
+	ldh [hPMCX], a
+	ret
+	
+TM_decMMCX:
+	ldh a,[hPMCX]
+	dec a
+	dec a
+	cp $FE
+	ret z
+	ldh [hPMCX], a
+	ret
+	
+	
+TileMap_SolveForYUnder64:
+	add 16
+	ld [wMC_ScreenY], a
+	xor a
+	ld [rSCY], a
+	ret
+	
+TileMap_SolveForYOver64:
+	sub 64
+	ldh [rSCY], a
+	ld a, $50
+	ld [wMC_ScreenY], a
+	ret
 
+TileMap_SolveForYOver178:
+	sub 96
+	ld [wMC_ScreenY], a
+	ld a, 112
+	ld [rSCY], a
+	ret
+
+TileMap_SolveForXUnder72:
+	add 8
+	ld [wMC_ScreenX], a
+	xor a
+	ld [rSCX], a
+	ret
+	
+TileMap_SolveForXOver72:
+	sub 72
+	ldh [rSCX], a
+	ld a, 80
+	ld [wMC_ScreenX], a
+	ret
+
+TileMap_SolveForXOver194:
+	sub 88
+	ld [wMC_ScreenX], a
+	ld a, 96
+	ld [rSCX], a
+	ret
+	
+	
+	
+	
+	
+	
+	
+	

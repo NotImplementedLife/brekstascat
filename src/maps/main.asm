@@ -22,6 +22,20 @@ Maps_Main::
 	call loadMemoryDOUBLE
 	
 	call MC_LoadTiles
+	call MC_Init	
+	call waitForVBlank
+	call MC_Display
+	ld a, %11100100
+	ldh [rOBP0], a
+	ld a, [rLCDC]
+	set 1, a ; OBJ_OFF
+	res 4, a ; tile set data $8800
+	ldh [rLCDC], a
+	
+	xor a
+	ldh [rSCX], a
+	ldh [rSCY], a
+	
 	
 	ld a, iMAP_Lobby
 	call TileMap_Load
@@ -29,5 +43,10 @@ Maps_Main::
 	call waitForVBlank
 	ld a, %11100100
 	ldh [rBGP], a
+	
+.loop
+	call TileMap_Execute
+	jp .loop
+
 	
 	jr @
