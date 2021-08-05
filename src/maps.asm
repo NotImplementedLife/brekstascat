@@ -85,6 +85,12 @@ hPMCY::
 	DS 1
 hPMCX::
 	DS 1
+	
+; Step Parity Counter
+; increments on each step
+; Tells whether to use MCP_FrontW or MCP_FrontS presets
+hStepParity::
+	DS 1
 
 SECTION "TileMap Index", ROM0, ALIGN[5]
 
@@ -103,8 +109,8 @@ TileMap_Init::
 	ldh [hMapStartO], a ; facing front
 	ld a, 3
 	ldh [hMapStartY], a
-	;ld a, 7
-	ld a, 4
+	ld a, 7
+	;ld a, 4
 	ldh [hMapStartX], a
 	; init the rest of the variables, they will be 
 	; updated on render
@@ -115,6 +121,7 @@ TileMap_Init::
 	ldh [hFaceToY], a
 	ldh [hPMCX], a
 	ldh [hPMCY], a
+	ldh [hStepParity], a
 	ret
 
 SECTION "Tilemap Loader", ROM0
@@ -240,64 +247,51 @@ TileMap_Execute::
 	call nc, TileMap_SolveForXOver72
 	pop af
 	cp 168
-	call nc, TileMap_SolveForXOver194
+	call nc, TileMap_SolveForXOver168
 	
+	; update map position (MMCY = PMCY/16 ; MMCX = (PMCX-8)/16)
+	ldh a, [hPMCY]
+	swap a
+	and $0F
+	ldh [hMMCY], a
+	ldh a, [hPMCX]
+	sub 8
+	swap a
+	and $0F
+	ldh [hMMCX], a
+	
+	; check MovQ
+	xor a
+	ld [MCMovQNextFrameInterrupt], a ; reset MovQ frame interrupt
+	REPT(19)
+	call MovQueueProcess
+	ENDR
 	
 	call waitForVBlank
 	call MC_Display
-	call waitForVBlank
+	
+	ld a, [MCMovQEnabled]
+	or a
+	ret nz ; don't check input while MovQ executing
+	
+	;call waitForVBlank
 	call updateJoypadState
 	ld a, [wJoypadState]
 	and a, PADF_DOWN
-	call nz, TM_incMMCY
+	call nz, TM_MC_CommandDown
 	ld a, [wJoypadState]
 	and a, PADF_UP
-	call nz, TM_decMMCY
+	call nz, TM_MC_CommandUp
 	ld a, [wJoypadState]
 	and a, PADF_LEFT
-	call nz, TM_decMMCX
+	call nz, TM_MC_CommandLeft
 	ld a, [wJoypadState]
 	and a, PADF_RIGHT
-	call nz, TM_incMMCX
+	call nz, TM_MC_CommandRight
 	
-	ret
-	
-TM_incMMCY:
-	ldh a,[hPMCY]
-	inc a
-	inc a
-	cp 256-16
-	ret z
-	ldh [hPMCY], a
-	ret
-	
-TM_decMMCY:
-	ldh a,[hPMCY]
-	dec a
-	dec a
-	cp $FE
-	ret z
-	ldh [hPMCY], a
-	ret
-	
-TM_incMMCX:
-	ldh a,[hPMCX]
-	inc a
-	inc a
-	cp 256-16
-	ret z
-	ldh [hPMCX], a
-	ret
-	
-TM_decMMCX:
-	ldh a,[hPMCX]
-	dec a
-	dec a
-	cp $FE
-	ret z
-	ldh [hPMCX], a
-	ret
-	
+	ret	
+
+SECTION "Tilemap Pixel Position Solver", ROMX, BANK[4]
 	
 TileMap_SolveForYUnder64:
 	add 16
@@ -334,16 +328,30 @@ TileMap_SolveForXOver72:
 	ld [wMC_ScreenX], a
 	ret
 
-TileMap_SolveForXOver194:
+TileMap_SolveForXOver168:
 	sub 88
 	ld [wMC_ScreenX], a
 	ld a, 96
 	ld [rSCX], a
 	ret
 	
+SECTION "Tilemap MC movement command placer", ROMX, BANK[4]
+
+TM_MC_CommandUp::
+	ld de, MovQInstr_Up
+	jp MovQueueLaunch
 	
+TM_MC_CommandDown::
+	ld de, MovQInstr_Down
+	jp MovQueueLaunch
 	
+TM_MC_CommandLeft::
+	ld de, MovQInstr_Left
+	jp MovQueueLaunch
 	
+TM_MC_CommandRight::
+	ld de, MovQInstr_Right
+	jp MovQueueLaunch
 	
 	
 	

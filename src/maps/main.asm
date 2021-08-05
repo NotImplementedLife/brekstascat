@@ -36,6 +36,7 @@ Maps_Main::
 	ldh [rSCX], a
 	ldh [rSCY], a
 	
+	call MovQueueInit
 	
 	ld a, iMAP_Lobby
 	call TileMap_Load
