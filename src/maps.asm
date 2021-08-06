@@ -21,10 +21,11 @@ wMapMetadata::
 wMapExitPointsCount::
 	DS 1
 ; Exit Points
-; An exit points (Y, X, M, Y', X') tells the program to exit the map when character steps on (X, Y) 
-; and load map at index M with the character at position (X', Y')
+; An exit points ($YX, $MM, $Y'X', $oo) tells the program to exit the map when character steps on (X, Y) 
+; and load map at index $MM with the character at position (X', Y') oriented $oo
+; Optimization hint: wMapExitPoints will be $X0 + 1
 wMapExitPoints::
-	DS 5*8 ; 8 is more than enough, I suppose
+	DS 4*8 ; 8 is more than enough, I suppose
 	
 SECTION "Scroll map MapActions", WRAM0, ALIGN[6]
 
@@ -97,6 +98,9 @@ hPMCX::
 ; Tells whether to use MCP_FrontW or MCP_FrontS presets
 hStepParity::
 	DS 1
+	
+hCurrentMetaBackup::
+	DS 1
 
 SECTION "TileMap Index", ROM0, ALIGN[5]
 
@@ -107,7 +111,9 @@ TileMapsList::
 
 SECTION "Tile map initializer", ROM0
 
+;--------------------------------------------------------------
 TileMap_Init::
+;--------------------------------------------------------------
 	; set Lobby as the default map
 	xor a
 	ldh [hMapIndex], a
@@ -134,7 +140,9 @@ SECTION "Tilemap Loader", ROM0
 
 ; loads the tilemap given the map index
 ; a = map index
+;--------------------------------------------------------------
 TileMap_Load::
+;--------------------------------------------------------------
 	; hl = TileMapsList + 2 * a
 	rlca
 	ld hl, TileMapsList
@@ -196,12 +204,10 @@ TileMap_Load::
 	
 	ld de, wMapExitPoints
 	
-	; b = a * 5
+	; b = a * 4
 	ld b, a
-	sla a
-	sla a
-	add b
-	ld b, a
+	sla b
+	sla b
 .exitPtsLoop
 	ld a, [hli]       
 	ld [de], a        
@@ -233,13 +239,21 @@ TileMap_Load::
 	ldh a, [hMapStartO]
 	ldh [hMMCO], a
 	
+	; a*=3, prepare MC Preset
+	ld b, a
+	sla a
+	add b
+	ld [wMC_Preset], a
+	
 	
 	ret
 
 SECTION "Tilemap Executer", ROM0
 
 ; steps to execute per frame
+;--------------------------------------------------------------
 TileMap_Execute::
+;--------------------------------------------------------------
 	; get MC position
 	call waitForVBlank
 	; solve for screenY coordinate
@@ -316,13 +330,21 @@ TileMap_Execute::
 	and 3
 	ld [hIsValidStep], a
 	
+	; current position events checkup
 	ld a, [MCMovQEnabled]
 	or a
-	jr nz, .skipCurrentPosCheck
+	jr nz, .skipCurrentPosEventCheck
 	call TileMap_GetCurrentPosMetadata
 	bit 2, a 
 	call z, TM_MC_ExecuteMAction
-.skipCurrentPosCheck:
+
+	; exitpoints check
+	call TM_ExitPoints_Check
+	
+.skipCurrentPosEventCheck:
+	
+	
+	
 	; check MovQ
 	xor a
 	ld [MCMovQNextFrameInterrupt], a ; reset MovQ frame interrupt
@@ -498,5 +520,51 @@ TM_MC_ExecuteMAction:
 	ld l, a
 	jp CallHL
 	
+SECTION "Tilemap exit points logic", ROM0
+
+TM_ExitPoints_Check::
+	; a = 16* MMCY + MMCX
+	ld hl, hMMCY
+	ld a, [hli]
+	swap a
+	ld l, [hl]
+	add l
+	
+	ld c, a ; current position
+	ld hl, wMapExitPointsCount
+	ld b, [hl]
+	ld hl, wMapExitPoints
+	ld de, 3
+.loop
+	ld a, [hli]
+	cp c ; if current position is among exit points
+	jr z, TM_ExitPoint_Process
+	add hl, de
+	dec b
+	jr nz, .loop
+	ret
+	
+TM_ExitPoint_Process:: 
+	ld a, [hli] ; map index
+	ldh [hMapIndex], a
+	ld a, [hli] ; mapYX
+	ld b, a
+	ld c, a
+	
+	ld a, b
+	swap a
+	and $0f
+	ld [hMapStartY], a
+	
+	ld a, c
+	and $0f
+	ld [hMapStartX], a
+	
+	ld a, [hli] ; Orientation
+	ld [hMapStartO], a
+	
+	ldh a, [hMapIndex]
+	call TileMap_Load
+	ret
 	
 	

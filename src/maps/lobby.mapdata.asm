@@ -65,8 +65,8 @@ DB $02
 
 .exitPoints::
 
-DB 12,  2, 0, 4, 7
-DB 12, 13, 0, 4, 7
+DB $C2, $00, $47, $00
+DB $CC, $00, $47, $00
 
 .mActions::
 DW _mAction_NoOp
