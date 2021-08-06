@@ -1,4 +1,6 @@
-SECTION "Save Vars", SRAM[$A010]
+SECTION "Save Vars", SRAM[$A000]
+
+sSRAMKEY: DS 16
 
 sNowhereIntroComplete:: DS 1 ; 0 = no, 1 = yes
 

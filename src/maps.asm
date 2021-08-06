@@ -9,7 +9,7 @@ SECTION "Scroll map Metadata", WRAM0, ALIGN[8]
 ; byte at offset 16*y+x tells the following about the position (x,y)
 ; bit 0 : 0 = can walk on, 1 = barrier
 ; bit 1 : 0 = free, 1 = occupied by an NPC
-; bit 2 : event launch method (0=on tile step, 1 = on key A pressed)
+; bit 2 : event launch method (0 = on tile step, 1 = on key A pressed)
 ; bits 3-7 : the last 5 bits of an address pointing to an action/event (wMActions)
 ; 
 ; IMPORTANT: metatiles are not aligned with the visual 8x8 tiles. Metaposition (x=0,y=0) covers the 
@@ -208,6 +208,17 @@ TileMap_Load::
 	inc de           
 	dec b
 	jr nz, .exitPtsLoop
+	
+	; mActions
+	ld de, wMActions
+	
+	ld b, 64
+.mActionsLoop
+	ld a, [hli]
+	ld [de], a
+	inc de
+	dec b
+	jr nz, .mActionsLoop
 
 	; load NPCs etc...
 	
@@ -297,20 +308,21 @@ TileMap_Execute::
 	add b
 	ldh [hLookingAtY], a
 	
-	ld b, a
-	
 	ldh a, [hMMCX]
 	add c
 	ldh [hLookingAtX], a
-	
-	ld c, a
 	
 	call TileMap_GetLookingAtMetadata
 	and 3
 	ld [hIsValidStep], a
 	
-.debugLkAt
-	
+	ld a, [MCMovQEnabled]
+	or a
+	jr nz, .skipCurrentPosCheck
+	call TileMap_GetCurrentPosMetadata
+	bit 2, a 
+	call z, TM_MC_ExecuteMAction
+.skipCurrentPosCheck:
 	; check MovQ
 	xor a
 	ld [MCMovQNextFrameInterrupt], a ; reset MovQ frame interrupt
@@ -330,19 +342,26 @@ TileMap_Execute::
 	ld a, [wJoypadState]
 	and a, PADF_UP
 	call nz, TM_MC_CommandUp
+	
 	ld a, [wJoypadState]
 	and a, PADF_DOWN
 	call nz, TM_MC_CommandDown
+	
 	ld a, [wJoypadState]
 	and a, PADF_LEFT
 	call nz, TM_MC_CommandLeft
+	
 	ld a, [wJoypadState]
 	and a, PADF_RIGHT
 	call nz, TM_MC_CommandRight
 	
+	ld a, [wJoypadPressed]
+	and a, PADF_A
+	call nz, TM_MC_ExecuteMActionOnAKey
+	
 	ret	
 
-SECTION "Tilemap Pixel Position Solver", ROMX, BANK[4]
+SECTION "Tilemap Pixel Position Solver", ROM0
 	
 TileMap_SolveForYUnder64:
 	add 16
@@ -400,8 +419,18 @@ TileMap_GetLookingAtMetadata:
 	ld a, [hl]
 	ret
 	
+TileMap_GetCurrentPosMetadata:
+	ld hl, hMMCY ; this is the only difference
+	ld a, [hli]
+	swap a
+	add [hl]
+	ld l, a
+	ld h, HIGH(wMapMetadata)
+	ld a, [hl]
+	ret
+	
 
-SECTION "Tilemap MC movement command placer", ROMX, BANK[4]
+SECTION "Tilemap command placer", ROM0
 
 TM_MC_CommandUp::
 	; before making any steps, make the orientation match the direction of walking
@@ -449,6 +478,25 @@ TM_MC_CommandRight::
 	ld de, MovQInstr_Right
 	jp MovQueueLaunch
 	
+TM_MC_ExecuteMActionOnAKey:
+	call TileMap_GetLookingAtMetadata
+	bit 2, a 
+	ret z
+TM_MC_ExecuteMAction:
+	; build the index in wMActions
+	ld hl, wMActions
+	
+	; a = (a/8)*2 <=> a = (a/4) & 0b11111110 ==> 0b00UUUUU0
+	sra a
+	sra a
+	and $FE
+	add l
+	ld l, a
+	
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	jp CallHL
 	
 	
 	

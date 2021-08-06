@@ -25,12 +25,6 @@ Maps_Main::
 	call MC_Init	
 	call waitForVBlank
 	call MC_Display
-	ld a, %11100100
-	ldh [rOBP0], a
-	ld a, [rLCDC]
-	set 1, a ; OBJ_OFF
-	res 4, a ; tile set data $8800
-	ldh [rLCDC], a
 	
 	xor a
 	ldh [rSCX], a
@@ -42,9 +36,16 @@ Maps_Main::
 	call TileMap_Load
 	
 	call waitForVBlank
+	call TileMap_Execute
 	ld a, %11100100
 	ldh [rBGP], a
-	
+	ld a, %11100100
+	ldh [rOBP0], a
+	ld a, [rLCDC]
+	set 1, a ; OBJ_OFF
+	res 4, a ; tile set data $8800
+	ldh [rLCDC], a
+	call waitForVBlank
 .loop
 	call TileMap_Execute
 	jp .loop
