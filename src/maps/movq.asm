@@ -12,6 +12,7 @@ SECTION "MC Movement Queue", WRAM0, ALIGN[8]
 ; $02 - move down by 2 px
 ; $03 - move left by 2 px
 ; $04 - move right by 2 px
+; $05 - terminate if not valid step
 ; %01uuAAAA - change sprite preset to %AAAA
 ; $FF - halt till next frame
 MCMovQ::
@@ -38,8 +39,8 @@ MovQueueReset::
 	ld [hli], a
 	ENDR
 	ld [MCMovQIndex], a
-	ld [MCMovQEnabled], a
 	ld [MCMovQNextFrameInterrupt], a
+	ld [MCMovQEnabled], a
 	
 	; as MovQueueReset follows after very character step (+-16 pixels movement),
 	; this is a good opportunity to update Step Parity
@@ -93,6 +94,9 @@ MovQueueProcess::
 	cp $04
 	call z, MovQ_MoveRight
 	
+	cp $05
+	call z, MovQ_TerminateIfNotValid
+	
 	cp $FF
 	call z, MovQ_NextFrame
 	
@@ -120,8 +124,6 @@ MovQ_MoveUp::
 	ld hl, hPMCY
 	dec [hl]
 	dec [hl]
-	;dec [hl]
-	;dec [hl]
 	pop af    ; fake return 
 	ret       ; this exits directly from MovQueueProcess
 	
@@ -129,8 +131,6 @@ MovQ_MoveDown::
 	ld hl, hPMCY
 	inc [hl]
 	inc [hl]
-	;inc [hl]
-	;inc [hl]
 	pop af
 	ret
 	
@@ -138,8 +138,6 @@ MovQ_MoveLeft::
 	ld hl, hPMCX
 	dec [hl]
 	dec [hl]
-	;dec [hl]
-	;dec [hl]
 	pop af
 	ret
 	
@@ -147,8 +145,6 @@ MovQ_MoveRight::
 	ld hl, hPMCX
 	inc [hl]
 	inc [hl]
-	;inc [hl]
-	;inc [hl]
 	pop af
 	ret
 	
@@ -157,6 +153,14 @@ MovQ_NextFrame::
 	ld [MCMovQNextFrameInterrupt], a
 	pop af
 	ret
+	
+; must execute before a the walking animation starts
+; in case the step is not valid, execution stops
+MovQ_TerminateIfNotValid::
+	ldh a, [hIsValidStep]
+	or a
+	ret z
+	jp MovQueueReset
 
 	
 MACRO _movQ_ChangePreset
@@ -186,10 +190,19 @@ ENDM
 MACRO _movQ_NextFrame
 	DB $FF
 ENDM
+
+MACRO _movQ_TerminateIfNotValidStep
+	DB $05
+ENDM
 	
 SECTION "MOVQ Instructions", ROMX, BANK[4]
 
+MovQInstr_PositionUp::
+	_movQ_ChangePreset MC_BACK0
+	_movQ_Terminate
+
 MovQInstr_Up::
+	_movQ_TerminateIfNotValidStep
 	_movQ_ChangePreset MC_BACKW
 	_movQ_GoUp
 	_movQ_NextFrame
@@ -210,7 +223,12 @@ MovQInstr_Up::
 	;_movQ_NextFrame
 	_movQ_Terminate
 
+MovQInstr_PositionDown::
+	_movQ_ChangePreset MC_FRONT0
+	_movQ_Terminate
+
 MovQInstr_Down::
+	_movQ_TerminateIfNotValidStep
 	_movQ_ChangePreset MC_FRONTW
 	_movQ_GoDown
 	_movQ_NextFrame
@@ -231,7 +249,12 @@ MovQInstr_Down::
 	;_movQ_NextFrame
 	_movQ_Terminate
 	
+MovQInstr_PositionLeft::
+	_movQ_ChangePreset MC_LEFT0
+	_movQ_Terminate
+	
 MovQInstr_Left::
+	_movQ_TerminateIfNotValidStep
 	_movQ_ChangePreset MC_LEFTW
 	_movQ_GoLeft
 	_movQ_NextFrame
@@ -252,7 +275,12 @@ MovQInstr_Left::
 	;_movQ_NextFrame
 	_movQ_Terminate
 	
+MovQInstr_PositionRight::
+	_movQ_ChangePreset MC_RIGHT0
+	_movQ_Terminate
+	
 MovQInstr_Right::
+	_movQ_TerminateIfNotValidStep
 	_movQ_ChangePreset MC_RIGHTW
 	_movQ_GoRight
 	_movQ_NextFrame
@@ -274,8 +302,6 @@ MovQInstr_Right::
 	_movQ_Terminate
 	
 
-	
-	
 	
 	
 	

@@ -7,7 +7,7 @@ SECTION "Scroll map Metadata", WRAM0, ALIGN[8]
 
 ; wMapMetadata
 ; byte at offset 16*y+x tells the following about the position (x,y)
-; bit 0 : 0 = barrier, 1 = can walk on
+; bit 0 : 0 = can walk on, 1 = barrier
 ; bit 1 : 0 = free, 1 = occupied by an NPC
 ; bit 2 : event launch method (0=on tile step, 1 = on key A pressed)
 ; bits 3-7 : the last 5 bits of an address pointing to an action/event (wMActions)
@@ -54,6 +54,11 @@ SECTION "Scroll map in HRAM", HRAM
 ; Currrent map index
 hMapIndex::
 	DS 1
+
+	
+; check if player can move towards LookingAt tile (0=yes, non-0 = no)
+hIsValidStep::
+	DS 1
 	
 ; Map Starting Point
 
@@ -70,13 +75,14 @@ hMMCY::
 	DS 1
 hMMCX::
 	DS 1
+; hMMCO : 0=front, 1=back, 2=left, 3=right
 hMMCO::
 	DS 1
 	
 ; the metaposition MC is faced to
-hFaceToY::
+hLookingAtY::
 	DS 1
-hFaceToX::
+hLookingAtX::
 	DS 1
 	
 ; MC pixel position on map
@@ -117,8 +123,8 @@ TileMap_Init::
 	xor a
 	ldh [hMMCX], a
 	ldh [hMMCY], a
-	ldh [hFaceToX], a
-	ldh [hFaceToY], a
+	ldh [hLookingAtX], a
+	ldh [hLookingAtY], a
 	ldh [hPMCX], a
 	ldh [hPMCY], a
 	ldh [hStepParity], a
@@ -260,6 +266,51 @@ TileMap_Execute::
 	and $0F
 	ldh [hMMCX], a
 	
+	; update LookingAtXY
+	ldh a, [hMMCO]
+	or a
+	jr z, .orientationFront
+	cp a, 1
+	jr z, .orientationBack
+	cp a, 2
+	jr z, .orientationLeft
+	cp a, 3
+	jr z, .orientationRight
+	
+.orientationFront:
+	ld b, 1
+	ld c, 0
+	jr .orientationEnd
+.orientationBack:
+	ld b, -1
+	ld c, 0
+	jr .orientationEnd
+.orientationLeft:
+	ld b, 0
+	ld c, -1
+	jr .orientationEnd
+.orientationRight:
+	ld b, 0
+	ld c, 1
+.orientationEnd:
+	ldh a, [hMMCY]
+	add b
+	ldh [hLookingAtY], a
+	
+	ld b, a
+	
+	ldh a, [hMMCX]
+	add c
+	ldh [hLookingAtX], a
+	
+	ld c, a
+	
+	call TileMap_GetLookingAtMetadata
+	and 3
+	ld [hIsValidStep], a
+	
+.debugLkAt
+	
 	; check MovQ
 	xor a
 	ld [MCMovQNextFrameInterrupt], a ; reset MovQ frame interrupt
@@ -277,11 +328,11 @@ TileMap_Execute::
 	;call waitForVBlank
 	call updateJoypadState
 	ld a, [wJoypadState]
-	and a, PADF_DOWN
-	call nz, TM_MC_CommandDown
-	ld a, [wJoypadState]
 	and a, PADF_UP
 	call nz, TM_MC_CommandUp
+	ld a, [wJoypadState]
+	and a, PADF_DOWN
+	call nz, TM_MC_CommandDown
 	ld a, [wJoypadState]
 	and a, PADF_LEFT
 	call nz, TM_MC_CommandLeft
@@ -335,21 +386,66 @@ TileMap_SolveForXOver168:
 	ld [rSCX], a
 	ret
 	
+TileMap_GetLookingAtMetadata:
+	; get index of position LookingAt(Y,X)
+	ld hl, hLookingAtY
+	ld a, [hli] ; a = [hLookingAtY]
+	swap a      ;     * 16
+	add [hl]    ;     + [hLookingAtX]
+	ld l, a
+	
+	ld h, HIGH(wMapMetadata)
+	
+	; finally, retrieve the value
+	ld a, [hl]
+	ret
+	
+
 SECTION "Tilemap MC movement command placer", ROMX, BANK[4]
 
 TM_MC_CommandUp::
+	; before making any steps, make the orientation match the direction of walking
+	ld de, MovQInstr_PositionUp
+	ld a, [hMMCO]
+	cp 1
+	ld a, 1
+	ldh [hMMCO], a
+	jp nz, MovQueueLaunch
+	
+	; if orientation is the same, proceed walking	
 	ld de, MovQInstr_Up
 	jp MovQueueLaunch
 	
 TM_MC_CommandDown::
+	ld de, MovQInstr_PositionDown
+	ld a, [hMMCO]
+	cp 0
+	ld a, 0
+	ldh [hMMCO], a
+	jp nz, MovQueueLaunch
+	
 	ld de, MovQInstr_Down
 	jp MovQueueLaunch
 	
 TM_MC_CommandLeft::
+	ld de, MovQInstr_PositionLeft
+	ld a, [hMMCO]
+	cp 2
+	ld a, 2
+	ldh [hMMCO], a
+	jp nz, MovQueueLaunch
+
 	ld de, MovQInstr_Left
 	jp MovQueueLaunch
 	
 TM_MC_CommandRight::
+	ld de, MovQInstr_PositionRight
+	ld a, [hMMCO]
+	cp 3
+	ld a, 3
+	ldh [hMMCO], a
+	jp nz, MovQueueLaunch
+	
 	ld de, MovQInstr_Right
 	jp MovQueueLaunch
 	
