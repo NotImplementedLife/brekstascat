@@ -106,6 +106,8 @@ SECTION "TileMap Index", ROM0, ALIGN[5]
 
 TileMapsList::
 	DW MAP_Lobby  ;  iMAP_Lobby
+	DW MAP_InfoRoom  ;  iMAP_InfoRoom
+	
 	
 ; Now let's write some code
 

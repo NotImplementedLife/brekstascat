@@ -7,7 +7,8 @@ MAPS_BANK EQU 4
 
 ; TileMap List Indices
 
-iMAP_Lobby EQU 0
+iMAP_Lobby    EQU 0
+iMAP_InfoRoom EQU 1
 
 ; MC Presets Ids
 

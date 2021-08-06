@@ -1,10 +1,10 @@
-INCLUDE "src/include/macros.inc"
+INCLUDE "src/include/constants.inc"
 
 SECTION "Lobby Map data", ROMX, BANK[4]
 
 MAP_Lobby::
 
-; size : 256
+; size : 1024
 .tilemap::
 
 DB $06, $14, $06, $00, $12, $02, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $04, $14, $01, $07, $14, $07
@@ -65,8 +65,9 @@ DB $02
 
 .exitPoints::
 
-DB $C2, $00, $47, $00
-DB $CC, $00, $47, $00
+DB $C2, iMAP_InfoRoom, $B7, $01
+;DB $C2, $00, $B7, $00
+DB $CC, $00, $37, $00
 
 .mActions::
 DW _mAction_NoOp
