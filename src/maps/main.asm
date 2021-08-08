@@ -16,6 +16,7 @@ Maps_Main::
 	ld [ArrAddress], a
 	ld a, $72
 	ld [ArrAddress + 1], a
+
 	
 	
 	ld a, [rLCDC]

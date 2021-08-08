@@ -74,3 +74,8 @@ DW _mAction_NoOp
 REPT(31)
 DW _mAction_NoOp
 ENDR
+
+.NpcCount::
+
+DB $00
+

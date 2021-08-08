@@ -39,15 +39,13 @@ wMnpcCount::
 	DS 1
 ; NPC Data
 ; For each NPC:
-;  bytes 0-3 : Orientation:Front tiles
-;  bytes 4-7 : Orientation:Back tiles
-;  bytes 8-11 : Orientation:Lateral tiles (Left; Obtain right by tile mirroring)
-;  byte 12 : PosY
-;  byte 13 : PosX
-;  byte 14 : Orientation (0=Front, 1=Back, 2=Left, 3=Right)
-;  byte 15 : 0 = Static, 1 = Dynamic (adjustes orientation to player's position)
+;  bytes 0-3 : Tiles
+;  byte 4 : PosY
+;  byte 5 : PosX
+;  byte 6 : Orientation (0=Front, 1=Back, 2=Left, 3=Right)
+;  byte 7 : not used
 wMnpcData::
-	DS 16*8 ; (Though I doubt I'll need 8 NPCs per map in this game)
+	DS 8*9 ; (Though I doubt I'll need 8 NPCs per map in this game) | Edit: I was wrong :))
 	
 
 SECTION "Scroll map in HRAM", HRAM
@@ -93,6 +91,12 @@ hPMCY::
 hPMCX::
 	DS 1
 	
+hEventToExecute::
+	DS 1
+	
+hWalkingCooldown::
+	DS 1
+	
 ; Step Parity Counter
 ; increments on each step
 ; Tells whether to use MCP_FrontW or MCP_FrontS presets
@@ -107,6 +111,7 @@ SECTION "TileMap Index", ROM0, ALIGN[5]
 TileMapsList::
 	DW MAP_Lobby  ;  iMAP_Lobby
 	DW MAP_InfoRoom  ;  iMAP_InfoRoom
+	DW MAP_Playground  ;  iMAP_Playground
 	
 	
 ; Now let's write some code
@@ -136,6 +141,7 @@ TileMap_Init::
 	ldh [hPMCX], a
 	ldh [hPMCY], a
 	ldh [hStepParity], a
+	ldh [hEventToExecute], a
 	ret
 
 SECTION "Tilemap Loader", ROM0
@@ -227,9 +233,62 @@ TileMap_Load::
 	inc de
 	dec b
 	jr nz, .mActionsLoop
-
-	; load NPCs etc...
 	
+	; zero OAM
+	
+	push hl
+	ld hl, ShadowOAM
+	xor a
+	ld b, 160
+._0OAMLoop
+	ld [hli], a
+	dec b
+	jr nz, ._0OAMLoop
+	pop hl
+
+	; load NPCs
+	;ld b,b
+	ld a, [hli]
+	ld [wMnpcCount], a
+	
+	or a
+	jr z, .loadNpcEnd
+	
+	ld de, wMnpcData
+	ld b, a
+	; b *= 8
+	swap b
+	srl b
+.npcLoop
+	ld a, [hli]
+	ld [de], a
+	inc de
+	dec b
+	jr nz, .npcLoop
+	
+	ld hl, wMnpcCount
+	ld a, [hli] ; now hl = wMnpcCount + 1 = wMnpcData
+	ld b, a
+	ld c, 4
+	ld de, ShadowOAM+18
+	
+.createOamFromNpcLoop
+	REPT(4)
+	ld a, [hli] ; get tile res
+	ld [de], a	
+	; e+=4 (next sprite)
+	ld a, e
+	add c
+	ld e, a
+	ENDR
+	ld a, l
+	add c
+	ld l, a ; next NPC
+	
+	dec b
+	jr nz, .createOamFromNpcLoop
+	
+.loadNpcEnd
 	; load pixel position & orientation
 	ldh a, [hMapStartY]
 	swap a
@@ -240,13 +299,12 @@ TileMap_Load::
 	ldh [hPMCX], a
 	ldh a, [hMapStartO]
 	ldh [hMMCO], a
-	
 	; a*=3, prepare MC Preset
 	ld b, a
 	sla a
 	add b
-	ld [wMC_Preset], a
-	
+	ld [wMC_Preset], a	
+	call arrInit ; in case Playground is executed
 	
 	ret
 
@@ -332,8 +390,15 @@ TileMap_Execute::
 	and 3
 	ld [hIsValidStep], a
 	
+	; check MovQ
+	xor a
+	ld [MCMovQNextFrameInterrupt], a ; reset MovQ frame interrupt
+	REPT(19)
+	call MovQueueProcess
+	ENDR
+	
 	; current position events checkup
-	ld a, [MCMovQEnabled]
+	ld a, [MCMovQEnabled];	
 	or a
 	jr nz, .skipCurrentPosEventCheck
 	call TileMap_GetCurrentPosMetadata
@@ -345,21 +410,104 @@ TileMap_Execute::
 	
 .skipCurrentPosEventCheck:
 	
-	
-	
-	; check MovQ
-	xor a
-	ld [MCMovQNextFrameInterrupt], a ; reset MovQ frame interrupt
-	REPT(19)
-	call MovQueueProcess
-	ENDR
-	
 	call waitForVBlank
+	
+	;ld hl, ShadowOAM
+	
 	call MC_Display
+	
+	ld c, 4
+	ld hl, wMnpcCount
+	ld a, [hli] ; now hl = wMnpcCount + 1 = wMnpcData
+	or a
+	jr z, .finOam
+	ld b, a
+	ld de, ShadowOAM+16
+	
+.createOamFromNpcLoop
+	push bc
+	REPT(4)
+	inc l   ; l+=4 (go to metapositionYX)
+	ENDR
+	ld a, [hli]
+	ld b, a ; b = metaposY
+	ld a, [hli]
+	ld c, a ; c = metaposX
+	inc l
+	inc l   ; hl points to next NPC
+	
+	; process metapositions ( b = y-SCY, c=x-SCX )	
+	ldh a, [rSCY]
+	cpl
+	inc a
+	add b
+	ld b, a
+	
+	ldh a, [rSCX]
+	cpl
+	inc a
+	add c
+	ld c, a
+	
+	; update sprite position
+	ld a, b
+	ld [de], a
+	inc e
+	ld a, c
+	ld [de], a
+	inc e
+	inc e
+	inc e
+	
+	ld a, b
+	ld [de], a
+	inc e
+	ld a, c
+	add 8
+	ld [de], a
+	inc e
+	inc e
+	inc e
+	
+	ld a, b
+	add 8
+	ld [de], a
+	inc e
+	ld a, c	
+	ld [de], a
+	inc e
+	inc e
+	inc e
+	
+	ld a, b
+	add 8
+	ld [de], a
+	inc e
+	ld a, c	
+	add 8
+	ld [de], a
+	inc e
+	inc e
+	inc e
+	
+	pop bc
+	dec b
+	jr nz, .createOamFromNpcLoop
+.finOam
+	initOAM ShadowOAM
 	
 	ld a, [MCMovQEnabled]
 	or a
-	ret nz ; don't check input while MovQ executing
+	ret nz ; don't check input while MovQ executing	
+	
+	;ld b,b
+	ldh a, [hWalkingCooldown]
+	or a
+	jr z, .skipCooldown
+	dec a
+	ldh [hWalkingCooldown], a
+	ret
+.skipCooldown
 	
 	;call waitForVBlank
 	call updateJoypadState

@@ -65,9 +65,9 @@ DB $02
 
 .exitPoints::
 
-DB $C2, iMAP_InfoRoom, $B7, $01
+DB $C2, iMAP_InfoRoom, $C7, $01
 ;DB $C2, $00, $B7, $00
-DB $CC, $00, $37, $00
+DB $CC, iMAP_Playground, $E7, $01
 
 .mActions::
 DW _mAction_NoOp                      ; 000
@@ -78,3 +78,6 @@ REPT(28)
 DW _mAction_NoOp
 ENDR
 	
+.NpcCount::
+
+DB $00

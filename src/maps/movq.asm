@@ -47,6 +47,11 @@ MovQueueReset::
 	ldh a, [hStepParity]
 	xor 16 ; idk why `xor 1` makes rSCY change unexpectedly
 	ldh [hStepParity], a
+	;ld b,b
+	ld a, 1
+	ldh [hWalkingCooldown], a
+	xor a ; buggy somewhere, a must be 0 at the end of this func
+	;ld b,b
 	ret
 	
 ; de = MovQ instrution
@@ -159,7 +164,7 @@ MovQ_NextFrame::
 MovQ_TerminateIfNotValid::
 	ldh a, [hIsValidStep]
 	or a
-	ret z
+	ret z	
 	jp MovQueueReset
 
 	

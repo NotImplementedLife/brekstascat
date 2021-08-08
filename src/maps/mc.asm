@@ -72,8 +72,6 @@ MC_Display::
 	dec a
 	jr nz, .loop
 	
-	initOAM ShadowOAM
-	
 	ret
 
 SECTION "MC Sprite Presets", ROMX, BANK[4], ALIGN[8]
