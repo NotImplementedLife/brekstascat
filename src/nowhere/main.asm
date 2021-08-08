@@ -60,9 +60,9 @@ Nowhere_Main::
 	
 	call waitForVBlank
 	ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJ16; | LCDCF_OBJON
-	ldh [rLCDC], a
+	ldh [rLCDC], a	
+	call waitForVBlank
 	
-	call waitForVBlank	
 	; "nowhere" main loop	
 .loop
 

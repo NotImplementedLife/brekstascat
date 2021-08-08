@@ -12,11 +12,21 @@ Maps_Main::
 	ld a, [rLCDC]
 	;res 2, a ; OBJ_8
 	res 1, a ; OBJ_OFF
-	res 4, a ; tile set data $8800
-	ld [rLCDC], a
+	set 4, a ; tile set data $8000
+	set 5, a ; enable window
+	set 6, a ; use window $9C00	
+	ld [rLCDC], a	
+	
+	ld a, 144
+	ldh [rWY], a
+	ld a, 7
+	ldh [rWX], a
 	
 	call clearVRAM
-	ld hl, $9000
+
+	call DialogInitWindow
+	
+	ld hl, $8800
 	ld de, MapsGeneralTileset
 	ld bc, MapsGeneralTilesetEnd
 	call loadMemoryDOUBLE
@@ -43,7 +53,7 @@ Maps_Main::
 	ldh [rOBP0], a
 	ld a, [rLCDC]
 	set 1, a ; OBJ_OFF
-	res 4, a ; tile set data $8800
+	set 4, a ; tile set data $8000
 	ldh [rLCDC], a
 	call waitForVBlank
 .loop

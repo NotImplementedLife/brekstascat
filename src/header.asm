@@ -1,5 +1,8 @@
 INCLUDE "src/include/macros.inc"
 
+rBGPI EQU $FF68
+rOBPI EQU $FF6A
+
 SECTION "Header", ROM0[$100]
 	nop
 	jp EntryPoint
@@ -8,9 +11,15 @@ SECTION "Header", ROM0[$100]
 
 SECTION "Entry point", ROM0
 
-EntryPoint:
+EntryPoint:		
 	call HbOwlSplashScreen
 	call CopyDMARoutine
+	
 	ei
-	vBlankInit
+	vBlankInit	
+			
 	jp Start
+
+
+
+

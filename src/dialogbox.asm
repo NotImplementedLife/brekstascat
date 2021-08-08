@@ -20,6 +20,29 @@ DialogInit::
 	ldh [OffsetY], a
 	ldh [Iterator], a
 	ret
+	
+DialogInitWindow::
+	; load border
+	; load border
+	loadVRAM_DOUBLE $8200, DialogBorder              , DialogBorderEnd
+	loadVRAM_DOUBLE $8300, DialogArrows              , DialogArrowsEnd
+	loadVRAM_DOUBLE $9C00, DialogFrameWnd               , DialogFrameWnd+20
+	loadVRAM_DOUBLE $9C20, DialogFrameWnd+20            , DialogFrameWnd+40 ; padding
+	loadVRAM_DOUBLE $9C40, DialogFrameWnd+40            , DialogFrameWnd+60
+	loadVRAM_DOUBLE $9C60, DialogFrameWnd+60            , DialogFrameWnd+80
+	loadVRAM_DOUBLE $9C80, DialogFrameWnd+20            , DialogFrameWnd+40 ; padding
+	loadVRAM_DOUBLE $9CA0, DialogFrameWnd+80            , DialogFrameWnd+100
+
+	
+	
+	
+	xor a
+	ldh [OffsetX], a
+	ldh [OffsetY], a
+	ldh [Iterator], a
+	ret
+	
+
 
 ; hl = destination tile + 2
 ; de = source tile     
@@ -241,6 +264,19 @@ DB $30, $30, $30, $30, $30, $30, $34, $30, $10, $11, $12, $13, $14, $15, $16, $1
 DB $30, $30, $30, $30, $30, $30, $22, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $23, $30, $30, $30, $30, $30, $30, ; bottop
 
 DialogFrameEnd::
+
+; Dialog in tilemap in window (not centered)
+DialogFrameWnd::
+
+DB $20, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $21, ; top
+DB $34, $30, $30, $30, $30, $30, $30, $30, $30, $30, $30, $30, $30, $30, $30, $30, $30, $30, $30, $34, ; padding
+DB $34, $30, $00, $01, $02, $03, $04, $05, $06, $07, $08, $09, $0A, $0B, $0C, $0D, $0E, $0F, $30, $34, ; line 1
+DB $34, $30, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $1A, $1B, $1C, $1D, $1E, $1F, $30, $34, ; line 2
+DB $22, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $24, $23, ; bottop
+
+DialogFrameWndEnd::
+
+SECTION "Char Widths", ROM0
 
 
 ; Index of char widths
