@@ -208,7 +208,7 @@ DW ValnyssaNowhereExit
 
 DB $FF
 
-SECTION "NextChar", ROMX, BANK[2]
+SECTION "NextChar", ROM0
 NextChar::
 	ld hl, StrAddr
 	ld a, [hli]
@@ -254,7 +254,7 @@ NextChar::
 	ld [StrAddr+1], a
 	ret	
 
-SECTION "Dialog Operations Table", ROMX, BANK[2]
+SECTION "Dialog Operations Table", ROM0
 	
 DialogOpTable:
 	
@@ -301,6 +301,12 @@ dialog_newline:
 	ret
 	
 dialog_waitkey:
+	; retrieve Arr Address
+	ld hl, ArrAddress
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+
 	ld a, [DownArr]
 	inc a
 	ld [DownArr], a
@@ -309,7 +315,7 @@ dialog_waitkey:
 	srl a
 	jr z, .skipArrowUpdate
 	add $30
-	ld [$99F8], a
+	ld [hl], a
 .skipArrowUpdate
 	call updateJoypadState
 	ld   a, [wJoypadPressed]
@@ -317,7 +323,7 @@ dialog_waitkey:
 	jr z, dialog_stop ; if no key was pressed, pause dialog iteration
 	
 	ld a, $30
-	ld [$99F8], a
+	ld [hl], a
 	ret
 
 dialog_stop:
@@ -355,4 +361,5 @@ SECTION "Dialog vars", WRAM0
 
 StrAddr:: DS 2
 DownArr:: DS 1
+ArrAddress:: DS 2 ; where to draw the arrow in VRAM
 

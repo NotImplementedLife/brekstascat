@@ -8,6 +8,15 @@ Maps_Main::
 	ldh [rBGP], a
 	ldh [rSCY], a
 	ldh [rSCX], a
+	; init dialog
+	ld [TMDialogActive], a
+	ld [DownArr], a
+	; init dialog Down Arr address
+	ld a, $9C
+	ld [ArrAddress], a
+	ld a, $72
+	ld [ArrAddress + 1], a
+	
 	
 	ld a, [rLCDC]
 	;res 2, a ; OBJ_8

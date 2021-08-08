@@ -23,6 +23,12 @@ Nowhere_Main::
 	dec b
 	jr nz, .loadLSin
 	
+	; init dialog Down Arr address
+	ld a, $99
+	ld [ArrAddress], a
+	ld a, $F8
+	ld [ArrAddress + 1], a
+	
 	; init Action variables
 	ld a, 1
 	ld [PendingAction], a

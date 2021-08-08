@@ -1,5 +1,3 @@
-INCLUDE "src/include/macros.inc"
-
 SECTION "mActions", ROMX, BANK[4]
 
 _mAction_NoOp::
@@ -10,15 +8,19 @@ _mAction_Lobby_GoDown37::
 	jp MovQueueLaunch
 	
 _mAction_Lobby_Sign_InfoRoom::
-	;ld b,b
+	ld a, HIGH(DialogString_ToInfoRoom)
+	ld [StrAddr], a
+	ld a, LOW(DialogString_ToInfoRoom)	
+	ld [StrAddr + 1], a	
+	jp Tilemap_DialogRender
 	
-	ld hl, rWY
-	REPT(48)
-	call waitForVBlank
-	dec [hl]
-	dec [hl]
-	ENDR
-	ret
+_mAction_Lobby_Sign_Playground::
+	ld a, HIGH(DialogString_ToPlayground)
+	ld [StrAddr], a
+	ld a, LOW(DialogString_ToPlayground)	
+	ld [StrAddr + 1], a	
+	jp Tilemap_DialogRender
+	
 
 SECTION "mAction Work Ram", WRAM0
 
