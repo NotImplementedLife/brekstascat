@@ -25,9 +25,9 @@ arrEventDownStepOn::
 	or a
 	ret nz
 	
-	REPT(10)
-	call waitForVBlank
-	ENDR
+	;REPT(10)
+	;call waitForVBlank
+	;ENDR
 	ld a, 1
 	ld [wPlayerOnArrow], a
 	call waitForVBlank
