@@ -4,6 +4,10 @@ sSRAMKEY: DS 16
 
 sNowhereIntroComplete:: DS 1 ; 0 = no, 1 = yes
 
+; the free matrix in the Playground map
+sTutorialMatrix::
+	DS 9  ; 3x3, 1..8, 0 = free square
+
 
 SECTION "Save Key", ROM0, ALIGN[8]
 
@@ -32,6 +36,19 @@ SRAM_Init::
 	; now that SRAM key is written, init the save data
 	xor a
 	ld [sNowhereIntroComplete], a
+	
+SRAM_InitTutorialMatrix::
+	xor a	
+	ld [sTutorialMatrix+8], a
+	ld hl, sTutorialMatrix
+	ld b, 8
+.loop
+	inc a
+	ld [hli], a
+	dec b
+	jr nz, .loop
+	
+	ret
 	
 	ret
 

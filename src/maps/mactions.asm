@@ -1,3 +1,11 @@
+MACRO PlayDialog
+	ld a, HIGH( \1 )
+	ld [StrAddr], a
+	ld a, LOW( \1 )	
+	ld [StrAddr + 1], a	
+	jp Tilemap_DialogRender
+ENDM
+
 SECTION "mActions", ROMX, BANK[4]
 
 _mAction_NoOp::
@@ -8,21 +16,22 @@ _mAction_Lobby_GoDown37::
 	jp MovQueueLaunch
 	
 _mAction_Lobby_Sign_InfoRoom::
-	ld a, HIGH(DialogString_ToInfoRoom)
-	ld [StrAddr], a
-	ld a, LOW(DialogString_ToInfoRoom)	
-	ld [StrAddr + 1], a	
-	jp Tilemap_DialogRender
+	PlayDialog DialogString_ToInfoRoom
 	
 _mAction_Lobby_Sign_Playground::
-	ld a, HIGH(DialogString_ToPlayground)
-	ld [StrAddr], a
-	ld a, LOW(DialogString_ToPlayground)	
-	ld [StrAddr + 1], a	
-	jp Tilemap_DialogRender
+	PlayDialog DialogString_ToPlayground	
 	
+_mAction_Playground_SacredStone_Dialog::
+	ldh a, [hMMCO]
+	cp 1
+	jr nz, .wrongView
+	PlayDialog DialogString_SacredStone
+.wrongView
+	PlayDialog DialogString_SacredStoneWrongView
+	
+_mAction_Playground_Sign_Instructions::
+	ldh a, [hMMCO]
+	cp 1
+	ret nz
+	PlayDialog DialogString_PlaygroundInstructions
 
-SECTION "mAction Work Ram", WRAM0
-
-;__Lobby_GoDown37_OnlyOnce::
-;DS 1

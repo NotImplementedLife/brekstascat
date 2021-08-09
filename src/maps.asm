@@ -266,6 +266,9 @@ TileMap_Load::
 	dec b
 	jr nz, .npcLoop
 	
+	; update Tutorial Matrix from SRAM in case Playground is executed
+	call arrLoadTutorialMap
+	
 	ld hl, wMnpcCount
 	ld a, [hli] ; now hl = wMnpcCount + 1 = wMnpcData
 	ld b, a
@@ -304,8 +307,6 @@ TileMap_Load::
 	sla a
 	add b
 	ld [wMC_Preset], a	
-	call arrInit ; in case Playground is executed
-	
 	ret
 
 SECTION "Tilemap Executer", ROM0

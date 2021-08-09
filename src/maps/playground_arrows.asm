@@ -4,16 +4,72 @@ INCLUDE "src/include/macros.inc"
 ; serves as tutorial part in Playground
 SECTION "Playground Arrows Events", ROMX, BANK[4]
 
-
-arrInit::
+arrLoadTutorialMap::
 	xor a
 	ld [wPlayerOnArrow], a
-	ld [wTutorialMatrix+8], a
-	ld hl, wTutorialMatrix
-	ld b, 8
+	ld de, sTutorialMatrix
+	ld b, 9
 .loop
-	inc a
-	ld [hli], a
+	ld a, [de] ; read matrix element
+	ld l, a
+	inc e ; inc de
+	or a ; 0, go to the next one
+	jr z, .continue
+	
+	; build sprite position
+	push de
+	ld a, b
+	cpl
+	add 10
+	ld e, a
+	push hl
+	call Div3 ; a/=3
+	pop hl
+	ld d, a ; d = row index
+	add d
+	add d
+	ld c, a ; c = 3*d
+	ld a, e
+	sub c
+	ld e, a ; d = col index
+	;ld b,b
+	
+	; at this point
+	; d = row Index (need to tranform to px coord Y)
+	; e = col Index (need to tranform to px coord X)
+	; l = NPC Index (need to tranform to wMnpcData)
+	
+	; d = 16*d+128
+	ld a, d
+	swap a
+	add 128
+	ld d, a
+	
+	; e = 16*e+112
+	ld a, e
+	swap a
+	add 112
+	ld e, a
+	
+	; l = (l-1)*8
+	dec l
+	ld a, l
+	add a,a
+	add a,a
+	add a,a
+	ld l, a
+	inc l ; note that wMnpcData=$XX01
+	ld h, HIGH(wMnpcData)
+	REPT(4)
+	inc hl
+	ENDR
+	; now we are ready to copy coordinates
+	ld [hl], d
+	inc hl
+	ld [hl], e
+	
+	pop de
+.continue
 	dec b
 	jr nz, .loop
 	
@@ -51,7 +107,7 @@ arrEventDownStepOn::
 	sub 3 ; get position above
 	ld e, a ; position of #
 	
-	ld hl, wTutorialMatrix
+	ld hl, sTutorialMatrix
 	add l
 	ld l, a
 	ld a, [hl]
@@ -59,14 +115,14 @@ arrEventDownStepOn::
 	; update TutorialMatrix
 	push af	
 	ld b, a
-	ld hl, wTutorialMatrix
+	ld hl, sTutorialMatrix
 	ld a, e
 	add l
 	ld l, a
 	xor a
 	ld [hl], a
 	
-	ld hl, wTutorialMatrix
+	ld hl, sTutorialMatrix
 	ld a, d
 	add l
 	ld l, a
@@ -162,7 +218,7 @@ arrEventUpStepOn::
 	add 3 ; get position below
 	ld e, a ; position of #
 	
-	ld hl, wTutorialMatrix
+	ld hl, sTutorialMatrix
 	add l
 	ld l, a
 	ld a, [hl]
@@ -170,14 +226,14 @@ arrEventUpStepOn::
 	; update TutorialMatrix
 	push af	
 	ld b, a
-	ld hl, wTutorialMatrix
+	ld hl, sTutorialMatrix
 	ld a, e
 	add l
 	ld l, a
 	xor a
 	ld [hl], a
 	
-	ld hl, wTutorialMatrix
+	ld hl, sTutorialMatrix
 	ld a, d
 	add l
 	ld l, a
@@ -274,7 +330,7 @@ arrEventRightStepOn::
 	dec a ; get position left
 	ld e, a ; position of #
 	
-	ld hl, wTutorialMatrix
+	ld hl, sTutorialMatrix
 	add l
 	ld l, a
 	ld a, [hl]
@@ -282,14 +338,14 @@ arrEventRightStepOn::
 	; update TutorialMatrix
 	push af	
 	ld b, a
-	ld hl, wTutorialMatrix
+	ld hl, sTutorialMatrix
 	ld a, e
 	add l
 	ld l, a
 	xor a
 	ld [hl], a
 	
-	ld hl, wTutorialMatrix
+	ld hl, sTutorialMatrix
 	ld a, d
 	add l
 	ld l, a
@@ -386,7 +442,7 @@ arrEventLeftStepOn::
 	inc a ; get position right
 	ld e, a ; position of #
 	
-	ld hl, wTutorialMatrix
+	ld hl, sTutorialMatrix
 	add l
 	ld l, a
 	ld a, [hl]
@@ -394,14 +450,14 @@ arrEventLeftStepOn::
 	; update TutorialMatrix
 	push af	
 	ld b, a
-	ld hl, wTutorialMatrix
+	ld hl, sTutorialMatrix
 	ld a, e
 	add l
 	ld l, a
 	xor a
 	ld [hl], a
 	
-	ld hl, wTutorialMatrix
+	ld hl, sTutorialMatrix
 	ld a, d
 	add l
 	ld l, a
@@ -536,7 +592,7 @@ arrEventLeftStepOut::
 ; a = position of 0 in TutorialMatrix
 arrLocate0::
 	ld b, 0
-	ld hl, wTutorialMatrix
+	ld hl, sTutorialMatrix
 .loop
 	ld a, [hli]
 	or a
@@ -548,16 +604,27 @@ arrLocate0::
 .fin
 	ld a, b
 	ret
+	
+SECTION "Div 3 Table", ROMX, BANK[4], ALIGN[4]
+
+Div3Table:
+
+DB 0, 0, 0, 1, 1, 1, 2, 2, 2
+
+; a = a / 3 - 11 cyc
+Div3::
+	ld hl, Div3Table ; 3
+	add l            ; 1
+	ld l, a          ; 1
+	ld a, [hl]       ; 2
+	ret              ; 4
+
 
 
 SECTION "Playground Arrows Vars", WRAM0, ALIGN[8]
-
-wTutorialMatrix::
-	DS 9  ; 3x3, 1..8, 0 = free square
 	
 
 wPlayerOnArrow::
 	DS 1
-	
 
 	
