@@ -317,6 +317,14 @@ TileMap_Execute::
 ;--------------------------------------------------------------
 	; get MC position
 	call waitForVBlank
+	
+	; check MovQ
+	xor a
+	ld [MCMovQNextFrameInterrupt], a ; reset MovQ frame interrupt
+	REPT(19)
+	call MovQueueProcess
+	ENDR
+	
 	; solve for screenY coordinate
 	ldh a, [hPMCY]
 	cp 64
@@ -390,13 +398,6 @@ TileMap_Execute::
 	call TileMap_GetLookingAtMetadata
 	and 3
 	ld [hIsValidStep], a
-	
-	; check MovQ
-	xor a
-	ld [MCMovQNextFrameInterrupt], a ; reset MovQ frame interrupt
-	REPT(19)
-	call MovQueueProcess
-	ENDR
 	
 	; current position events checkup
 	ld a, [MCMovQEnabled];	

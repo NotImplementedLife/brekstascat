@@ -81,6 +81,8 @@ arrEventDownStepOn::
 	or a
 	ret nz
 	
+	
+	
 	;REPT(10)
 	;call waitForVBlank
 	;ENDR
