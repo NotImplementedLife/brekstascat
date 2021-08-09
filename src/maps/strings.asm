@@ -24,9 +24,10 @@ DialogString_SacredStone::
 	DB "Pretty unreadable.", DLG_WKEY, " Oh, wait...&nl;", DLG_WKEY, "For God's sake, you're in a", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB "dream! Of course you can&nl;read that.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB "Ahem...", DLG_WKEY, DLG_CLR0, DLG_CLR1
-	DB "Void  Eight Seven&nl;", DLG_WKEY
-	DB "Six   Five  Four&nl;", DLG_WKEY, DLG_CLR0, DLG_CLR1
-	DB "Three Two   One&nl;", DLG_WKEY
+	DB "\"Void  Eight Seven&nl;", DLG_WKEY
+	DB "  Six   Five  Four&nl;", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "  Three Two   One&nl;", DLG_WKEY
+	DB " And the good will happen.\"", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
 	
