@@ -98,18 +98,18 @@ ENDR
 
 .NpcCount::
 
-DB $08
+DB $00
 
 .NPCs::
 
-DB $A9, $AA, $B9, $BA, 128, 112, $00, $00  ; Moving Block 1
-DB $AB, $AC, $B9, $BA, 128, 128, $00, $00  ; Moving Block 2
-DB $AD, $AE, $B9, $BA, 128, 144, $00, $00  ; Moving Block 3
-DB $BB, $BC, $B9, $BA, 144, 112, $00, $00  ; Moving Block 4
-DB $BD, $BE, $B9, $BA, 144, 128, $00, $00  ; Moving Block 5
-DB $C9, $CA, $B9, $BA, 144, 144, $00, $00  ; Moving Block 6
-DB $CB, $CC, $B9, $BA, 160, 112, $00, $00  ; Moving Block 7
-DB $CD, $CE, $B9, $BA, 160, 128, $00, $00  ; Moving Block 8
+;DB $A9, $AA, $B9, $BA, 128, 112, $00, $00  ; Moving Block 1
+;DB $AB, $AC, $B9, $BA, 128, 128, $00, $00  ; Moving Block 2
+;DB $AD, $AE, $B9, $BA, 128, 144, $00, $00  ; Moving Block 3
+;DB $BB, $BC, $B9, $BA, 144, 112, $00, $00  ; Moving Block 4
+;DB $BD, $BE, $B9, $BA, 144, 128, $00, $00  ; Moving Block 5
+;DB $C9, $CA, $B9, $BA, 144, 144, $00, $00  ; Moving Block 6
+;DB $CB, $CC, $B9, $BA, 160, 112, $00, $00  ; Moving Block 7
+;DB $CD, $CE, $B9, $BA, 160, 128, $00, $00  ; Moving Block 8
  
 
 

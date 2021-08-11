@@ -151,6 +151,7 @@ SECTION "Tilemap Loader", ROM0
 ;--------------------------------------------------------------
 TileMap_Load::
 ;--------------------------------------------------------------
+	ldh [hMapIndex], a
 	; hl = TileMapsList + 2 * a
 	rlca
 	ld hl, TileMapsList
@@ -194,6 +195,12 @@ TileMap_Load::
 	dec b
 	jr nz, .waitVRAM2
 	
+	; update Tutorial Matrix from SRAM in case Playground is executed
+	push hl
+	ldh a, [hMapIndex]
+	cp iMAP_Playground
+	call z, arrLoadTutorialMap
+	pop hl
 	; then the metadata
 	
 	ld de, wMapMetadata
@@ -265,9 +272,6 @@ TileMap_Load::
 	inc de
 	dec b
 	jr nz, .npcLoop
-	
-	; update Tutorial Matrix from SRAM in case Playground is executed
-	call arrLoadTutorialMap
 	
 	ld hl, wMnpcCount
 	ld a, [hli] ; now hl = wMnpcCount + 1 = wMnpcData
