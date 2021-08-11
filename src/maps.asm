@@ -142,6 +142,7 @@ TileMap_Init::
 	ldh [hPMCY], a
 	ldh [hStepParity], a
 	ldh [hEventToExecute], a
+	ld [wEnterEasy], a
 	ret
 
 SECTION "Tilemap Loader", ROM0
@@ -322,6 +323,7 @@ TileMap_Execute::
 	; get MC position
 	call waitForVBlank
 	
+	;ld b,b
 	; check MovQ
 	xor a
 	ld [MCMovQNextFrameInterrupt], a ; reset MovQ frame interrupt

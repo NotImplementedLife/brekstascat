@@ -50,7 +50,6 @@ SRAM_InitTutorialMatrix::
 	
 	ret
 	
-	ret
 
 SRAM_CheckWritten::
 	ld b, HIGH(SRAM_Key)

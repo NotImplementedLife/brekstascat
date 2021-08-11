@@ -47,7 +47,7 @@ DB $93, $93, $93, $93, $93, $93, $93, $93, $93, $93, $93, $93, $93, $93, $92, $9
 .meta::
 
 DB %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, $01, 
-DB %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, $01, 
+DB %00000_0_0_1, %01011_0_0_0, %00000_0_0_1, %01100_0_0_0, %00000_0_0_1, %01101_0_0_0, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, %00000_0_0_1, $01, 
 
 DB %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, $01, 
 DB %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, %00000_0_0_0, $01, 
@@ -80,18 +80,21 @@ DB $01
 DB $F7, $00, $DC, $00
 
 .mActions::
-DW _mAction_NoOp
-DW arrEventDownStepOn       ; 0001
-DW arrEventDownStepOut      ; 0010
-DW arrEventUpStepOn         ; 0011
-DW arrEventUpStepOut        ; 0100
-DW arrEventRightStepOn      ; 0101
-DW arrEventRightStepOut     ; 0110
-DW arrEventLeftStepOn       ; 0111
-DW arrEventLeftStepOut      ; 1000
-DW _mAction_Playground_SacredStone_Dialog ; 1001
-DW _mAction_Playground_Sign_Instructions  ; 1010
-REPT(21)
+DW _mAction_NoOp            ; 00000
+DW arrEventDownStepOn       ; 00001
+DW arrEventDownStepOut      ; 00010
+DW arrEventUpStepOn         ; 00011
+DW arrEventUpStepOut        ; 00100
+DW arrEventRightStepOn      ; 00101
+DW arrEventRightStepOut     ; 00110
+DW arrEventLeftStepOn       ; 00111
+DW arrEventLeftStepOut      ; 01000
+DW _mAction_Playground_SacredStone_Dialog ; 01001
+DW _mAction_Playground_Sign_Instructions  ; 01010
+DW _mAction_EnterPuzzleRoomE              ; 01011
+DW _mAction_EnterPuzzleRoomM              ; 01100
+DW _mAction_EnterPuzzleRoomH              ; 01101
+REPT(18)
 DW _mAction_NoOp
 ENDR
 
@@ -101,16 +104,6 @@ ENDR
 DB $00
 
 .NPCs::
-
-;DB $A9, $AA, $B9, $BA, 128, 112, $00, $00  ; Moving Block 1
-;DB $AB, $AC, $B9, $BA, 128, 128, $00, $00  ; Moving Block 2
-;DB $AD, $AE, $B9, $BA, 128, 144, $00, $00  ; Moving Block 3
-;DB $BB, $BC, $B9, $BA, 144, 112, $00, $00  ; Moving Block 4
-;DB $BD, $BE, $B9, $BA, 144, 128, $00, $00  ; Moving Block 5
-;DB $C9, $CA, $B9, $BA, 144, 144, $00, $00  ; Moving Block 6
-;DB $CB, $CC, $B9, $BA, 160, 112, $00, $00  ; Moving Block 7
-;DB $CD, $CE, $B9, $BA, 160, 128, $00, $00  ; Moving Block 8
- 
 
 
 

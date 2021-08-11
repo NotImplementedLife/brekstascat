@@ -35,3 +35,25 @@ _mAction_Playground_Sign_Instructions::
 	ret nz
 	PlayDialog DialogString_PlaygroundInstructions
 
+_mAction_EnterPuzzleRoomE::
+	;ld b,b
+	ld a, [wEnterEasy]
+	ret nz
+	ld a, 1
+	ld [wEnterEasy], a
+	ld de, MovQInstr_Down
+	jp MovQueueLaunch
+	ret
+	
+_mAction_EnterPuzzleRoomM::
+	ret
+	
+_mAction_EnterPuzzleRoomH::
+	ret
+
+	
+SECTION "Puzzle room loading vars", WRAM0
+
+wEnterEasy::
+	DS 1
+	
