@@ -1,3 +1,5 @@
+INCLUDE "src/include/macros.inc"
+
 MACRO PlayDialog
 	ld a, HIGH( \1 )
 	ld [StrAddr], a
@@ -45,8 +47,17 @@ _mAction_EnterPuzzleRoomE::
 	; backup VRAM$8800, Tilemap$9800 and OAM and prepare to run the Game room
 	call TakeVRAMSnapshot
 	
+	call Puzzle_Init
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
 	
-	
+	ld a, %11100100
+	ldh [rBGP], a
 	
 	; restore VRAM$8800, Tilemap$9800 & OAM and continue map execution
 	call RestoreVRAMSnapshot

@@ -44,7 +44,9 @@ FIXFLAGS = -p $(PADVALUE) -v -i "$(GAMEID)" -k "$(LICENSEE)" -l $(OLDLIC) -m $(M
 SRCS = $(wildcard $(SRCDIR)/*.asm)         $(wildcard $(SRCDIR)/HomebrewOwl.GB/*.asm) \
 	   $(wildcard $(SRCDIR)/nowhere/*.asm) \
 	   $(wildcard $(SRCDIR)/logo/*.asm) \
-	   $(wildcard $(SRCDIR)/maps/*.asm)
+	   $(wildcard $(SRCDIR)/maps/*.asm) \
+	   $(wildcard $(SRCDIR)/puzzle/*.asm) \
+	   $(wildcard $(SRCDIR)/puzzleres/*.asm)
 
 ## Project-specific configuration
 # Use this to override the above
