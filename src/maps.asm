@@ -540,6 +540,183 @@ TileMap_Execute::
 	call nz, TM_MC_ExecuteMActionOnAKey
 	
 	ret	
+	
+;--------------------------------------------------------------	
+TileMap_Execute_OnlyMovQ::
+;--------------------------------------------------------------
+	; get MC position
+	call waitForVBlank
+	
+	;ld b,b
+	; check MovQ
+	xor a
+	ld [MCMovQNextFrameInterrupt], a ; reset MovQ frame interrupt
+	REPT(19)
+	call MovQueueProcess
+	ENDR
+	
+	; solve for screenY coordinate
+	ldh a, [hPMCY]
+	cp 64
+	push af
+	call c, TileMap_SolveForYUnder64
+	pop af
+	push af
+	call nc, TileMap_SolveForYOver64
+	pop af
+	cp 178
+	call nc, TileMap_SolveForYOver178
+	
+	;solve for screenX coordinate
+	ldh a, [hPMCX]
+	cp 72
+	push af
+	call c, TileMap_SolveForXUnder72
+	pop af
+	push af
+	call nc, TileMap_SolveForXOver72
+	pop af
+	cp 168
+	call nc, TileMap_SolveForXOver168
+	
+	; update map position (MMCY = PMCY/16 ; MMCX = (PMCX-8)/16)
+	ldh a, [hPMCY]
+	swap a
+	and $0F
+	ldh [hMMCY], a
+	ldh a, [hPMCX]
+	sub 8
+	swap a
+	and $0F
+	ldh [hMMCX], a
+	
+	; update LookingAtXY
+	ldh a, [hMMCO]
+	or a
+	jr z, .orientationFront
+	cp a, 1
+	jr z, .orientationBack
+	cp a, 2
+	jr z, .orientationLeft
+	cp a, 3
+	jr z, .orientationRight
+	
+.orientationFront:
+	ld b, 1
+	ld c, 0
+	jr .orientationEnd
+.orientationBack:
+	ld b, -1
+	ld c, 0
+	jr .orientationEnd
+.orientationLeft:
+	ld b, 0
+	ld c, -1
+	jr .orientationEnd
+.orientationRight:
+	ld b, 0
+	ld c, 1
+.orientationEnd:
+	ldh a, [hMMCY]
+	add b
+	ldh [hLookingAtY], a
+	
+	ldh a, [hMMCX]
+	add c
+	ldh [hLookingAtX], a
+	
+	call TileMap_GetLookingAtMetadata
+	and 3
+	ld [hIsValidStep], a
+	
+	; don't check events
+	
+	call waitForVBlank
+	
+	;ld hl, ShadowOAM
+	
+	call MC_Display
+	
+	ld c, 4
+	ld hl, wMnpcCount
+	ld a, [hli] ; now hl = wMnpcCount + 1 = wMnpcData
+	or a
+	jr z, .finOam
+	ld b, a
+	ld de, ShadowOAM+16
+	
+.createOamFromNpcLoop
+	push bc
+	REPT(4)
+	inc l   ; l+=4 (go to metapositionYX)
+	ENDR
+	ld a, [hli]
+	ld b, a ; b = metaposY
+	ld a, [hli]
+	ld c, a ; c = metaposX
+	inc l
+	inc l   ; hl points to next NPC
+	
+	; process metapositions ( b = y-SCY, c=x-SCX )	
+	ldh a, [rSCY]
+	cpl
+	inc a
+	add b
+	ld b, a
+	
+	ldh a, [rSCX]
+	cpl
+	inc a
+	add c
+	ld c, a
+	
+	; update sprite position
+	ld a, b
+	ld [de], a
+	inc e
+	ld a, c
+	ld [de], a
+	inc e
+	inc e
+	inc e
+	
+	ld a, b
+	ld [de], a
+	inc e
+	ld a, c
+	add 8
+	ld [de], a
+	inc e
+	inc e
+	inc e
+	
+	ld a, b
+	add 8
+	ld [de], a
+	inc e
+	ld a, c	
+	ld [de], a
+	inc e
+	inc e
+	inc e
+	
+	ld a, b
+	add 8
+	ld [de], a
+	inc e
+	ld a, c	
+	add 8
+	ld [de], a
+	inc e
+	inc e
+	inc e
+	
+	pop bc
+	dec b
+	jr nz, .createOamFromNpcLoop
+.finOam
+	initOAM ShadowOAM
+	ret
 
 SECTION "Tilemap Pixel Position Solver", ROM0
 	

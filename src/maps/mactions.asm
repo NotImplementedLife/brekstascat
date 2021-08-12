@@ -36,20 +36,51 @@ _mAction_Playground_Sign_Instructions::
 	PlayDialog DialogString_PlaygroundInstructions
 
 _mAction_EnterPuzzleRoomE::
-	;ld b,b
-	ld a, [wEnterEasy]
-	ret nz
-	ld a, 1
-	ld [wEnterEasy], a
+	; finish movQ if not ready (sometimes unfinished moves remain before raising event)
+	call TileMap_Execute_OnlyMovQ
+	call TileMap_Execute_OnlyMovQ
+	call TileMap_Execute_OnlyMovQ
+	
+	
+	; backup VRAM$8800, Tilemap$9800 and OAM and prepare to run the Game room
+	call TakeVRAMSnapshot
+	
+	
+	
+	
+	; restore VRAM$8800, Tilemap$9800 & OAM and continue map execution
+	call RestoreVRAMSnapshot
+	
+	; movQ won't execute if the block MC is looking at is a barrier
+	; (see MovQ_TerminateIfNotValid in maps/movq.asm)
+	; Therefore, if we want to tell MC to automatically go down,
+	; it must be oriented front (to the free area)
+	; more simple and efficient approach: hIsValidStep = 0
+	; this tells movQ it's ok to execute the command and
+	; MC will automatically go down
+	; [took hours to realize this fact so it must better be written somewhere :))]
+	xor a
+	ld [hIsValidStep], a
+	
 	ld de, MovQInstr_Down
 	jp MovQueueLaunch
 	ret
-	
+
 _mAction_EnterPuzzleRoomM::
 	ret
 	
 _mAction_EnterPuzzleRoomH::
 	ret
+	
+_mAction_ExitPuzzleRoomE::
+	ret
+
+_mAction_ExitPuzzleRoomM::
+	ret
+
+_mAction_ExitPuzzleRoomH::
+	ret
+
 
 	
 SECTION "Puzzle room loading vars", WRAM0
