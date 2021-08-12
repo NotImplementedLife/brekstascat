@@ -47,6 +47,9 @@ _mAction_EnterPuzzleRoomE::
 	; backup VRAM$8800, Tilemap$9800 and OAM and prepare to run the Game room
 	call TakeVRAMSnapshot
 	
+	ld a, 3
+	ld [wPuzzle_Size], a
+	
 	call Puzzle_Init
 	call waitForVBlank
 	call waitForVBlank

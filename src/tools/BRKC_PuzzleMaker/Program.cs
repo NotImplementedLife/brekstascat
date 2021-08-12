@@ -118,9 +118,9 @@ namespace BRKC_PuzzleMaker
                 }
             }
 
-            if(2*Tiles816.Count>226)
+            if (2 * distinct > 226) 
             {
-                throw new OutOfMemoryException("Image converts to more than 226 tiles");
+                throw new OutOfMemoryException($"Image converts to more than {2 * Tiles816.Count} tiles, which is more than 226.");
             }
             //for (int i = 0; i < Tiles816.Count; i++) Console.Write($"{Ids816[i]} ");
             Console.WriteLine();
@@ -154,7 +154,7 @@ namespace BRKC_PuzzleMaker
                 }
             }
 
-            int totalSize = 32 * distinct + tm.Dim * tm.Dim;
+            int totalSize = 32 * distinct + tm.Dim * tm.Dim + 1;
 
             Console.WriteLine($"Total sliding puzzle size: 0x{totalSize.ToString("X2")} bytes.");
 
