@@ -3,7 +3,7 @@ INCLUDE "src/include/macros.inc"
 SECTION "Puzzle init logic", ROMX, BANK[4]
 
 Puzzle_Init::
-	
+	; load graphics resources
 	ld hl, $8DE0
 	ld de, PuzzleUITileset
 	ld bc, PuzzleUITilesetEnd
@@ -41,6 +41,9 @@ Puzzle_Init::
 	ld bc, 160
 	call fillMemory0
 	initOAM ShadowOAM
+	call waitForVBlank
+	ld b,b
+	
 	
 	ret
 
