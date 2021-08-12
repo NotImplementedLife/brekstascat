@@ -842,10 +842,12 @@ TM_MC_ExecuteMActionOnAKey:
 TM_MC_ExecuteMAction:
 	; build the index in wMActions
 	ld hl, wMActions
+	; or a
+	; ret z
 	
 	; a = (a/8)*2 <=> a = (a/4) & 0b11111110 ==> 0b00UUUUU0
-	sra a
-	sra a
+	srl a
+	srl a
 	and $FE
 	add l
 	ld l, a
