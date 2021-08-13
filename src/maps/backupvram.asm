@@ -28,6 +28,10 @@ TakeVRAMSnapshot::
 	ld de, ShadowOAM
 	ld bc, 160
 	call loadMemory
+	call waitForVBlank
+	ldh a, [rLCDC]
+	res 4, a
+	ldh [rLCDC], a
 	ret
 	
 RestoreVRAMSnapshot::
@@ -45,4 +49,7 @@ RestoreVRAMSnapshot::
 	call loadMemory
 	call waitForVBlank
 	initOAM ShadowOAM
+	ldh a, [rLCDC]
+	set 4, a
+	ldh [rLCDC], a
 	ret

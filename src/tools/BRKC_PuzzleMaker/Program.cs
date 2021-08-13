@@ -10,7 +10,8 @@
  * This program converts images based on their size, in the following way:
  * 
  * -   96x96 px => a 3x3 sliding puzzle with pieces of size 4x4 tiles (32x32 px)
- * - 128x128 px => a 4x4 sliding puzzle with pieces of size 4x4 tiles (32x32 px)
+ * -            OR a 4x4 sliding puzzle with pieces of size 3x3 tiles (24x24 px)
+ * -            OR a 6x6 sliding puzzle with pieces of size 2x2 tiles (16x16 px)
  * -   80x80 px => a 5x5 sliding puzzle with pieces of size 2x2 tiles (16x16 px)
  * 
  * (A)RGB color is converted to Gameboy color in the following way:
@@ -20,9 +21,8 @@
  * 
  * Requirements/Limitations:
  * 
- *  - final maximum number of tiles is 226. This program won't convert an image which results in 
- *    more than 226 tiles.
- *  - image must be of sizes 80x80, 96x96, 128x128 px.
+ *  - final maximum number of tiles is 226. (Though this is always the case)
+ *  - input image must be of size 80x80 or 96x96 px.
  */
 
 using System;
@@ -66,17 +66,13 @@ namespace BRKC_PuzzleMaker
             if (w != h)
                 throw new ArgumentException("Image must be 96x96, 128x128 or 80x80 pixels.");
 
-            if (w != 96 && w != 128 && w != 80)
+            if (w != 96 && w != 80) 
                 throw new ArgumentException("Image must be 96x96, 128x128 or 80x80 pixels.");
 
             if (w == 96)
             {
                 sptype = 3;
-            }
-            else if (w == 128)
-            {
-                sptype = 4;
-            }
+            }           
             else if (w == 80)
             {
                 sptype = 5;
@@ -86,85 +82,31 @@ namespace BRKC_PuzzleMaker
 
             PxSquare psq = new PxSquare(bmp);
 
-            List<Tile816> Tiles816 = new List<Tile816>();
-            List<int> Ids816 = new List<int>();
+            List<Tile> Tiles = new List<Tile>();
 
-            for (int r = 0; 16 * r < h; r++) 
-            {
-                for (int c = 0; 8 * c < w; c++)
-                {
-                    var t816 = new Tile816(psq, r, c);
-                    Tiles816.Add(t816);
-                    Ids816.Add(Tiles816.Count - 1);
-                    //Console.WriteLine(string.Join(", ", t816.Bytes.Select(b => $"0x{b.ToString("X2").PadLeft(2, '0')}")));
-                    //Console.WriteLine(Ids816.Last());
-                }
-            }
+            for (int r = 0; 8 * r < h; r++)             
+                for (int c = 0; 8 * c < w; c++)                                     
+                    Tiles.Add(new Tile(psq, r, c));
 
-            int distinct = Tiles816.Count;
-            for(int i=0;i<Tiles816.Count;i++)
-            {
-                for (int j = i + 1; j < Tiles816.Count; j++) 
-                {
-                    if (Ids816[j] == j)
-                    {
-                        if (Tiles816[i].Equals(Tiles816[j]))
-                        {
-                            Ids816[j] = i;
-                            distinct--;
-                            //for(int k=)
-                        }
-                    }
-                }
-            }
-
-            if (2 * distinct > 226) 
-            {
-                throw new OutOfMemoryException($"Image converts to more than {2 * Tiles816.Count} tiles, which is more than 226.");
-            }
-            //for (int i = 0; i < Tiles816.Count; i++) Console.Write($"{Ids816[i]} ");
-            Console.WriteLine();
-            Console.WriteLine($"Image converts to {2 * distinct} tiles out of a maximum of {Math.Min(2 * Tiles816.Count, 226)}.");
-            Console.WriteLine($"Compression ratio of {(float)(distinct * 100 / Tiles816.Count)}%");
+            for (; Tiles.Count < 144; Tiles.Add(new Tile())) ;                        
 
             string tilesetStr = "";
-            var dlist = Ids816.Distinct().ToList();           
-            for(int i=0;i<dlist.Count;i++)
-            {
-                var t = Tiles816[dlist[i]];
-                t.Id = i;
-                tilesetStr += t.ToString() + "\n";          
-            }
-            /*for (int i = 0; i < Tiles816.Count; i++) 
-            {
-                Console.Write($"{Tiles816[Ids816[i]].Id} ");
-            }*/
-            Console.WriteLine();
-            //Console.WriteLine(tilesetStr);            
+            for (int i = 0; i < Tiles.Count; i++)
+                tilesetStr += Tiles[i].ToString() + "\n";
 
-
-            Tilemap tm = new Tilemap(w / 8);
-
-            for (int r = 0; r < tm.Dim; r += 2) 
-            {
-                for (int c = 0; c < tm.Dim; c++)
-                {
-                    int id816 = (r / 2) * tm.Dim + c;
-                    tm.SetTile(r, c, Tiles816[Ids816[id816]].Id);
-                }
-            }
-
-            int totalSize = 32 * distinct + tm.Dim * tm.Dim + 1;
-
+            int totalSize = 16 * Tiles.Count;
             Console.WriteLine($"Total sliding puzzle size: 0x{totalSize.ToString("X2")} bytes.");
 
             var filewe = Path.GetFileNameWithoutExtension(fn);
             var dir = Path.GetDirectoryName(fn);
             Console.WriteLine("Writing to file...");
+
+            string ptype = (w == 96) ? "3x3 or 4x4 or 6x6" : "5x5";
             using (var f = new StreamWriter(File.Create(Path.Combine(dir, filewe + ".asm"))))
             {
                 f.WriteLine($"; This file was generated automatically by BRKC_PuzzleMaker at {DateTime.Now}.");
-                f.WriteLine($"; This is a {sptype}x{sptype} sliding puzzle and must be registered in the puzzles list of BRKC.");
+                f.WriteLine($"; This is a sliding puzzle and must be registered in the puzzles list of BRKC.");
+                f.WriteLine($"; Possible puzzle types: {ptype}.");
                 f.WriteLine();
                 f.WriteLine();
                 f.WriteLine("; SRAM Highscore");
@@ -173,15 +115,9 @@ namespace BRKC_PuzzleMaker
                 f.WriteLine($"SLP_{filewe}_HighScore::");
                 f.WriteLine($"  DS 2\n");
 
-                f.WriteLine($"SECTION \"Sliding Puzzle {filewe}\", ROMX, BANK[5]\n");
-                f.WriteLine($"SLP_{filewe}::\n");                
-                f.WriteLine($"DB {2 * distinct}".PadRight(10, ' ') + " ; Tiles count\n");
+                f.WriteLine($"SECTION \"Sliding Puzzle {filewe}\", ROMX, BANK[5], ALIGN[8]\n");
                 f.WriteLine($"SLP_{filewe}_Tiles::\n");
-                f.WriteLine(tilesetStr + "\n");
-                f.WriteLine($"SLP_{filewe}_TilesEnd::\n");
-                f.WriteLine($"SLP_{filewe}_Tilemap::\n");
-                f.WriteLine(tm.ToString() + "\n");
-                f.WriteLine($"SLP_{filewe}_TilemapEnd::\n");               
+                f.WriteLine(tilesetStr + "\n");                
 
             }
             Console.WriteLine("Done.");
@@ -212,17 +148,28 @@ namespace BRKC_PuzzleMaker
         }
     }
 
-    class Tile816
+    class Tile
     {
-        public byte[,] Pixels = new byte[16, 8];
-        public byte[] Bytes = new byte[32];
-        public int Id = -1;
+        public byte[,] Pixels = new byte[8, 8];
+        public byte[] Bytes = new byte[16];        
 
-        public Tile816(PxSquare psq, int row, int col)
+        public Tile()
         {
-            row *= 16;
+            for(int i=0;i<8;i++)
+            {
+                for(int j=0;j<8;j++)
+                {
+                    Pixels[i, j] = 0;                    
+                }
+            }
+            for (int i = 0; i < 15; i++)
+                Bytes[i] = 0;
+        }
+        public Tile(PxSquare psq, int row, int col)
+        {
+            row *= 8;
             col *= 8;
-            for (int y = 0; y < 16; y++)
+            for (int y = 0; y < 8; y++)
             {
                 for (int x = 0; x < 8; x++)
                 {
@@ -231,7 +178,7 @@ namespace BRKC_PuzzleMaker
             }
 
             int k = 0;
-            for (int y = 0; y < 16; y++)
+            for (int y = 0; y < 8; y++) 
             {
                 byte b0 = 0, b1 = 0;
                 for (int x = 0; x < 8; x++)
@@ -246,9 +193,9 @@ namespace BRKC_PuzzleMaker
             }
         }
 
-        public bool Equals(Tile816 t816)
+        public bool Equals(Tile t816)
         {
-            for(int i=0;i<32;i++)
+            for (int i = 0; i < 16; i++) 
             {
                 if (Bytes[i] != t816.Bytes[i]) 
                     return false;
@@ -258,40 +205,7 @@ namespace BRKC_PuzzleMaker
 
         public override string ToString()
         {
-            return "DB " + string.Join(", ", Bytes.Take(16).Select(b => "$" + b.ToString("x2").PadLeft(2, '0'))) + "\n" +
-                   "DB " + string.Join(", ", Bytes.Skip(16).Select(b => "$" + b.ToString("x2").PadLeft(2, '0')));
+            return "DB " + string.Join(", ", Bytes.Select(b => "$" + b.ToString("x2").PadLeft(2, '0')));
         }
-    }
-
-    class Tilemap
-    {
-        public int Dim;
-        public byte[,] Tiles;
-        public Tilemap(int dim)
-        {
-            Dim = dim;
-            Tiles = new byte[Dim, Dim];
-        }
-
-        public void SetTile(int r, int c, int id)
-        {
-            Tiles[r, c] = (byte)(2 * id);
-            Tiles[r + 1, c] = (byte)(2 * id + 1);
-        }
-
-        public override string ToString()
-        {
-            string str = "";
-            for (int y = 0; y < Dim; y++) 
-            {
-                str += "DB ";
-                for (int x = 0; x < Dim; x++) 
-                {
-                    str += "$" + Tiles[y, x].ToString("x2").PadLeft(2, '0') + ", ";                    
-                }
-                str += "\n";                
-            }
-            return str;
-        }
-    }
+    }    
 }
