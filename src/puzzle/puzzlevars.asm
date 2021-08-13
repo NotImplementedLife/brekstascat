@@ -4,6 +4,10 @@ SECTION "Puzzle vars", WRAM0
 ; rendering differs depending on the type of puzzle
 wPuzzle_Size::
 	DS 1
+
+; wPuzzle_MSize = wPuzzle_Size * wPuzzle_Size
+wPuzzle_MSize::
+	DS 1
 	
 SECTION "Puzzle on Tilemap", WRAM0, ALIGN[8]
 
@@ -17,3 +21,7 @@ wBorderFactory::
 	
 wBackupHL::
 	DS 2
+	
+SECTION "Puzzle Matrix", WRAMX, ALIGN[8]
+wSPMatrix::
+	DS 36

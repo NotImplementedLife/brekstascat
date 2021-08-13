@@ -37,11 +37,12 @@ _mAction_Playground_Sign_Instructions::
 	ret nz
 	PlayDialog DialogString_PlaygroundInstructions
 
+SECTION "mActions Enter Easy", ROMX, BANK[4]
 _mAction_EnterPuzzleRoomE::
 	; finish movQ if not ready (sometimes unfinished moves remain before raising event)
+	REPT(3)
 	call TileMap_Execute_OnlyMovQ
-	call TileMap_Execute_OnlyMovQ
-	call TileMap_Execute_OnlyMovQ
+	ENDR
 	
 	
 	; backup VRAM$8800, Tilemap$9800 and OAM and prepare to run the Game room
@@ -49,15 +50,16 @@ _mAction_EnterPuzzleRoomE::
 	
 	ld a, 3
 	ld [wPuzzle_Size], a
+	call Sqr
+	ld [wPuzzle_MSize], a
 	
 	call Puzzle_Init
-	call waitForVBlank
-	call waitForVBlank
-	call waitForVBlank
-	call waitForVBlank
-	call waitForVBlank
-	call waitForVBlank
-	call waitForVBlank
+	
+.loop
+	call updateJoypadState
+	ld   a, [wJoypadPressed]
+	and a, a
+	jr z, .loop
 	
 	ld a, %11100100
 	ldh [rBGP], a
@@ -80,10 +82,108 @@ _mAction_EnterPuzzleRoomE::
 	jp MovQueueLaunch
 	ret
 
+SECTION "mActions Enter Medium", ROMX, BANK[4]
 _mAction_EnterPuzzleRoomM::
+	REPT(3)
+	call TileMap_Execute_OnlyMovQ
+	ENDR
+	
+	; backup VRAM$8800, Tilemap$9800 and OAM and prepare to run the Game room
+	call TakeVRAMSnapshot
+	
+	ld a, 4
+	ld [wPuzzle_Size], a
+	call Sqr
+	ld [wPuzzle_MSize], a
+	
+	call Puzzle_Init
+	
+.loop
+	call updateJoypadState
+	ld   a, [wJoypadPressed]
+	and a, a
+	jr z, .loop
+	
+	ld a, %11100100
+	ldh [rBGP], a
+	
+	; restore VRAM$8800, Tilemap$9800 & OAM and continue map execution
+	call RestoreVRAMSnapshot
+	
+	xor a
+	ld [hIsValidStep], a
+	
+	ld de, MovQInstr_Down
+	jp MovQueueLaunch
 	ret
 	
+SECTION "mActions Enter Hard", ROMX, BANK[4]
 _mAction_EnterPuzzleRoomH::
+	REPT(3)
+	call TileMap_Execute_OnlyMovQ
+	ENDR
+	
+	; backup VRAM$8800, Tilemap$9800 and OAM and prepare to run the Game room
+	call TakeVRAMSnapshot
+	
+	ld a, 5
+	ld [wPuzzle_Size], a
+	call Sqr
+	ld [wPuzzle_MSize], a
+	
+	call Puzzle_Init
+	
+.loop
+	call updateJoypadState
+	ld   a, [wJoypadPressed]
+	and a, a
+	jr z, .loop
+	
+	ld a, %11100100
+	ldh [rBGP], a
+	
+	; restore VRAM$8800, Tilemap$9800 & OAM and continue map execution
+	call RestoreVRAMSnapshot
+	
+	xor a
+	ld [hIsValidStep], a
+	
+	ld de, MovQInstr_Down
+	jp MovQueueLaunch
+	ret
+	
+_mAction_ExitPuzzleRoomX::
+	REPT(3)
+	call TileMap_Execute_OnlyMovQ
+	ENDR
+	
+	; backup VRAM$8800, Tilemap$9800 and OAM and prepare to run the Game room
+	call TakeVRAMSnapshot
+	
+	ld a, 6
+	ld [wPuzzle_Size], a
+	call Sqr
+	ld [wPuzzle_MSize], a
+	
+	call Puzzle_Init
+	
+.loop
+	call updateJoypadState
+	ld   a, [wJoypadPressed]
+	and a, a
+	jr z, .loop
+	
+	ld a, %11100100
+	ldh [rBGP], a
+	
+	; restore VRAM$8800, Tilemap$9800 & OAM and continue map execution
+	call RestoreVRAMSnapshot
+	
+	xor a
+	ld [hIsValidStep], a
+	
+	ld de, MovQInstr_Down
+	jp MovQueueLaunch
 	ret
 	
 _mAction_ExitPuzzleRoomE::
