@@ -1,32 +1,3 @@
-# Breksta's Cat
+# Breksta's Cat Puzzle Maker Tool
 
-This repo is part of [HomebrewOwl.GB](https://github.com/NotImplementedLife/HomebrewOwl.GB "HomebrewOwl") projects collection.
-
-## The idea
-
-...
-
-## How to build
-
-```
-git clone https://github.com/NotImplementedLife/brekstascat --recursive
-```
-
-```
-cd brekstascat
-make
-```
-Make sure RGBDS is installed and exists in your `%PATH%`.
-
-## How to play
-
-...
-
-## Screenshots
-
-...
-
-## Linked
-
-- [HomebrewOwl.GB](https://github.com/NotImplementedLife/HomebrewOwl.GB "HomebrewOwl.GB") - check out my other Gameboy projects
-
+This is a resource command-line creation tool for [Breksta's Cat](https://github.com/NotImplementedLife/brekstascat/tree/master) Gameboy game.
