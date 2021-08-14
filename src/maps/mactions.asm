@@ -54,6 +54,11 @@ _mAction_EnterPuzzleRoomE::
 	ld [wPuzzle_MSize], a
 	
 	call Puzzle_Init
+		
+	ld hl, $9884
+	call waitForVBlank
+	ld e, 0
+	call SpritifyTile
 	
 .loop
 	call updateJoypadState
@@ -63,6 +68,7 @@ _mAction_EnterPuzzleRoomE::
 	
 	ld a, %11100100
 	ldh [rBGP], a
+	ldh [rOBP0], a
 	
 	; restore VRAM$8800, Tilemap$9800 & OAM and continue map execution
 	call RestoreVRAMSnapshot
@@ -106,6 +112,7 @@ _mAction_EnterPuzzleRoomM::
 	
 	ld a, %11100100
 	ldh [rBGP], a
+	ldh [rOBP0], a
 	
 	; restore VRAM$8800, Tilemap$9800 & OAM and continue map execution
 	call RestoreVRAMSnapshot
@@ -141,6 +148,7 @@ _mAction_EnterPuzzleRoomH::
 	
 	ld a, %11100100
 	ldh [rBGP], a
+	ldh [rOBP0], a
 	
 	; restore VRAM$8800, Tilemap$9800 & OAM and continue map execution
 	call RestoreVRAMSnapshot
@@ -175,6 +183,7 @@ _mAction_ExitPuzzleRoomX::
 	
 	ld a, %11100100
 	ldh [rBGP], a
+	ldh [rOBP0], a
 	
 	; restore VRAM$8800, Tilemap$9800 & OAM and continue map execution
 	call RestoreVRAMSnapshot

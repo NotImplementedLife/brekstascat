@@ -3,6 +3,9 @@ INCLUDE "src/include/macros.inc"
 SECTION "Puzzle init logic", ROMX, BANK[4]
 
 Puzzle_Init::
+	ld a, $C0
+	ld [wSpritifyIndex], a
+	
 	; load graphics resources
 	ld hl, $8DD0
 	ld de, PuzzleUITileset
@@ -36,6 +39,9 @@ Puzzle_Init::
 	call waitForVBlank
 	ld a, %00100111
 	ldh [rBGP], a
+	ldh [rOBP0], a
+	ld a, %11111111
+	ldh [rOBP1], a
 	xor a
 	ld  [rSCY], a
 	ld  [rSCX], a
