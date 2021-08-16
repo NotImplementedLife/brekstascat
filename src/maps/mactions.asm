@@ -102,8 +102,8 @@ _mAction_EnterPuzzleRoomM::
 .loop
 	call updateJoypadState
 	ld   a, [wJoypadPressed]
-	and a, a
-	jr z, .loop
+	call ProcessMoveInput4x4
+	jr .loop
 	
 	ld a, %11100100
 	ldh [rBGP], a
@@ -138,8 +138,8 @@ _mAction_EnterPuzzleRoomH::
 .loop
 	call updateJoypadState
 	ld   a, [wJoypadPressed]
-	and a, a
-	jr z, .loop
+	call ProcessMoveInput5x5
+	jr .loop
 	
 	ld a, %11100100
 	ldh [rBGP], a

@@ -296,28 +296,7 @@ DivAB::
 .loopEnd:
 	ld e, a
 	ret
-
-; Find tilemap address of piece pointed by wEmptyIndex
-
-EmptyIndexToHL3x3::
-	ld a, [wEmptyIndex]
-	ld b, 3
-	call DivAB
-	; now we need hl = $9884 + $20*(4*d)+4*e = $9884 + $80*d + 4*e	
-	sla e
-	sla e ; e*=4
-	; try to bitwise simulate de = $80*d+e = (d>>1)*$100+((d>>7)|e) 
-	; or sth like that
-	ld a, d
-	rrca
-	and $80 ; a = most significant bit of d
-	or e   
-	ld e, a
-	srl d
-	ld hl, $9884
-	add hl, de ; note that de = $80 * d + e
-	ret
-
+	
 ; b = dY, c = dX
 MoveStepOAM::
 	ld hl, ShadowOAM
@@ -346,7 +325,37 @@ PuzMatrixSwapEntries::
 	ld l, b
 	ld [hl], e
 	ret
+	
+; works in the following combo:
+; ld a, [wEmptyIndex]
+; cp {some value that a should not take}
+; jp z, IllegalMove ; technically {ret z; {from Executer} ret {from Input checker}}
+IllegalMove::
+	pop af ; fake return 
+	ret ; return from caller
 
+SECTION "Puzzle Executer 3x3", ROM0
+
+; Find tilemap address of piece pointed by wEmptyIndex
+
+EmptyIndexToHL3x3::
+	ld a, [wEmptyIndex]
+	ld b, 3
+	call DivAB
+	; now we need hl = $9884 + $20*(4*d)+4*e = $9884 + $80*d + 4*e	
+	sla e
+	sla e ; e*=4
+	; try to bitwise simulate de = $80*d+e = (d>>1)*$100+((d>>7)|e) 
+	; or sth like that
+	ld a, d
+	rrca
+	and $80 ; a = most significant bit of d
+	or e   
+	ld e, a
+	srl d
+	ld hl, $9884
+	add hl, de ; note that de = $80 * d + e
+	ret
 	
 ; routines to check if the input move is legal
 ; in affirmative case, update the Puzzle Matrix & perform animation
@@ -360,11 +369,11 @@ MoveFinish3x3::
 MoveValidateDown3x3::
 	ld a, [wEmptyIndex]
 	cp 0
-	ret z
+	jp z, IllegalMove
 	cp 1
-	ret z
+	jp z, IllegalMove
 	cp 2
-	ret z	
+	jp z, IllegalMove
 	
 	ld b, a
 	sub 3
@@ -390,11 +399,11 @@ MoveValidateDown3x3::
 MoveValidateUp3x3::
 	ld a, [wEmptyIndex]
 	cp 6
-	ret z
+	jp z, IllegalMove
 	cp 7
-	ret z
+	jp z, IllegalMove
 	cp 8
-	ret z	
+	jp z, IllegalMove
 	
 	ld b, a
 	add 3
@@ -420,11 +429,11 @@ MoveValidateUp3x3::
 MoveValidateLeft3x3::
 	ld a, [wEmptyIndex]
 	cp 2
-	ret z
+	jp z, IllegalMove
 	cp 5
-	ret z
+	jp z, IllegalMove
 	cp 8
-	ret z	
+	jp z, IllegalMove
 	
 	ld b, a
 	add 1
@@ -450,11 +459,11 @@ MoveValidateLeft3x3::
 MoveValidateRight3x3::
 	ld a, [wEmptyIndex]
 	cp 0
-	ret z
+	jp z, IllegalMove
 	cp 3
-	ret z
+	jp z, IllegalMove
 	cp 6
-	ret z	
+	jp z, IllegalMove
 	
 	ld b, a
 	sub 1
@@ -488,6 +497,567 @@ ProcessMoveInput3x3::
 	call nz, MoveValidateRight3x3
 	ret
 
+SECTION "Puzzle Executer 4x4", ROM0
+
+; Find tilemap address of piece pointed by wEmptyIndex
+
+EmptyIndexToHL4x4::
+	ld a, [wEmptyIndex]
+	ld b, 4
+	call DivAB
+	; now we need hl = $9884 + $20*(3*d)+3*e	
+	ld a, e
+	sla e
+	add e
+	ld e, a ; e *= 3
+	
+	ld a, d
+	sla d
+	add d
+	ld d, a ; d *= 3
+		
+	swap a
+	rlca
+	
+	ld d, a
+	and $F0
+	or e
+	ld e, a
+	ld a, d
+	and $0F
+	ld d, a
+	
+	ld hl, $9884
+	add hl, de ; note that de = $60 * d + e
+	ret
+	
+; routines to check if the input move is legal
+; in affirmative case, update the Puzzle Matrix & perform animation
+
+MoveFinish4x4::
+	call waitForVBlank
+	call PuzzleRenderFromMatrix4
+	pop af ; fake return
+	ret ; return from caller function
+
+MoveValidateDown4x4::
+	ld a, [wEmptyIndex]
+	cp 0
+	jp z, IllegalMove
+	cp 1
+	jp z, IllegalMove
+	cp 2
+	jp z, IllegalMove
+	cp 3
+	jp z, IllegalMove
+	
+	ld b, a
+	sub 4
+	ld [wEmptyIndex], a
+	ld c, a
+	
+	call PuzMatrixSwapEntries	
+	call EmptyIndexToHL4x4	
+	call SpritifyRegion3x3
+	
+	ld e, 8
+.loop
+	call waitForVBlank
+	ld b, 3
+	ld c, 0
+	call MoveStepOAM
+	initOAM ShadowOAM
+	dec e
+	jr nz, .loop
+	
+	jp MoveFinish4x4
+	
+MoveValidateUp4x4::
+	ld a, [wEmptyIndex]
+	cp 12
+	jp z, IllegalMove
+	cp 13
+	jp z, IllegalMove
+	cp 14
+	jp z, IllegalMove
+	cp 15
+	jp z, IllegalMove
+	
+	ld b, a
+	add 4
+	ld [wEmptyIndex], a
+	ld c, a
+	
+	call PuzMatrixSwapEntries
+	call EmptyIndexToHL4x4	
+	call SpritifyRegion3x3
+	
+	ld e, 8
+.loop
+	call waitForVBlank
+	ld b, -3
+	ld c, 0
+	call MoveStepOAM
+	initOAM ShadowOAM
+	dec e
+	jr nz, .loop
+	
+	jp MoveFinish4x4
+	
+MoveValidateLeft4x4::
+	ld a, [wEmptyIndex]
+	cp 3
+	jp z, IllegalMove
+	cp 7
+	jp z, IllegalMove
+	cp 11
+	jp z, IllegalMove
+	cp 15
+	jp z, IllegalMove
+	
+	ld b, a
+	add 1
+	ld [wEmptyIndex], a
+	ld c, a
+	
+	call PuzMatrixSwapEntries
+	call EmptyIndexToHL4x4	
+	call SpritifyRegion3x3
+	
+	ld e, 8
+.loop
+	call waitForVBlank
+	ld b, 0
+	ld c, -3
+	call MoveStepOAM
+	initOAM ShadowOAM
+	dec e
+	jr nz, .loop
+	
+	jp MoveFinish4x4
+	
+MoveValidateRight4x4::
+	ld a, [wEmptyIndex]
+	cp 0
+	jp z, IllegalMove
+	cp 4
+	jp z, IllegalMove
+	cp 8
+	jp z, IllegalMove
+	cp 12
+	jp z, IllegalMove
+	
+	ld b, a
+	sub 1
+	ld [wEmptyIndex], a
+	ld c, a
+	
+	call PuzMatrixSwapEntries
+	call EmptyIndexToHL4x4	
+	call SpritifyRegion3x3
+	
+	ld e, 8
+.loop
+	call waitForVBlank
+	ld b, 0
+	ld c, 3
+	call MoveStepOAM
+	initOAM ShadowOAM
+	dec e
+	jr nz, .loop
+	
+	jp MoveFinish4x4
+	
+ProcessMoveInput4x4::
+	bit PADB_DOWN, a
+	call nz, MoveValidateDown4x4
+	bit PADB_UP, a
+	call nz, MoveValidateUp4x4
+	bit PADB_LEFT, a
+	call nz, MoveValidateLeft4x4
+	bit PADB_RIGHT, a
+	call nz, MoveValidateRight4x4
+	ret
+	
+SECTION "Puzzle Executer 5x5", ROM0
+
+; Find tilemap address of piece pointed by wEmptyIndex
+
+EmptyIndexToHL5x5::
+	ld a, [wEmptyIndex]
+	ld b, 5
+	call DivAB
+	; now we need hl = $98A5 + $20*(2*d)+2*e = $98A5 + (d<<6) + 2*e
+	; note that d,e = 0..24 (5 bits)
+	sla e
+	
+	ld a, d
+	rrca 
+	rrca 
+	ld d, a
+	
+	and $C0
+	or e
+	ld e, a
+	
+	ld a, d
+	and $3F
+	ld d, a
+	
+	ld hl, $98A5
+	add hl, de ; note that de = $40 * d + e	
+	ret
+	
+; routines to check if the input move is legal
+; in affirmative case, update the Puzzle Matrix & perform animation
+
+MoveFinish5x5::
+	call waitForVBlank
+	call PuzzleRenderFromMatrix5
+	pop af ; fake return
+	ret ; return from caller function
+
+MoveValidateDown5x5::
+	ld a, [wEmptyIndex]
+	cp 0
+	jp z, IllegalMove
+	cp 1
+	jp z, IllegalMove
+	cp 2
+	jp z, IllegalMove
+	cp 3
+	jp z, IllegalMove
+	cp 4
+	jp z, IllegalMove
+	
+	ld b, a
+	sub 5
+	ld [wEmptyIndex], a
+	ld c, a
+	
+	call PuzMatrixSwapEntries	
+	call EmptyIndexToHL5x5	
+	call SpritifyRegion2x2
+	
+	ld e, 8
+.loop
+	call waitForVBlank
+	ld b, 2
+	ld c, 0
+	call MoveStepOAM
+	initOAM ShadowOAM
+	dec e
+	jr nz, .loop
+	
+	jp MoveFinish5x5
+	
+MoveValidateUp5x5::
+	ld a, [wEmptyIndex]	
+	cp 20
+	jp z, IllegalMove
+	cp 21
+	jp z, IllegalMove
+	cp 22
+	jp z, IllegalMove
+	cp 23
+	jp z, IllegalMove
+	cp 24
+	jp z, IllegalMove
+	
+	ld b, a
+	add 5
+	ld [wEmptyIndex], a
+	ld c, a
+	
+	call PuzMatrixSwapEntries
+	call EmptyIndexToHL5x5	
+	call SpritifyRegion2x2
+	
+	ld e, 8
+.loop
+	call waitForVBlank
+	ld b, -2
+	ld c, 0
+	call MoveStepOAM
+	initOAM ShadowOAM
+	dec e
+	jr nz, .loop
+	
+	jp MoveFinish5x5
+	
+MoveValidateLeft5x5::
+	ld a, [wEmptyIndex]
+	cp 4
+	jp z, IllegalMove
+	cp 9
+	jp z, IllegalMove
+	cp 14
+	jp z, IllegalMove
+	cp 19
+	jp z, IllegalMove
+	cp 24
+	jp z, IllegalMove
+	
+	ld b, a
+	add 1
+	ld [wEmptyIndex], a
+	ld c, a
+	
+	call PuzMatrixSwapEntries
+	call EmptyIndexToHL5x5	
+	call SpritifyRegion2x2
+	
+	ld e, 8
+.loop
+	call waitForVBlank
+	ld b, 0
+	ld c, -2
+	call MoveStepOAM
+	initOAM ShadowOAM
+	dec e
+	jr nz, .loop
+	
+	jp MoveFinish5x5
+	
+MoveValidateRight5x5::
+	ld a, [wEmptyIndex]
+	cp 0
+	jp z, IllegalMove
+	cp 5
+	jp z, IllegalMove
+	cp 10
+	jp z, IllegalMove	
+	cp 15
+	jp z, IllegalMove
+	cp 20
+	jp z, IllegalMove
+	
+	ld b, a
+	sub 1
+	ld [wEmptyIndex], a
+	ld c, a
+	
+	call PuzMatrixSwapEntries
+	call EmptyIndexToHL5x5	
+	call SpritifyRegion2x2
+	
+	ld e, 8
+.loop
+	call waitForVBlank
+	ld b, 0
+	ld c, 2
+	call MoveStepOAM
+	initOAM ShadowOAM
+	dec e
+	jr nz, .loop
+	
+	jp MoveFinish5x5
+	
+ProcessMoveInput5x5::
+	bit PADB_DOWN, a
+	call nz, MoveValidateDown5x5
+	bit PADB_UP, a
+	call nz, MoveValidateUp5x5
+	bit PADB_LEFT, a
+	call nz, MoveValidateLeft5x5
+	bit PADB_RIGHT, a
+	call nz, MoveValidateRight5x5
+	ret
+	
+SECTION "Puzzle Executer 6x6", ROM0
+
+; Find tilemap address of piece pointed by wEmptyIndex
+
+EmptyIndexToHL6x6::
+	ld a, [wEmptyIndex]
+	ld b, 6
+	call DivAB
+	; now we need hl = $98A5 + $20*(2*d)+2*e = $98A5 + (d<<6) + 2*e
+	; note that d,e = 0..35 (6 bits)
+	sla e
+	
+	ld a, d
+	rrca 
+	rrca 
+	ld d, a
+	
+	and $C0
+	or e
+	ld e, a
+	
+	ld a, d
+	and $3F
+	ld d, a
+	
+	ld hl, $9884
+	add hl, de ; note that de = $40 * d + e	
+	ret
+	
+; routines to check if the input move is legal
+; in affirmative case, update the Puzzle Matrix & perform animation
+
+MoveFinish6x6::
+	call waitForVBlank
+	call PuzzleRenderFromMatrix6
+	pop af ; fake return
+	ret ; return from caller function
+
+MoveValidateDown6x6::
+	ld a, [wEmptyIndex]
+	cp 0
+	jp z, IllegalMove
+	cp 1
+	jp z, IllegalMove
+	cp 2
+	jp z, IllegalMove
+	cp 3
+	jp z, IllegalMove
+	cp 4
+	jp z, IllegalMove
+	cp 5
+	jp z, IllegalMove
+	
+	ld b, a
+	sub 6
+	ld [wEmptyIndex], a
+	ld c, a
+	
+	call PuzMatrixSwapEntries	
+	call EmptyIndexToHL6x6	
+	call SpritifyRegion2x2
+	
+	ld e, 8
+.loop
+	call waitForVBlank
+	ld b, 2
+	ld c, 0
+	call MoveStepOAM
+	initOAM ShadowOAM
+	dec e
+	jr nz, .loop
+	
+	jp MoveFinish6x6
+	
+MoveValidateUp6x6::
+	ld a, [wEmptyIndex]	
+	cp 30
+	jp z, IllegalMove
+	cp 31
+	jp z, IllegalMove
+	cp 32
+	jp z, IllegalMove
+	cp 33
+	jp z, IllegalMove
+	cp 34
+	jp z, IllegalMove
+	cp 35
+	jp z, IllegalMove
+	
+	ld b, a
+	add 6
+	ld [wEmptyIndex], a
+	ld c, a
+	
+	call PuzMatrixSwapEntries
+	call EmptyIndexToHL6x6	
+	call SpritifyRegion2x2
+	
+	ld e, 8
+.loop
+	call waitForVBlank
+	ld b, -2
+	ld c, 0
+	call MoveStepOAM
+	initOAM ShadowOAM
+	dec e
+	jr nz, .loop
+	
+	jp MoveFinish6x6
+	
+MoveValidateLeft6x6::
+	ld a, [wEmptyIndex]
+	cp 5
+	jp z, IllegalMove
+	cp 11
+	jp z, IllegalMove
+	cp 17
+	jp z, IllegalMove
+	cp 23
+	jp z, IllegalMove
+	cp 29
+	jp z, IllegalMove
+	cp 35
+	jp z, IllegalMove
+	
+	ld b, a
+	add 1
+	ld [wEmptyIndex], a
+	ld c, a
+	
+	call PuzMatrixSwapEntries
+	call EmptyIndexToHL6x6
+	call SpritifyRegion2x2
+	
+	ld e, 8
+.loop
+	call waitForVBlank
+	ld b, 0
+	ld c, -2
+	call MoveStepOAM
+	initOAM ShadowOAM
+	dec e
+	jr nz, .loop
+	
+	jp MoveFinish6x6
+	
+MoveValidateRight6x6::
+	ld a, [wEmptyIndex]
+	cp 0
+	jp z, IllegalMove
+	cp 6
+	jp z, IllegalMove
+	cp 12
+	jp z, IllegalMove	
+	cp 18
+	jp z, IllegalMove
+	cp 24
+	jp z, IllegalMove
+	cp 30
+	jp z, IllegalMove
+	
+	ld b, a
+	sub 1
+	ld [wEmptyIndex], a
+	ld c, a
+	
+	call PuzMatrixSwapEntries
+	call EmptyIndexToHL6x6	
+	call SpritifyRegion2x2
+	
+	ld e, 8
+.loop
+	call waitForVBlank
+	ld b, 0
+	ld c, 2
+	call MoveStepOAM
+	initOAM ShadowOAM
+	dec e
+	jr nz, .loop
+	
+	jp MoveFinish6x6
+	
+ProcessMoveInput6x6::
+	bit PADB_DOWN, a
+	call nz, MoveValidateDown6x6
+	bit PADB_UP, a
+	call nz, MoveValidateUp6x6
+	bit PADB_LEFT, a
+	call nz, MoveValidateLeft6x6
+	bit PADB_RIGHT, a
+	call nz, MoveValidateRight6x6
+	ret
+
+	
 
 SECTION "Puzzle Moves Vars", WRAM0
 
