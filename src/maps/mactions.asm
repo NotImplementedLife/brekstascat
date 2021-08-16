@@ -54,7 +54,6 @@ _mAction_EnterPuzzleRoomE::
 	ld [wPuzzle_MSize], a
 	
 	call Puzzle_Init
-	
 .loop
 	call updateJoypadState
 	ld   a, [wJoypadPressed]

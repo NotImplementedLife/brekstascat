@@ -8,6 +8,10 @@ _3x3_PuzzlesList::
 	DB 1  ; # of puzzles
 	
 	DB 5                    ; ROMX Bank number
+	DB HIGH(SLP_MonaLisa_Tiles) ; Address where puzzle data starts
+	DW SLP_test_HighScore   ; Address where time score is saved	
+	
+	DB 5                    ; ROMX Bank number
 	DB HIGH(SLP_test_Tiles) ; Address where puzzle data starts
 	DW SLP_test_HighScore   ; Address where time score is saved	
 
@@ -34,6 +38,22 @@ _6x6_PuzzlesList::
 	DW SLP_test_HighScore
 
 SECTION "Sliding Puzzle Data Handling", ROM0
+
+; hl = puzzle list data address
+PuzzleLoadDataTilesetNoBorder::
+	; load ROMX bank
+	setBank [hli]		
+	
+	; get puzzle data address
+	
+	ld d, [hl]	
+	ld e, 0
+	ld c, e
+	ld b, 9
+	ld hl, wPuzzleOnTilemap
+	call loadMemory
+	setBank 4
+	jp PuzzleCopyTileset
 
 ; hl = puzzle list data address
 PuzzleLoadDataTileset::

@@ -93,6 +93,12 @@ Puzzle_Init::
 	add hl, bc
 	
 	call PuzzleLoadDataTileset		
+	;call PuzzleLoadDataTilesetNoBorder
+	;call waitForVBlank
+	;call PuzzleDisplayFull
+	;call waitForVBlank
+	;call waitForVBlank
+	;ld b,b
 	
 	; init sliding puzzle matrix
 	ld a, 1
