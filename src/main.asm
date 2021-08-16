@@ -3,6 +3,7 @@ INCLUDE "src/include/macros.inc"
 SECTION "Main", ROM0
 
 Start::
+
 	; "Zero" Shadow OAM 
 	ld hl, ShadowOAM
 	ld bc, 160

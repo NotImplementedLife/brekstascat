@@ -54,17 +54,12 @@ _mAction_EnterPuzzleRoomE::
 	ld [wPuzzle_MSize], a
 	
 	call Puzzle_Init
-		
-	ld hl, $9884
-	call waitForVBlank
-	ld e, 0
-	call SpritifyTile
 	
 .loop
 	call updateJoypadState
 	ld   a, [wJoypadPressed]
-	and a, a
-	jr z, .loop
+	call ProcessMoveInput3x3
+	jr .loop
 	
 	ld a, %11100100
 	ldh [rBGP], a
@@ -78,8 +73,8 @@ _mAction_EnterPuzzleRoomE::
 	; Therefore, if we want to tell MC to automatically go down,
 	; it must be oriented front (to the free area)
 	; more simple and efficient approach: hIsValidStep = 0
-	; this tells movQ it's ok to execute the command and
-	; MC will automatically go down
+	; this tells movQ it's ok to execute the command no matter
+	; the orientation and MC will automatically go down
 	; [took hours to realize this fact so it must better be written somewhere :))]
 	xor a
 	ld [hIsValidStep], a

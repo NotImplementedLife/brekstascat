@@ -7,8 +7,16 @@ Puzzle_Init::
 	ld [wSpritifyIndex], a
 	
 	; load graphics resources
-	ld hl, $8DD0
+	
+	; [misplanning "fix"] load "empty" and ":"top/down tiles separately
+	; $8C00-$8DF0 are used for spritifying rendering
+	ld hl, $8BD0
 	ld de, PuzzleUITileset
+	ld bc, PuzzleUITileset + 3*16
+	call loadMemoryDOUBLE
+	; load the rest of the graphics
+	ld hl, $8E00
+	ld de, PuzzleUITileset + 3*16
 	ld bc, PuzzleUITilesetEnd
 	call loadMemoryDOUBLE
 	
@@ -100,6 +108,7 @@ Puzzle_Init::
 	ld h, HIGH(wSPMatrix)
 	ld a, [wPuzzle_MSize]
 	dec a
+	ld [wEmptyIndex], a ; store the empty square position
 	ld l, a
 	xor a
 	ld [hl], a

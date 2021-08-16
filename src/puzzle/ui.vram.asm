@@ -41,7 +41,7 @@ PuzzleUITilesetEnd::
 SECTION "Puzzle UI Tilemap", ROMX, BANK[4]
 
 PuzzleUITilemap::
-DB $f4, $f5, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $e0, $e0, $de, $e0, $e0, $fb, $f9, $f4
-DB $f4, $f5, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $e1, $e1, $df, $e1, $e1, $fb, $f9, $f4
+DB $f4, $f5, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $e0, $e0, $be, $e0, $e0, $fb, $f9, $f4
+DB $f4, $f5, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $e1, $e1, $bf, $e1, $e1, $fb, $f9, $f4
 ; Next row to be repeated 16 times
 DB $f4, $f5, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $f9, $f4

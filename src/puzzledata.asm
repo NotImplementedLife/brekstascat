@@ -295,7 +295,7 @@ PuzzlePutPiece3::
 .emptyPiece:
 REPT(4)
 	wait_vram
-	ld a, $DD
+	ld a, $BD
 	ld [hli], a
 	ld [hli], a
 	ld [hli], a
@@ -380,7 +380,7 @@ PuzzlePutPiece4::
 .emptyPiece:
 REPT(3)
 	wait_vram
-	ld a, $DD	
+	ld a, $BD	
 	ld [hli], a
 	ld [hli], a
 	ld [hli], a
@@ -464,7 +464,7 @@ PuzzlePutPiece5::
 	jr nz, .normalPiece
 .emptyPiece:
 	wait_vram
-	ld a, $DD	
+	ld a, $BD	
 	ld [hli], a
 	ld [hli], a
 	add hl, de
@@ -544,7 +544,7 @@ PuzzlePutPiece6::
 	jr nz, .normalPiece
 .emptyPiece:
 	wait_vram
-	ld a, $DD	
+	ld a, $BD	
 	ld [hli], a
 	ld [hli], a
 	add hl, de
