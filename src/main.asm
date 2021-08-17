@@ -3,7 +3,22 @@ INCLUDE "src/include/macros.inc"
 SECTION "Main", ROM0
 
 Start::
-
+	; Enable SRAM
+	ld a, $0A
+	ld [$0000], a
+	
+	
+	; init random seed
+	ld hl, rSeed1
+	call rtcGetSeconds
+	ld [hli], a
+	call rtcGetMinutes
+	ld [hli], a
+	call rtcGetHours
+	ld [hli], a
+	ld a, $47
+	ld [hl], a
+	
 	; "Zero" Shadow OAM 
 	ld hl, ShadowOAM
 	ld bc, 160
@@ -12,9 +27,6 @@ Start::
 	; init map engine
 	call TileMap_Init
 	
-	; Enable SRAM
-	ld a, $0A
-	ld [$0000], a	
 	
 	; Init input vars
 	xor a

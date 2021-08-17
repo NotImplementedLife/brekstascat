@@ -59,6 +59,3 @@ MACRO loadVRAM_DOUBLE
 	ld bc, \3
 	call loadMemoryDOUBLE
 ENDM
-
-
-

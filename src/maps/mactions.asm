@@ -58,7 +58,9 @@ _mAction_EnterPuzzleRoomE::
 	call updateJoypadState
 	ld   a, [wJoypadPressed]
 	call ProcessMoveInput3x3
-	jr .loop
+	ld   a, [wJoypadPressed]
+	and PADF_B
+	jr z, .loop
 	
 	ld a, %11100100
 	ldh [rBGP], a
@@ -102,7 +104,9 @@ _mAction_EnterPuzzleRoomM::
 	call updateJoypadState
 	ld   a, [wJoypadPressed]
 	call ProcessMoveInput4x4
-	jr .loop
+	ld   a, [wJoypadPressed]
+	and PADF_B
+	jr z, .loop
 	
 	ld a, %11100100
 	ldh [rBGP], a
@@ -138,7 +142,9 @@ _mAction_EnterPuzzleRoomH::
 	call updateJoypadState
 	ld   a, [wJoypadPressed]
 	call ProcessMoveInput5x5
-	jr .loop
+	ld   a, [wJoypadPressed]
+	and PADF_B
+	jr z, .loop
 	
 	ld a, %11100100
 	ldh [rBGP], a
@@ -172,7 +178,9 @@ _mAction_ExitPuzzleRoomX::
 .loop
 	call updateJoypadState
 	ld   a, [wJoypadPressed]
-	and a, a
+	call ProcessMoveInput6x6
+	ld   a, [wJoypadPressed]
+	and PADF_B
 	jr z, .loop
 	
 	ld a, %11100100

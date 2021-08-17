@@ -79,15 +79,18 @@ Puzzle_Init::
 	ld hl, _6x6_PuzzlesList	
 .choosePuzListEnd
 	
+	;ld b,b
 	ld a, [hli]
 	ld b, a   ; list size
+	push hl
+	push bc
 	call rand ; select a random puzzle from list
+	pop bc
+	pop hl
 	
-	; hl += a*5
-	ld b, a
+	; hl += a*4
 	rlca
 	rlca
-	add b	
 	ld c, a
 	ld b, 0
 	add hl, bc

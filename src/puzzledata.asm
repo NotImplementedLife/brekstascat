@@ -5,7 +5,7 @@ SECTION "Sliding Puzzle Data", ROM0
 
 _3x3_PuzzlesList::
 	
-	DB 1  ; # of puzzles
+	DB 2  ; # of puzzles
 	
 	DB 5                    ; ROMX Bank number
 	DB HIGH(SLP_MonaLisa_Tiles) ; Address where puzzle data starts
