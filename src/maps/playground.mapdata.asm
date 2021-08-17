@@ -93,7 +93,7 @@ DW _mAction_EnterPuzzleRoomH              ; 01101
 DW _mAction_ExitPuzzleRoomE               ; 01110
 DW _mAction_ExitPuzzleRoomM               ; 01111
 DW _mAction_ExitPuzzleRoomH               ; 10000
-DW _mAction_ExitPuzzleRoomX               ; 10001
+DW _mAction_EnterPuzzleRoomX              ; 10001
 REPT(14)
 DW _mAction_NoOp
 ENDR

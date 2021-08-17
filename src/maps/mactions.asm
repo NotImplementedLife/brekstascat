@@ -54,14 +54,19 @@ _mAction_EnterPuzzleRoomE::
 	ld [wPuzzle_MSize], a
 	
 	call Puzzle_Init
+	call rtcReset
+	
 .loop
+	call waitForVBlank
+	call RenderTimer
+	
 	call updateJoypadState
 	ld   a, [wJoypadPressed]
 	call ProcessMoveInput3x3
 	ld   a, [wJoypadPressed]
 	and PADF_B
 	jr z, .loop
-	
+.end::
 	ld a, %11100100
 	ldh [rBGP], a
 	ldh [rOBP0], a
@@ -101,12 +106,16 @@ _mAction_EnterPuzzleRoomM::
 	call Puzzle_Init
 	
 .loop
+	call waitForVBlank
+	call RenderTimer
+	
 	call updateJoypadState
 	ld   a, [wJoypadPressed]
 	call ProcessMoveInput4x4
 	ld   a, [wJoypadPressed]
 	and PADF_B
 	jr z, .loop
+.end::
 	
 	ld a, %11100100
 	ldh [rBGP], a
@@ -139,13 +148,17 @@ _mAction_EnterPuzzleRoomH::
 	call Puzzle_Init
 	
 .loop
+	call waitForVBlank
+	call RenderTimer
+	
 	call updateJoypadState
 	ld   a, [wJoypadPressed]
 	call ProcessMoveInput5x5
 	ld   a, [wJoypadPressed]
 	and PADF_B
 	jr z, .loop
-	
+.end::
+
 	ld a, %11100100
 	ldh [rBGP], a
 	ldh [rOBP0], a
@@ -160,7 +173,7 @@ _mAction_EnterPuzzleRoomH::
 	jp MovQueueLaunch
 	ret
 	
-_mAction_ExitPuzzleRoomX::
+_mAction_EnterPuzzleRoomX::
 	REPT(3)
 	call TileMap_Execute_OnlyMovQ
 	ENDR
@@ -176,12 +189,16 @@ _mAction_ExitPuzzleRoomX::
 	call Puzzle_Init
 	
 .loop
+	call waitForVBlank
+	call RenderTimer
+	
 	call updateJoypadState
 	ld   a, [wJoypadPressed]
 	call ProcessMoveInput6x6
 	ld   a, [wJoypadPressed]
 	and PADF_B
 	jr z, .loop
+.end::
 	
 	ld a, %11100100
 	ldh [rBGP], a
@@ -197,6 +214,7 @@ _mAction_ExitPuzzleRoomX::
 	jp MovQueueLaunch
 	ret
 	
+
 _mAction_ExitPuzzleRoomE::
 	ret
 
@@ -204,6 +222,9 @@ _mAction_ExitPuzzleRoomM::
 	ret
 
 _mAction_ExitPuzzleRoomH::
+	ret
+	
+_mAction_ExitPuzzleRoomX::
 	ret
 
 
