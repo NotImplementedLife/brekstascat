@@ -2,13 +2,14 @@
 ; This is a sliding puzzle and must be registered in the puzzles list of BRKC.
 ; Possible puzzle types: 3x3 or 4x4 or 6x6.
 
+INCLUDE "include/charmap.puzzle.inc"
 
 ; SRAM Highscore
 
 SECTION "SLP_MonaLisa HighScore", SRAM
 
 SLP_MonaLisa_HighScore::
-  DS 2
+  DS 3
 
 SECTION "Sliding Puzzle MonaLisa", ROMX, BANK[5], ALIGN[8]
 
@@ -159,4 +160,5 @@ DB $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $0
 DB $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 DB $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
-
+SLP_MonaLisa_Text::
+DB "  Mona Lisa   "

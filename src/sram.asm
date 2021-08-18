@@ -1,8 +1,12 @@
+INCLUDE "src/include/macros.inc"
+
 SECTION "Save Vars", SRAM[$A000]
 
 sSRAMKEY: DS 16
 
 sNowhereIntroComplete:: DS 1 ; 0 = no, 1 = yes
+
+sCatCoins:: DS 1
 
 ; the free matrix in the Playground map
 sTutorialMatrix::
@@ -36,6 +40,26 @@ SRAM_Init::
 	; now that SRAM key is written, init the save data
 	xor a
 	ld [sNowhereIntroComplete], a
+	ld [sCatCoins], a
+	
+	; init all the high score tables
+	; place an 08 on hours place to know that 
+	; the respective puzzle was never solved
+	
+	ld hl, _3x3_PuzzlesList
+	call SRAM_InitPuzzleList
+	
+	ld hl, _4x4_PuzzlesList
+	call SRAM_InitPuzzleList
+	
+	ld hl, _5x5_PuzzlesList
+	call SRAM_InitPuzzleList
+	
+	ld hl, _6x6_PuzzlesList
+	call SRAM_InitPuzzleList
+	
+	
+	
 	
 SRAM_InitTutorialMatrix::
 	xor a	
@@ -48,6 +72,36 @@ SRAM_InitTutorialMatrix::
 	dec b
 	jr nz, .loop
 	
+	ret
+	
+SRAM_InitPuzzleList::
+	ld a, [hli] ; get puzzle count
+	ld c, a
+	
+.loop
+	ld a, [hli] ; get BANK
+	setBank a
+	inc hl ; skip HIGH
+	
+	push hl
+
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ld a, 8
+	ld [hli], a
+	xor a
+	ld [hli], a
+	ld [hli], a
+	
+	pop hl
+	inc hl 
+	inc hl 
+	
+	dec c
+	jr nz, .loop
+	
+	setBank 1
 	ret
 	
 

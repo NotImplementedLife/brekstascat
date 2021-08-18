@@ -33,7 +33,7 @@ SECTION "Scroll map MapActions", WRAM0, ALIGN[6]
 wMActions::
 	DS 64 ; 32 MActions * 2 bytes per address
 
-SECTION "Scroll map NPCs", WRAM0, ALIGN[8]
+SECTION "Scroll map NPCs", WRAMX, ALIGN[8]
 
 wMnpcCount::
 	DS 1

@@ -1203,7 +1203,7 @@ Div3::
 
 
 
-SECTION "Playground Arrows Vars", WRAM0, ALIGN[8]
+SECTION "Playground Arrows Vars", WRAM0, ALIGN[3]
 	
 
 wPlayerOnArrow::

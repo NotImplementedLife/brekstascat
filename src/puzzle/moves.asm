@@ -1191,12 +1191,139 @@ PuzzleCheckComplete::
 	dec c
 	jr nz, .centerTimerLoop
 	
+	; update time score
+	; c = seconds, d = minutes, e = hours
+	ld hl, $A000
 	
-.loop2
+	ld a, $08
+	ld [$4000], a
+	ld c, [hl]
+	ld a, $09
+	ld [$4000], a
+	ld d, [hl]
+	ld a, $0A
+	ld e, [hl]
+	
+	; transform all to BCD
+	ld a, c
+	call MakeBCD
+	ld c, a
+	
+	ld a, d
+	call MakeBCD
+	ld d, a
+	
+	ld a, e
+	call MakeBCD
+	ld d, a
+	
+	; compare to saved time and decide if highscore
+	ld hl, wPuzzleSaveAddress
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+	
+	xor a 
+	ld [$4000], a ; SRAM 0
+	
+	
+	ld a, [hli] ; read hours
+	cp e ; c=1 if current hours (=e) > saved hours (=a)
+	jr c, .puzzleFinish ; not a high
+	jr nz, .isHighscore
+	; get here if crtHours == savHours
+	
+	ld a, [hli] ; read minutes
+	cp d ; c=1 if current mins (=d) > saved mins (=a)
+	jr c, .puzzleFinish ; not a high
+	jr nz, .isHighscore
+	; get here if crtMins == savMins
+	
+	ld a, [hli] ; read seconds
+	cp c
+	jr c, .puzzleFinish ; not a high
+	jr nz, .isHighscore
+	; get here if crtSecs == savSecs
+	; a very unlucky situation...
+	jr .puzzleFinish
+	
+.isHighscore:
+	; save it
+	ld hl, wPuzzleSaveAddress
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+	
+	ld a, e ; h
+	ld [hli], a
+	ld a, d ; m
+	ld [hli], a
+	ld a, c ; s
+	ld [hli], a
+	
+	; perform a crappy high score animation
+	;ld b,b
+	call waitForVBlank
+	ld a, %11000100
+	ldh [rOBP1], a
+	
+	ld hl, ShadowOAM + 14 * 4
+	ld de, HighScoreMessageOAM
+	ld bc, HighScoreMessageOAMEnd-HighScoreMessageOAM
+	call loadMemory
+	call waitForVBlank
+	initOAM ShadowOAM
+	ld c, 0
+.hsLoop
+	call waitForVBlank
+	inc c
+	inc c
+	ld a, c
+	cp $80
+	push af
+	call c, showBGP1
+	pop af
+	call nc, hideBGP1
+	
 	call updateJoypadState
 	ld a, [wJoypadPressed]
-	jr z, .loop2
+	jr nz, .ret
+	jr .hsLoop
 	
+.puzzleFinish:
+
+.waitLoop
+	call updateJoypadState
+	ld a, [wJoypadPressed]
+	jr z, .waitLoop
+
+.ret:
+	
+	pop af ; fake return
+	
+	; now find the caller entry by puzzle size and exit game loop
+	
+	ld a, [wPuzzle_Size]
+	
+	cp 3
+	jp z, _mAction_EnterPuzzleRoomE.end
+	
+	cp 4
+	jp z, _mAction_EnterPuzzleRoomM.end
+	
+	cp 5
+	jp z, _mAction_EnterPuzzleRoomH.end
+	
+	;cp 6
+	jp _mAction_EnterPuzzleRoomX.end
+	
+showBGP1::
+	ld a, %11000100
+	ldh [rOBP1], a
+	ret
+hideBGP1::
+	xor a
+	ldh [rOBP1], a
 	ret
 	
 

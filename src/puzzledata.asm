@@ -7,9 +7,9 @@ _3x3_PuzzlesList::
 	
 	DB 2  ; # of puzzles
 	
-	DB 5                    ; ROMX Bank number
+	DB 5                        ; ROMX Bank number
 	DB HIGH(SLP_MonaLisa_Tiles) ; Address where puzzle data starts
-	DW SLP_test_HighScore   ; Address where time score is saved	
+	DW SLP_MonaLisa_HighScore   ; Address where time score is saved	
 	
 	DB 5                    ; ROMX Bank number
 	DB HIGH(SLP_test_Tiles) ; Address where puzzle data starts
@@ -73,6 +73,14 @@ PuzzleLoadDataTileset::
 	ld b, 9
 	ld hl, wPuzzleOnTilemap
 	call loadMemory
+	
+	; following tiles there are 16 bytes of string
+	
+	ld hl, $9A43
+	ld b, d
+	ld c, 14
+	call loadMemoryDOUBLE
+	
 	
 	setBank 4
 	

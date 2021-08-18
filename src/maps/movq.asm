@@ -1,6 +1,6 @@
 INCLUDE "src/include/constants.inc"
 
-SECTION "MC Movement Queue", WRAM0, ALIGN[8]
+SECTION "MC Movement Queue", WRAMX, ALIGN[8]
 
 ; MC Movement Instructions Queue
 ; This tells the engine to perform to perform MC-related operations

@@ -199,13 +199,8 @@ TooLongTimePlaying::
 	cp 5
 	jp z, _mAction_EnterPuzzleRoomH.end
 	
-	cp 6
-	jp z, _mAction_EnterPuzzleRoomX.end
-	
-	
-	;jr @
-	
-	ret
+	;cp 6
+	jp _mAction_EnterPuzzleRoomX.end
 	
 InvertD:
 	ld a, d

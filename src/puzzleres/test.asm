@@ -8,7 +8,7 @@
 SECTION "SLP_test HighScore", SRAM
 
 SLP_test_HighScore::
-  DS 2
+  DS 3
 
 SECTION "Sliding Puzzle test", ROMX, BANK[5], ALIGN[8]
 

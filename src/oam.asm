@@ -1,4 +1,4 @@
-SECTION "Shadow Oam", WRAM0, ALIGN[8]
+SECTION "Shadow Oam", WRAMX, ALIGN[8]
 
 ShadowOAM:: DS 160
 

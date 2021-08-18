@@ -5,7 +5,7 @@ SECTION "Puzzle List Address", WRAM0
 wPuzzleListAddress::
 	DS 2
 
-SECTION "Puzzle init logic", ROMX, BANK[4]
+SECTION "Puzzle init logic", ROM0
 
 Puzzle_Init::
 	xor a
@@ -14,6 +14,22 @@ Puzzle_Init::
 	
 	ld a, $C0
 	ld [wSpritifyIndex], a
+	
+	; load puzzle chars from BANK 3
+	
+	setBank 3
+	
+	ld hl, wPuzzleCharTiles
+	ld de, PuzzleCharTiles
+	ld bc, PuzzleCharTilesEnd-PuzzleCharTiles
+	call loadMemory
+	
+	setBank 4
+	
+	ld hl, $8900
+	ld de, wPuzzleCharTiles
+	ld bc, wPuzzleCharTilesEnd
+	call loadMemoryDOUBLE
 	
 	; load graphics resources
 	
@@ -116,13 +132,22 @@ Puzzle_Init::
 	ld a, l
 	ld [wPuzzleListAddress+1], a
 	
+	push hl
 	call PuzzleLoadDataTileset		
-	;call PuzzleLoadDataTilesetNoBorder
-	;call waitForVBlank
-	;call PuzzleDisplayFull
-	;call waitForVBlank
-	;call waitForVBlank
-	;ld b,b
+	pop hl
+	
+	inc hl ; skip bank
+	inc hl ; skip HIGH
+	
+	; store SRAM address in WRAM
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	
+	ld a, h
+	ld [wPuzzleSaveAddress], a
+	ld a, l
+	ld [wPuzzleSaveAddress+1], a
 	
 	; init sliding puzzle matrix
 	ld a, 1
