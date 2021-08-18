@@ -1,5 +1,10 @@
 INCLUDE "src/include/macros.inc"
 
+SECTION "Puzzle List Address", WRAM0
+
+wPuzzleListAddress::
+	DS 2
+
 SECTION "Puzzle init logic", ROMX, BANK[4]
 
 Puzzle_Init::
@@ -95,6 +100,12 @@ Puzzle_Init::
 	ld b, 0
 	add hl, bc
 	
+	; save hl for PuzzleLoadDataTilesetNoBorder
+	ld a, h
+	ld [wPuzzleListAddress], a
+	ld a, l
+	ld [wPuzzleListAddress+1], a
+	
 	call PuzzleLoadDataTileset		
 	;call PuzzleLoadDataTilesetNoBorder
 	;call waitForVBlank
@@ -121,7 +132,28 @@ Puzzle_Init::
 	ld l, a
 	xor a
 	ld [hl], a
-		
+	
+	call PuzzleShuffle
+	
+	; update empty index
+	; not necessary, because puzzle shuffler does not change it
+	;ld a, [wPuzzle_MSize]
+	;dec a
+	;ld b, a
+	;ld l, 0
+	;ld hl, wSPMatrix
+;.loop
+	;ld a, [hl]
+	;or a
+	;jr z, .setEmptyIndex
+	;inc l
+	;dec b
+	;jr nz, .loop
+;.setEmptyIndex:
+	;ld a, l
+	;ld [wEmptyIndex], a
+	
+	; render puzzle
 	ld a, [wPuzzle_Size]
 	cp 3
 	push af
@@ -142,6 +174,7 @@ Puzzle_Init::
 	
 	call waitForVBlank		
 	call waitForVBlank		
+	call rtcReset
 	
 	ret
 

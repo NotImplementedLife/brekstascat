@@ -39,8 +39,13 @@ _6x6_PuzzlesList::
 
 SECTION "Sliding Puzzle Data Handling", ROM0
 
-; hl = puzzle list data address
 PuzzleLoadDataTilesetNoBorder::
+	; need to obtain hl manually
+	ld hl, wPuzzleListAddress
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+	
 	; load ROMX bank
 	setBank [hli]		
 	

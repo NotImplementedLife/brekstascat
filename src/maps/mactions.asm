@@ -54,7 +54,6 @@ _mAction_EnterPuzzleRoomE::
 	ld [wPuzzle_MSize], a
 	
 	call Puzzle_Init
-	call rtcReset
 	
 .loop
 	call waitForVBlank

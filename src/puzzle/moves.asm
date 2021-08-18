@@ -495,7 +495,7 @@ ProcessMoveInput3x3::
 	call nz, MoveValidateLeft3x3
 	bit PADB_RIGHT, a
 	call nz, MoveValidateRight3x3
-	ret
+	jp PuzzleCheckComplete
 
 SECTION "Puzzle Executer 4x4", ROM0
 
@@ -677,7 +677,7 @@ ProcessMoveInput4x4::
 	call nz, MoveValidateLeft4x4
 	bit PADB_RIGHT, a
 	call nz, MoveValidateRight4x4
-	ret
+	jp PuzzleCheckComplete
 	
 SECTION "Puzzle Executer 5x5", ROM0
 
@@ -862,7 +862,7 @@ ProcessMoveInput5x5::
 	call nz, MoveValidateLeft5x5
 	bit PADB_RIGHT, a
 	call nz, MoveValidateRight5x5
-	ret
+	jp PuzzleCheckComplete
 	
 SECTION "Puzzle Executer 6x6", ROM0
 
@@ -1055,8 +1055,42 @@ ProcessMoveInput6x6::
 	call nz, MoveValidateLeft6x6
 	bit PADB_RIGHT, a
 	call nz, MoveValidateRight6x6
-	ret
+	jp PuzzleCheckComplete
+	
 
+PuzzleCheckComplete::
+	ld hl, wSPMatrix
+	ld c, 1
+	ld a, [wPuzzle_MSize]
+	dec a
+	ld b, a
+	; check if wSPMatrix = 1,2,3,....,wPuzzle_MSize-1
+.loop
+	ld a, [hli]
+	cp c
+	ret nz
+	inc c
+	dec b
+	jr nz, .loop
+	call PuzzleLoadDataTilesetNoBorder
+	call PuzzleDisplayFull
+	
+	xor a
+	ld b, 40
+	ld hl, ShadowOAM
+.clOamLoop
+	ld [hli], a
+	ld [hli], a
+	ld [hli], a
+	ld [hli], a
+	dec b
+	jr nz, .clOamLoop	
+	call waitForVBlank
+	initOAM ShadowOAM
+	call waitForVBlank
+	call waitForVBlank
+	ld b,b
+	ret
 	
 
 SECTION "Puzzle Moves Vars", WRAM0
