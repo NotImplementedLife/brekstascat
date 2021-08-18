@@ -99,6 +99,8 @@ ENDR
 	ld a, [wSpritifyIndex]
 	ld [de], a
 	inc e
+	xor a 
+	ld [de], a ; palette 0
 	inc e
 	
 	; next tile is just black color
@@ -113,7 +115,7 @@ ENDR
 	ld c, a
 	ld a, b
 	and $0F
-	or $80
+	or $80 
 	ld b, a
 	
 	; get hl to the original tile address value
@@ -1058,6 +1060,8 @@ ProcessMoveInput6x6::
 	jp PuzzleCheckComplete
 	
 
+SECTION "Puzzle Check Complete", ROM0
+	
 PuzzleCheckComplete::
 	ld hl, wSPMatrix
 	ld c, 1
@@ -1072,6 +1076,18 @@ PuzzleCheckComplete::
 	inc c
 	dec b
 	jr nz, .loop
+	
+	; puzzle complete, stop timer
+	xor a
+	ld [$6000], a
+	inc a
+	ld [$6000], a	
+	ld a, $0C
+	ld [$4000], a
+	ld a, [$A000]
+	set 6, a ; HALT
+	ld [$A000], a
+	
 	call PuzzleLoadDataTilesetNoBorder
 	call PuzzleDisplayFull
 	
@@ -1088,8 +1104,99 @@ PuzzleCheckComplete::
 	call waitForVBlank
 	initOAM ShadowOAM
 	call waitForVBlank
+	call RenderTimer ; just to make sure everything is correct
+	
+	; spritify timer
+	ld a, $C0
+	ld [wSpritifyIndex], a
+	ld e, 0
+	
+	ld hl, $980A
+	
+	ld b, 7
+.loopTimer1
+	push bc
+	push hl
 	call waitForVBlank
-	ld b,b
+	call SpritifyTile	
+	initOAM ShadowOAM
+	pop hl
+	ld a, $FF   ; instead of $FB that SpritifyTile leaves on that tile
+	ld [hli], a 
+	pop bc
+	
+	ld a, e
+	sub 4
+	ld e, a
+	
+	dec b
+	jr nz, .loopTimer1
+	
+	ld hl, $982A
+	
+	ld b, 7
+.loopTimer2
+	push bc
+	push hl
+	call waitForVBlank
+	call SpritifyTile	
+	initOAM ShadowOAM
+	pop hl
+	ld a, $FF   ; instead of $FB that SpritifyTile leaves on that tile
+	ld [hli], a 
+	pop bc
+	
+	ld a, e
+	sub 4
+	ld e, a
+	
+	dec b
+	jr nz, .loopTimer2
+	
+	ld hl, ShadowOAM + $38 ; clear sprite 15 (spritifying redundancy)
+	xor a
+	ld [hli], a
+	ld [hli], a
+	ld [hli], a
+	ld [hli], a
+	
+	call waitForVBlank
+	initOAM ShadowOAM
+	call waitForVBlank
+	
+	ld c, 30
+.centerTimerLoop
+	ld hl, ShadowOAM + 1
+	ld b, 14
+	.innerLoop
+		dec [hl]
+		inc l
+		inc l
+		inc l
+		inc l
+		dec b
+		jr nz, .innerLoop
+	call waitForVBlank
+	initOAM ShadowOAM
+	
+	ld a, c
+	and 1
+	jr nz, .scrollEnd
+	
+	ldh a, [rSCY]
+	inc a
+	ldh [rSCY], a
+	
+.scrollEnd
+	dec c
+	jr nz, .centerTimerLoop
+	
+	
+.loop2
+	call updateJoypadState
+	ld a, [wJoypadPressed]
+	jr z, .loop2
+	
 	ret
 	
 

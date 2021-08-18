@@ -8,6 +8,10 @@ wPuzzleListAddress::
 SECTION "Puzzle init logic", ROMX, BANK[4]
 
 Puzzle_Init::
+	xor a
+	ld [rSCY], a
+	ld [rSCX], a
+	
 	ld a, $C0
 	ld [wSpritifyIndex], a
 	
