@@ -16,12 +16,18 @@ Puzzle_Init::
 	; [misplanning "fix"] load "empty" and ":"top/down tiles separately
 	; $8C00-$8DF0 are used for spritifying rendering
 	ld hl, $8BD0
-	ld de, PuzzleUITileset
-	ld bc, PuzzleUITileset + 3*16
+	ld de, PuzzleUIDigitsTileset
+	ld bc, PuzzleUIDigitsTileset + 3*16
 	call loadMemoryDOUBLE
 	; load the rest of the graphics
+	
 	ld hl, $8E00
-	ld de, PuzzleUITileset + 3*16
+	ld de, PuzzleUIDigitsTileset + 3*16
+	ld bc, PuzzleUIDigitsTilesetEnd
+	call loadMemoryDOUBLE
+	
+	ld hl, $8FC0
+	ld de, PuzzleUITileset
 	ld bc, PuzzleUITilesetEnd
 	call loadMemoryDOUBLE
 	

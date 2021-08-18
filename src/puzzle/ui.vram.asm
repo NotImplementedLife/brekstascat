@@ -1,6 +1,6 @@
 SECTION "Puzzle UI Tileset", ROMX, BANK[4]
 
-PuzzleUITileset::
+PuzzleUIDigitsTileset::
 DB $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 DB $00, $ff, $00, $ff, $00, $ff, $00, $ff, $00, $ff, $18, $e7, $18, $e7, $00, $ff
 DB $00, $ff, $18, $e7, $18, $e7, $00, $ff, $00, $ff, $00, $ff, $00, $ff, $00, $ff
@@ -24,24 +24,19 @@ DB $00, $ff, $00, $ff, $00, $ff, $00, $ff, $1c, $e3, $22, $dd, $22, $dd, $1c, $e
 DB $22, $dd, $22, $dd, $22, $dd, $1c, $e3, $00, $ff, $00, $ff, $00, $ff, $00, $ff
 DB $00, $ff, $00, $ff, $00, $ff, $00, $ff, $1c, $e3, $22, $dd, $22, $dd, $1e, $e1
 DB $02, $fd, $02, $fd, $04, $fb, $18, $e7, $00, $ff, $00, $ff, $00, $ff, $00, $ff
+PuzzleUIDigitsTilesetEnd::
+
+PuzzleUITileset::
 DB $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 DB $ff, $fe, $ff, $fe, $ff, $fe, $ff, $fe, $ff, $fe, $ff, $fe, $ff, $fe, $ff, $fe
-DB $00, $00, $00, $7f, $00, $7f, $00, $7f, $00, $7f, $00, $7f, $00, $7f, $00, $7f
-DB $00, $00, $00, $ff, $00, $ff, $00, $ff, $00, $ff, $00, $ff, $00, $ff, $00, $ff
-DB $00, $00, $00, $fe, $00, $fe, $00, $fe, $00, $fe, $00, $fe, $00, $fe, $00, $fe
 DB $ff, $7f, $ff, $7f, $ff, $7f, $ff, $7f, $ff, $7f, $ff, $7f, $ff, $7f, $ff, $7f
-DB $00, $7f, $00, $7f, $00, $7f, $00, $7f, $00, $7f, $00, $7f, $00, $7f, $00, $7f
 DB $00, $ff, $00, $ff, $00, $ff, $00, $ff, $00, $ff, $00, $ff, $00, $ff, $00, $ff
-DB $00, $fe, $00, $fe, $00, $fe, $00, $fe, $00, $fe, $00, $fe, $00, $fe, $00, $fe
-DB $00, $7f, $00, $7f, $00, $7f, $00, $7f, $00, $7f, $00, $7f, $00, $7f, $00, $00
-DB $00, $ff, $00, $ff, $00, $ff, $00, $ff, $00, $ff, $00, $ff, $00, $ff, $00, $00
-DB $00, $fe, $00, $fe, $00, $fe, $00, $fe, $00, $fe, $00, $fe, $00, $fe, $00, $00
 PuzzleUITilesetEnd::
 
 SECTION "Puzzle UI Tilemap", ROMX, BANK[4]
 
 PuzzleUITilemap::
-DB $f4, $f5, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $e0, $e0, $be, $e0, $e0, $fb, $f9, $f4
-DB $f4, $f5, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $e1, $e1, $bf, $e1, $e1, $fb, $f9, $f4
+DB $fc, $fd, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $e0, $e0, $be, $e0, $e0, $ff, $fe, $fc
+DB $fc, $fd, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $e1, $e1, $bf, $e1, $e1, $ff, $fe, $fc
 ; Next row to be repeated 16 times
-DB $f4, $f5, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $fb, $f9, $f4
+DB $fc, $fd, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $fe, $fc
