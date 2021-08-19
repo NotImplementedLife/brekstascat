@@ -108,17 +108,32 @@ namespace BRKC_PuzzleMaker
                 f.WriteLine($"; This is a sliding puzzle and must be registered in the puzzles list of BRKC.");
                 f.WriteLine($"; Possible puzzle types: {ptype}.");
                 f.WriteLine();
+                f.WriteLine("INCLUDE \"include/charmap.puzzle.inc\"");
                 f.WriteLine();
                 f.WriteLine("; SRAM Highscore");
                 f.WriteLine();
                 f.WriteLine($"SECTION \"SLP_{filewe} HighScore\", SRAM\n");
                 f.WriteLine($"SLP_{filewe}_HighScore::");
-                f.WriteLine($"  DS 2\n");
+                f.WriteLine($"  DS 3\n");
 
                 f.WriteLine($"SECTION \"Sliding Puzzle {filewe}\", ROMX, BANK[5], ALIGN[8]\n");
                 f.WriteLine($"SLP_{filewe}_Tiles::\n");
-                f.WriteLine(tilesetStr + "\n");                
+                f.WriteLine(tilesetStr + "\n");
 
+                f.WriteLine($"SLP_{filewe}_Text::");
+
+                string str = "0000000000000000";
+                while (str.Length > 14) 
+                {
+                    Console.Write("Puzzle name (max. 14 characters):");
+                    str = Console.ReadLine();
+                }
+                if (str.Length % 2 == 1)
+                    str += " ";
+                int padlen = (14 - str.Length) / 2;
+                
+                str = str.PadLeft(14 - padlen, ' ').PadRight(14, ' ');
+                f.WriteLine($"DB \"{str}\"");
             }
             Console.WriteLine("Done.");
 
