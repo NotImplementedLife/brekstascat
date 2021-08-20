@@ -28,6 +28,11 @@ Puzzle_Init::
 	
 	ld hl, $8900
 	ld de, wPuzzleCharTiles
+	ld bc, wPuzzleCharTiles + 45 * 16
+	call loadMemoryDOUBLE
+	
+	ld hl, $8F40
+	ld de, wPuzzleCharTiles + 45 * 16
 	ld bc, wPuzzleCharTilesEnd
 	call loadMemoryDOUBLE
 	

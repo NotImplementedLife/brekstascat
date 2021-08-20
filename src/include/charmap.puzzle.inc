@@ -9,11 +9,19 @@ ENDR
 
 LOWER_BASE EQU $AA
 
-LCHARS equs "abcdefghijklmnopqrstuvwxyz"
+LCHARS equs "abcdefghijklmnopqrs"
 LCHAR = 0
 REPT STRLEN("{LCHARS}")
 	charmap STRSUB("{LCHARS}", LCHAR + 1, 1), LOWER_BASE + LCHAR
 LCHAR = LCHAR + 1
 ENDR
+
+charmap "t", $F4
+charmap "u", $F5
+charmap "v", $F6
+charmap "w", $F7
+charmap "x", $F8
+charmap "y", $F9
+charmap "z", $FA
 
 charmap " ", $FF

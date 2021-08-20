@@ -1,26 +1,30 @@
 INCLUDE "src/include/macros.inc"
 INCLUDE "src/include/charmap.inc"
 
+; Define puzzle
+; \1 = bank, \2 = puzzle name
+MACRO DefPuzzle
+	DB \1
+	DB HIGH(SLP_\2_Tiles)
+	DW SLP_\2_HighScore
+ENDM
+
 SECTION "Sliding Puzzle Data", ROM0
 
 _3x3_PuzzlesList::
 	
-	DB 2  ; # of puzzles
+	DB 5  ; # of puzzles
 	
-	DB 5                        ; ROMX Bank number
-	DB HIGH(SLP_MonaLisa_Tiles) ; Address where puzzle data starts
-	DW SLP_MonaLisa_HighScore   ; Address where time score is saved	
-	
-	DB 5                    ; ROMX Bank number
-	DB HIGH(SLP_test_Tiles) ; Address where puzzle data starts
-	DW SLP_test_HighScore   ; Address where time score is saved	
+	DefPuzzle 5, MonaLisa
+	DefPuzzle 5, kitty
+	DefPuzzle 5, creeper  
+	DefPuzzle 5, DSL 
+	DefPuzzle 5, triforce
 
 _4x4_PuzzlesList::
 	DB 1
 	
-	DB 5                    
-	DB HIGH(SLP_test_Tiles) 
-	DW SLP_test_HighScore
+	DefPuzzle 5, klein
 
 _5x5_PuzzlesList::
 	DB 1  
@@ -33,7 +37,7 @@ _5x5_PuzzlesList::
 _6x6_PuzzlesList::
 	DB 1
 	
-	DB 5                    
+	DB 1                    
 	DB HIGH(SLP_test_Tiles) 
 	DW SLP_test_HighScore
 

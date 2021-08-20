@@ -1,4 +1,4 @@
-; This file was generated automatically by BRKC_PuzzleMaker at 16-Aug-21 18:52:28.
+; This file was generated automatically by BRKC_PuzzleMaker at 19-Aug-21 09:04:41.
 ; This is a sliding puzzle and must be registered in the puzzles list of BRKC.
 ; Possible puzzle types: 3x3 or 4x4 or 6x6.
 
@@ -159,6 +159,7 @@ DB $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $0
 DB $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 DB $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 DB $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+
 
 SLP_MonaLisa_Text::
 DB "  Mona Lisa   "
