@@ -26,6 +26,8 @@ ENDR
 CHARMAP " ", $2A
 CHARMAP "\"", $2B
 CHARMAP ":", $2C
+CHARMAP "<", $2D
+CHARMAP ">", $2E
 
 LOWER_BASE EQU $30
 

@@ -62,3 +62,22 @@ DialogString_PlaygroundInstructions::
 	
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
+	
+DialogString_HighScoreMessage::
+	DB "High score table", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+	
+SECTION "Highscore Table string", ROMX, BANK[4]
+	
+HighScore_Easy::
+	DB "  Highscores  < Easy >", $F0
+	
+HighScore_Medium::
+	DB "Highscores  < Medium >", $F0
+	
+HighScore_Hard::
+	DB " Highscores  < Hard >", $F0
+	
+HighScore_Master::
+	DB "Highscores  < Master >", $F0

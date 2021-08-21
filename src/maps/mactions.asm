@@ -8,7 +8,7 @@ MACRO PlayDialog
 	jp Tilemap_DialogRender
 ENDM
 
-SECTION "mActions", ROMX, BANK[4]
+SECTION "mActions", ROM0
 
 _mAction_NoOp::
 	ret
@@ -36,6 +36,93 @@ _mAction_Playground_Sign_Instructions::
 	cp 1
 	ret nz
 	PlayDialog DialogString_PlaygroundInstructions
+	
+_mAction_Inforoom_HighScoreRead::
+	ld a, HIGH(DialogString_HighScoreMessage)
+	ld [StrAddr], a
+	ld a, LOW(DialogString_HighScoreMessage)	
+	ld [StrAddr + 1], a	
+	call Tilemap_DialogRender
+	
+	call TakeVRAMSnapshot
+	
+	xor a
+	ld [wHSTableSelected], a
+
+.viewTable:
+	ld a, [wHSTableSelected]
+	rlca
+	ld h, HIGH(HSTablesList)
+	ld l, a
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	
+	call DisplayPuzzleListHighScore
+	call waitForVBlank
+	
+.loop
+	call updateJoypadState
+	ld   a, [wJoypadPressed]
+	bit PADB_LEFT, a
+	push af
+	call nz, TableLeft
+	pop af
+	bit PADB_RIGHT, a
+	push af
+	call nz, TableRight
+	pop af
+	and PADF_B
+	jr z, .loop
+	
+	xor a
+	ld [OffsetX], a
+	setBank 4
+	call RestoreVRAMSnapshot
+	ret
+
+TableLeft::
+	ld a, [wHSTableSelected]
+	cp 0
+	jr z, .last
+	dec a
+	ld [wHSTableSelected], a
+	jr .fin
+.last:
+	ld a, 3
+.fin
+	ld [wHSTableSelected], a
+	pop af ; fake ret
+	xor a
+	ld [OffsetX], a
+	setBank 4
+	jp _mAction_Inforoom_HighScoreRead.viewTable
+	
+TableRight::
+	ld a, [wHSTableSelected]
+	cp 3
+	jr z, .first
+	inc a
+	ld [wHSTableSelected], a
+	jr .fin
+.first:
+	xor a
+.fin
+	ld [wHSTableSelected], a
+	pop af ; fake ret
+	xor a
+	ld [OffsetX], a
+	setBank 4
+	jp _mAction_Inforoom_HighScoreRead.viewTable
+	
+SECTION "HighScore tables list", ROMX, BANK[4], ALIGN[8]
+HSTablesList:
+DW _3x3_PuzzlesList, _4x4_PuzzlesList, _5x5_PuzzlesList, _6x6_PuzzlesList
+	
+SECTION "Highscore table selection", WRAM0
+
+wHSTableSelected:
+	DS 1
 
 SECTION "mActions Enter Easy", ROMX, BANK[4]
 _mAction_EnterPuzzleRoomE::
