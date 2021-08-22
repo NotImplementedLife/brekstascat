@@ -1191,6 +1191,21 @@ PuzzleCheckComplete::
 	dec c
 	jr nz, .centerTimerLoop
 	
+	; update coins
+	ld a, [wPuzzle_Size]
+	
+	cp 3
+	call z, give1Coin
+	
+	cp 4
+	call z, give2Coins
+	
+	cp 5
+	call z, give3Coins
+	
+	ld a, b
+	ld [wCCReward], a
+	
 	; update time score
 	; c = seconds, d = minutes, e = hours
 	ld hl, $A000
@@ -1326,7 +1341,18 @@ hideBGP1::
 	xor a
 	ldh [rOBP1], a
 	ret
+
+give1Coin::
+	ld b, 1
+	ret
 	
+give2Coins::
+	ld b, 2
+	ret
+	
+give3Coins::
+	ld b, 2
+	ret
 
 SECTION "Puzzle Moves Vars", WRAM0
 

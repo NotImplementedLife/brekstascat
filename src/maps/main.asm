@@ -51,9 +51,16 @@ Maps_Main::
 	ld bc, CatCoinsTilesEnd
 	call loadMemoryDOUBLE
 	
+	; init RewardMessage
+	ld hl, wRewardMessage
+	ld de, RewardMessage
+	ld bc, 30
+	call loadMemory
+	
 	xor a
 	ldh [rSCX], a
 	ldh [rSCY], a
+	ld [wCCReward], a
 	
 	call MovQueueInit
 	

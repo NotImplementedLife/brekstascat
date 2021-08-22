@@ -116,6 +116,14 @@ SECTION "Highscore table selection", WRAM0
 wHSTableSelected:
 	DS 1
 
+SECTION "Reward Pending", WRAM0
+
+wCCReward::
+	DS 1
+
+wRewardMessage::
+	DS 30 ; 26 ?
+	
 SECTION "mActions Enter Easy", ROMX, BANK[4]
 _mAction_EnterPuzzleRoomE::
 	; finish movQ if not ready (sometimes unfinished moves remain before raising event)
@@ -294,18 +302,34 @@ _mAction_EnterPuzzleRoomX::
 	
 
 _mAction_ExitPuzzleRoomE::
-	ret
-
 _mAction_ExitPuzzleRoomM::
-	ret
-
 _mAction_ExitPuzzleRoomH::
+	ld a, [wCCReward]
+	or a
+	ret z
+	ld [wRewardMessage + 8], a
+	ld c, a
+.loop
+	push bc
+	call TileMap_Execute_OnlyMovQ
+	pop bc
+	ld hl, sCatCoins
+	ld a, [hl]
+	add 1
+	daa
+	ld [hl], a
+	dec c
+	jr nz, .loop
+	xor a
+	ld [wCCReward], a
+	
+	call TileMap_Execute_OnlyMovQ
+	
+	PlayDialog wRewardMessage
 	ret
 	
 _mAction_ExitPuzzleRoomX::
 	ret
-
-
 	
 SECTION "Puzzle room loading vars", WRAM0
 

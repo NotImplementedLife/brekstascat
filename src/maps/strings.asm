@@ -68,7 +68,7 @@ DialogString_HighScoreMessage::
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
 	
-SECTION "Highscore Table string", ROMX, BANK[4]
+SECTION "Highscore Table string", ROM0
 	
 HighScore_Easy::
 	DB "  Highscores  < Easy >", $F0
@@ -81,3 +81,11 @@ HighScore_Hard::
 	
 HighScore_Master::
 	DB "Highscores  < Master >", $F0
+	
+	
+SECTION "Reward strings", ROM0
+
+RewardMessage::
+	DB "You got X Cat Coins!", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
