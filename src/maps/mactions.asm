@@ -65,19 +65,14 @@ _mAction_Inforoom_HighScoreRead::
 	call updateJoypadState
 	ld   a, [wJoypadPressed]
 	bit PADB_LEFT, a
-	push af
-	call nz, TableLeft
-	pop af
+	jr nz, TableLeft
 	bit PADB_RIGHT, a
-	push af
-	call nz, TableRight
-	pop af
+	jr nz, TableRight
 	and PADF_B
 	jr z, .loop
 	
 	xor a
 	ld [OffsetX], a
-	setBank 4
 	call RestoreVRAMSnapshot
 	ret
 
@@ -92,10 +87,8 @@ TableLeft::
 	ld a, 3
 .fin
 	ld [wHSTableSelected], a
-	pop af ; fake ret
 	xor a
 	ld [OffsetX], a
-	setBank 4
 	jp _mAction_Inforoom_HighScoreRead.viewTable
 	
 TableRight::
@@ -109,7 +102,6 @@ TableRight::
 	xor a
 .fin
 	ld [wHSTableSelected], a
-	pop af ; fake ret
 	xor a
 	ld [OffsetX], a
 	setBank 4

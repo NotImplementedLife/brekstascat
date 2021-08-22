@@ -345,6 +345,9 @@ DisplayPuzzleListHighScore::
 	inc hl
 	inc hl
 	jr nz, .loadPuzzlesLoop
+	
+	setBank 4
+	
 	ret
 	
 setHS3::
