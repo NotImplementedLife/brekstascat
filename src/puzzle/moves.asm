@@ -1202,6 +1202,7 @@ PuzzleCheckComplete::
 	ld [$4000], a
 	ld d, [hl]
 	ld a, $0A
+	ld [$4000], a
 	ld e, [hl]
 	
 	; transform all to BCD
@@ -1215,7 +1216,7 @@ PuzzleCheckComplete::
 	
 	ld a, e
 	call MakeBCD
-	ld d, a
+	ld e, a
 	
 	; compare to saved time and decide if highscore
 	ld hl, wPuzzleSaveAddress
