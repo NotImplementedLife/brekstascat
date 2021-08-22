@@ -502,6 +502,23 @@ TileMap_Execute::
 	dec b
 	jr nz, .createOamFromNpcLoop
 .finOam
+	; copy CatCoin OAM display
+	ld hl, ShadowOAM+37*4
+	ld de, CatCoinsSprite
+	ld bc, 12
+	call loadMemory
+	
+	ld a, [sCatCoins]
+	ld b, a
+	and $0F
+	add $70
+	ld [ShadowOAM+39*4+2], a
+	ld a, b
+	swap a
+	and $0F
+	add $70
+	ld [ShadowOAM+38*4+2], a
+	
 	initOAM ShadowOAM
 	
 	ld a, [MCMovQEnabled]

@@ -46,6 +46,11 @@ Maps_Main::
 	call waitForVBlank
 	call MC_Display
 	
+	ld hl, $8700
+	ld de, CatCoinsTiles
+	ld bc, CatCoinsTilesEnd
+	call loadMemoryDOUBLE
+	
 	xor a
 	ldh [rSCX], a
 	ldh [rSCY], a

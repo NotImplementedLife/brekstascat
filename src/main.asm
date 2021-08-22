@@ -24,6 +24,7 @@ Start::
 	ld bc, 160
 	call fillMemory0
 	
+	
 	; init map engine
 	call TileMap_Init
 	

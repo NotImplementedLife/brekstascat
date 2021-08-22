@@ -21,7 +21,7 @@ Tilemap_DialogRender::
 	push hl
 	ld hl, ShadowOAM
 	ld de, 4
-	ld c, 40
+	ld c, 37
 .oamUpLoop:
 	dec [hl]
 	dec [hl]
@@ -67,7 +67,7 @@ Tilemap_DialogRender::
 	push hl
 	ld hl, ShadowOAM
 	ld de, 4
-	ld c, 40
+	ld c, 37
 .oamDownLoop:
 	inc [hl]
 	inc [hl]
