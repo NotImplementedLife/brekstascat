@@ -2,6 +2,7 @@
 ; This is a sliding puzzle and must be registered in the puzzles list of BRKC.
 ; Possible puzzle types: 5x5.
 
+INCLUDE "include/charmap.puzzle.inc"
 
 ; SRAM Highscore
 
@@ -160,3 +161,5 @@ DB $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $0
 DB $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
 
+SLP_test80_Text::
+DB "    testEI    "

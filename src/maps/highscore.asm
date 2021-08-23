@@ -110,7 +110,7 @@ HS_GetPuzzleData::
 	ld [bc], a
 .timercpyEnd
 	pop bc
-	
+
 	setBank b
 	; hl = puzzle tiles address + $900 = string address
 	ld a, c

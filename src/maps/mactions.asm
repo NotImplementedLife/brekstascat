@@ -58,6 +58,7 @@ _mAction_Inforoom_HighScoreRead::
 	ld h, [hl]
 	ld l, a
 	
+	;ld b,b
 	call DisplayPuzzleListHighScore
 	call waitForVBlank
 	
@@ -141,7 +142,14 @@ _mAction_EnterPuzzleRoomE::
 	ld [wPuzzle_MSize], a
 	
 	call Puzzle_Init
-	
+	; ld b,b
+	; ran this on Sameboy and there seemed to be a bug
+	; when player completes a puzzle and starts a new one,
+	; the timer fails to reset
+	; the issue disappeared when I changed the emulation settings
+	; RTC -> Accurate instead of Sync to System Clock
+	; so I guess there's no problem after all?
+	call rtcReset
 .loop
 	call waitForVBlank
 	call RenderTimer

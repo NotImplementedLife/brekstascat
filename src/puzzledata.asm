@@ -29,17 +29,13 @@ _4x4_PuzzlesList::
 _5x5_PuzzlesList::
 	DB 1  
 
-	DB 5                      
-	DB HIGH(SLP_test80_Tiles) 
-	DW SLP_test80_HighScore   
+	DefPuzzle 1, test80
 
 
 _6x6_PuzzlesList::
 	DB 1
 	
-	DB 1                    
-	DB HIGH(SLP_test_Tiles) 
-	DW SLP_test_HighScore
+	DefPuzzle 1, test
 
 SECTION "Sliding Puzzle Data Handling", ROM0
 
