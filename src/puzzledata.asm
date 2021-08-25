@@ -22,9 +22,11 @@ _3x3_PuzzlesList::
 	DefPuzzle 5, triforce
 
 _4x4_PuzzlesList::
-	DB 1
+	DB 3
 	
 	DefPuzzle 5, klein
+	DefPuzzle 6, blackrose
+	DefPuzzle 6, clock
 
 _5x5_PuzzlesList::
 	DB 1  
