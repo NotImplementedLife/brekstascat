@@ -31,13 +31,13 @@ _4x4_PuzzlesList::
 _5x5_PuzzlesList::
 	DB 1  
 
-	DefPuzzle 1, test80
+	DefPuzzle 6, alphabet
 
 
 _6x6_PuzzlesList::
 	DB 1
 	
-	DefPuzzle 1, test
+	DefPuzzle 6, confusion
 
 SECTION "Sliding Puzzle Data Handling", ROM0
 
