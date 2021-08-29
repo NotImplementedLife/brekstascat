@@ -3,6 +3,7 @@ INCLUDE "src/include/macros.inc"
 SECTION "Maps Main Logic", ROMX, BANK[4]
 
 Maps_Main::
+	jp EndingMain
 	; copy SnakeCleared in WRAM because it may be accessed multiple times (e.g on map enter/exit)
 	ld a, [sSnakeCleared]
 	ld [wSnakeCleared], a
