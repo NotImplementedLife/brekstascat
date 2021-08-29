@@ -7,15 +7,17 @@ Tilemap_DialogRender::
 	; move everything up 48px to make room for the dialog Window (animate)
 	ld hl, rWY
 	ldh a, [rSCY]
-	ld b, 24
+	ld b, 16
 .showDialogLoop:
 	push af
 	call waitForVBlank
-	pop af
-	dec [hl]
-	dec [hl]
-	inc a
-	inc a
+	
+	ld a, [hl]
+	sub 3	
+	ld [hl], a
+	
+	pop af	
+	inc a	
 	ldh [rSCY], a
 	
 	push hl
@@ -23,8 +25,7 @@ Tilemap_DialogRender::
 	ld de, 4
 	ld c, 37
 .oamUpLoop:
-	dec [hl]
-	dec [hl]
+	dec [hl]	
 	add hl, de
 	dec c
 	jr nz, .oamUpLoop
@@ -53,14 +54,16 @@ Tilemap_DialogRender::
 	
 	ld hl, rWY
 	ldh a, [rSCY]
-	ld b, 24
+	ld b, 16
 .hideDialogLoop:
 	push af
 	call waitForVBlank
+	
+	ld a, [hl]
+	add 3	
+	ld [hl], a
+	
 	pop af
-	inc [hl]
-	inc [hl]
-	dec a
 	dec a
 	ldh [rSCY], a
 	
@@ -69,8 +72,7 @@ Tilemap_DialogRender::
 	ld de, 4
 	ld c, 37
 .oamDownLoop:
-	inc [hl]
-	inc [hl]
+	inc [hl]	
 	add hl, de
 	dec c
 	jr nz, .oamDownLoop

@@ -8,6 +8,8 @@ sNowhereIntroComplete:: DS 1 ; 0 = no, 1 = yes
 
 sCatCoins:: DS 1
 
+sSnakeCleared:: DS 1
+
 ; the free matrix in the Playground map
 sTutorialMatrix::
 	DS 9  ; 3x3, 1..8, 0 = free square
@@ -41,7 +43,7 @@ SRAM_Init::
 	xor a
 	ld [sNowhereIntroComplete], a
 	ld [sCatCoins], a
-	
+	ld [sSnakeCleared], a
 	; init all the high score tables
 	; place an 08 on hours place to know that 
 	; the respective puzzle was never solved

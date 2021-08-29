@@ -339,8 +339,65 @@ _mAction_ExitPuzzleRoomH::
 _mAction_ExitPuzzleRoomX::
 	ret
 	
+_mAction_Snake::	
+	; check the column where the player is to set the snake's orientation accordingly
+	ldh a, [hMMCX]
+	cp $0C
+	call z, __snakeSetLeft
+	cp $0D
+	call z, __snakeSetFront
+	cp $0E
+	call z, __snakeSetRight
+	
+	; allow acces to Master room only if player has 20 coins
+	ld a, [sCatCoins]
+	cp $20
+	jr c, .negative
+	
+	PlayDialog Snake20	
+	
+.negative
+	PlayDialog SnakeNot20	
+	
+__snakeSetFront::
+	ld b, $58
+	jr __snakeUpdate
+	
+__snakeSetLeft::
+	ld b, $60
+	jr __snakeUpdate
+	
+__snakeSetRight::
+	ld b, $5C
+	jr __snakeUpdate
+	
+__snakeUpdate::
+	ld hl, ShadowOAM + $12
+	ld c, 4
+.loop
+	ld [hl], b
+	inc b
+	inc l
+	inc l
+	inc l
+	inc l
+	dec c
+	jr nz, .loop
+	ret
+	
+; Playground loads by default with the snake enabled
+; disable snake if cleared when enter the map
+__snakeCheckOnMapExnter::	
+	ld a, [wSnakeCleared]
+	or a
+	ret z
+	jp SnakeClear
+	
 SECTION "Puzzle room loading vars", WRAM0
 
 wEnterEasy::
 	DS 1
 	
+; WRAM copy of sSnakeCleared
+wSnakeCleared:: 
+	DS 1

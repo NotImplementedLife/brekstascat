@@ -1,3 +1,4 @@
+INCLUDE "src/include/macros.inc"
 INCLUDE "src/include/charmap.inc"
 
 DLG_CLR0 EQU $F0
@@ -89,3 +90,106 @@ RewardMessage::
 	DB "You got X Cat Coins!", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
+	
+SECTION "Snake Lines", ROM0
+
+SnakeNot20::
+	DB "Do you have 20 coins kiddo'?", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "I see... Then there's nothing to discuss with you.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+	
+Snake20::
+	;DB "Do you have 20 coins kiddo'?", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	;DB "Oh! Excellent! Gim'me that&nl; and I'll let you enter in this", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	;DB "Master room. ", DLG_WKEY, "My boss told me&nl;not to let anyone in there, ", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	;DB "but my wage is trash and,&nl;seriously, ", DLG_WKEY, "the hell with him!", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	;DB "I'm not his puppet!  Plus,&nl;I'm desperate. Tomorrow is", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	;DB "my wife's birthday and I didn't&nl;find a gift cheaper than 20.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	;DB "20 coins and I'll give you&nl;permanent access to the", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	;DB "Master's room. ", DLG_WKEY, "20 coins and&nl;you'll never see me again.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	;DB "That's right, I have no dignity.&nl;But guess what?", DLG_WKEY, DLG_CLR0, DLG_CLR1	
+	;DB "I'm a snake!&nl;Snakes don't have dignity.", DLG_WKEY, DLG_CLR0, DLG_CLR1	
+	DB "HAHAHAHAHAHA!!!", DLG_WKEY, DLG_CLR0, DLG_CLR1	
+	DB DLG_EXEC
+	DW SnakeRun
+	DB "               ", DLG_CLR0, DLG_CLR1
+	DB ".   .   .   .   .   .   .   .   .   .", DLG_WKEY, DLG_CLR0, DLG_CLR1	
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+	
+	
+SnakeRun::
+	ld hl, rLCDC
+	res 5, [hl]	
+	
+	ldh a, [hMMCX]
+	cp $0D
+	call z, SnakeMoveRight
+	ld b, $58
+	call __snakeUpdate
+	
+	call waitForVBlank
+	initOAM ShadowOAM
+	ld e, 80
+	.loop
+	ld hl, ShadowOAM+$10
+	REPT(4)
+	inc [hl]
+	inc [hl]
+	inc l
+	inc l
+	inc l
+	inc l
+	ENDR
+	call waitForVBlank
+	initOAM ShadowOAM
+	dec e
+	jr nz, .loop
+	
+	ld hl, rLCDC
+	set 5, [hl]	
+	call waitForVBlank
+	call waitForVBlank
+	
+	ld a, 1
+	ld [sSnakeCleared], a
+	ld [wSnakeCleared], a
+	ld a, [sCatCoins]
+	sub $20
+	ld [sCatCoins], a
+	
+SnakeClear::
+	; remove snake
+	xor a
+	ld [wMnpcCount], a ; snake is the only npc on that map,
+	; so clear all NPCs is the simplest solution
+	
+	; free the tile occupied by the snake
+	ld [wMapMetadata + 16*2 + 13], a	
+	
+	ret
+	
+SnakeMoveRight::
+	; set snake right
+	ld b, $5C
+	call __snakeUpdate
+	
+	call waitForVBlank
+	initOAM ShadowOAM
+	
+	ld e, 16
+.loop
+	ld hl, ShadowOAM+$11
+	REPT(4)
+	inc [hl]
+	inc l
+	inc l
+	inc l
+	inc l
+	ENDR
+	call waitForVBlank
+	initOAM ShadowOAM
+	dec e
+	jr nz, .loop
+	ret
