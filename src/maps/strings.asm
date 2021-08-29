@@ -91,6 +91,29 @@ RewardMessage::
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
 	
+SECTION "Room payments", ROM0
+
+MediumPaymentNotice::
+	DB "2 Cat Coins will be spent for this action.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+	
+HardPaymentNotice::
+	DB "4 Cat Coins will be spent for this action.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+	
+NotEnoughMoneyNotice::
+	DB "You don't have enough money.&nl;Go solve more sliding puzzles.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+	
+PocketsFullNotice::
+	DB "Your pockets can't hold more&nl;than 50 Cat Coins.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "You dropped the extra coins.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+	
 SECTION "Snake Lines", ROM0
 
 SnakeNot20::

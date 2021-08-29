@@ -188,7 +188,35 @@ _mAction_EnterPuzzleRoomM::
 	REPT(3)
 	call TileMap_Execute_OnlyMovQ
 	ENDR
+
+	ld a, HIGH( MediumPaymentNotice )
+	ld [StrAddr], a
+	ld a, LOW( MediumPaymentNotice )	
+	ld [StrAddr + 1], a	
+	call Tilemap_DialogRender
 	
+	ld a, [sCatCoins]
+	cp 2
+	jr nc, .proceed
+	
+	ld a, HIGH( NotEnoughMoneyNotice )
+	ld [StrAddr], a
+	ld a, LOW( NotEnoughMoneyNotice )	
+	ld [StrAddr + 1], a	
+	call Tilemap_DialogRender
+	
+	;exit gloriously :))
+	xor a
+	ld [hIsValidStep], a
+
+	ld de, MovQInstr_Down
+	jp MovQueueLaunch
+	
+.proceed
+	ld a, [sCatCoins]
+	sub 2
+	daa
+	ld [sCatCoins], a
 	; backup VRAM$8800, Tilemap$9800 and OAM and prepare to run the Game room
 	call TakeVRAMSnapshot
 	
@@ -230,6 +258,35 @@ _mAction_EnterPuzzleRoomH::
 	REPT(3)
 	call TileMap_Execute_OnlyMovQ
 	ENDR
+	
+	ld a, HIGH( HardPaymentNotice )
+	ld [StrAddr], a
+	ld a, LOW( HardPaymentNotice )	
+	ld [StrAddr + 1], a	
+	call Tilemap_DialogRender
+	
+	ld a, [sCatCoins]
+	cp 4
+	jr nc, .proceed
+	
+	ld a, HIGH( NotEnoughMoneyNotice )
+	ld [StrAddr], a
+	ld a, LOW( NotEnoughMoneyNotice )	
+	ld [StrAddr + 1], a	
+	call Tilemap_DialogRender
+	
+	;exit gloriously :))
+	xor a
+	ld [hIsValidStep], a
+
+	ld de, MovQInstr_Down
+	jp MovQueueLaunch
+	
+.proceed
+	ld a, [sCatCoins]
+	sub 4
+	daa
+	ld [sCatCoins], a
 	
 	; backup VRAM$8800, Tilemap$9800 and OAM and prepare to run the Game room
 	call TakeVRAMSnapshot
@@ -315,26 +372,55 @@ _mAction_ExitPuzzleRoomH::
 	ld a, [wCCReward]
 	or a
 	ret z
+	
 	ld [wRewardMessage + 8], a
+	
+	push af
+	ld a, HIGH( wRewardMessage )
+	ld [StrAddr], a
+	ld a, LOW( wRewardMessage )	
+	ld [StrAddr + 1], a	
+	call Tilemap_DialogRender
+	pop af
+	
 	ld c, a
 .loop
 	push bc
+	call TileMap_Execute_OnlyMovQ
+	call TileMap_Execute_OnlyMovQ
 	call TileMap_Execute_OnlyMovQ
 	pop bc
 	ld hl, sCatCoins
 	ld a, [hl]
 	add 1
 	daa
+	cp $51
+	jr nc, .pocketsFull
+	
 	ld [hl], a
 	dec c
 	jr nz, .loop
 	xor a
 	ld [wCCReward], a
+	jp TileMap_Execute_OnlyMovQ
 	
-	call TileMap_Execute_OnlyMovQ
+.pocketsFull
+	; executes if players attempt to get more than 50 Cat Coins
+	ld a, $50
+	ld [sCatCoins], a
 	
-	PlayDialog wRewardMessage
-	ret
+	ld a, HIGH( PocketsFullNotice )
+	ld [StrAddr], a
+	ld a, LOW( PocketsFullNotice )	
+	ld [StrAddr + 1], a	
+	call Tilemap_DialogRender
+	
+	xor a
+	ld [wCCReward], a
+	
+	jp TileMap_Execute_OnlyMovQ
+	
+
 	
 _mAction_ExitPuzzleRoomX::
 	ret

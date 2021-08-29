@@ -1346,12 +1346,12 @@ give1Coin::
 	ld b, 1
 	ret
 	
-give2Coins::
-	ld b, 2
+give2Coins:: ; 2^2
+	ld b, 4
 	ret
 	
-give3Coins::
-	ld b, 2
+give3Coins:: ; 3^2
+	ld b, 9
 	ret
 
 SECTION "Puzzle Moves Vars", WRAM0
