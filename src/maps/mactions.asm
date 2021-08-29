@@ -324,6 +324,7 @@ _mAction_EnterPuzzleRoomH::
 	jp MovQueueLaunch
 	ret
 	
+SECTION "mActions Enter Master", ROMX, BANK[4]
 _mAction_EnterPuzzleRoomX::
 	REPT(3)
 	call TileMap_Execute_OnlyMovQ
@@ -355,15 +356,10 @@ _mAction_EnterPuzzleRoomX::
 	ldh [rBGP], a
 	ldh [rOBP0], a
 	
-	; restore VRAM$8800, Tilemap$9800 & OAM and continue map execution
-	call RestoreVRAMSnapshot
+	; The game is practically finished
+	; run the ending
 	
-	xor a
-	ld [hIsValidStep], a
-	
-	ld de, MovQInstr_Down
-	jp MovQueueLaunch
-	ret
+	jp EndingMain
 	
 
 _mAction_ExitPuzzleRoomE::
