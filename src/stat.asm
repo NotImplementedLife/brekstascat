@@ -10,10 +10,47 @@ STATInterrupt:
 SECTION "STAT Handler", ROM0
 
 STATHandler:
-	ld a, [rLY]
+	push bc
+	push de
+	;ld b,b
 	
-	ld hl, rLYC
-	inc [hl]
+	ldh a, [rLYC]
+	inc a
+	cp 143
+	jr nz, .skip0
+	xor a
+.skip0
+	ldh [rLYC], a
+	
+	
+	ld b, HIGH(EndingRowData)	
+	ld d, 0
+	ldh a, [rLY]
+	inc a
+	ld c, a
+	
+	ldh a, [rSCY]
+	add c
+	jr nc, .skipD
+	ld d, $20
+.skipD
+	rrca
+	rrca
+	rrca
+	and %00011111
+	add d
+	ld c, a
+	ld a, [EndingCompensateY]
+	add c
+	ld c, a
+	ld a, [bc]
+	ld d, a
+	wait_vram
+	ldh a, [rLCDC]
+	and $EF
+	or d
+	ldh [rLCDC], a
+	pop de
+	pop bc
 	
     reti
-	
