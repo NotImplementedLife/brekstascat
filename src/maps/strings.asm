@@ -216,3 +216,63 @@ SnakeMoveRight::
 	dec e
 	jr nz, .loop
 	ret
+
+; a character that explains things
+; when speaking to her, she picks one random line
+; from below and tells it to the player 
+SECTION "P_Lines", ROM0
+
+P_StrAddresses::
+	DW P_Str0, P_Str1, P_Str2, P_Str3, P_Str4, P_Str5, P_Str6, P_Str7, P_Str8
+
+P_Str0::
+	DB "So you were also chosen by&nl;Valnyssa to save this crappy", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "world? I failed... and now&nl;I'm just stuck here.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "My sister must be worried.&nl;I want to get out of here!", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+P_Str1::
+	DB "You can enter the easy room&nl;for free. However, you must", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "pay for playing at other&nl;difficulties.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "I accidentally left the room&nl;during a hard puzzle, and I", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "lost my precious 5 Cat Coins&nl;I worked so hard for...", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "Don't press B during a puzzle&nl;unless you are sure you want", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "to give up.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+P_Str2::
+	DB "There's a terrifying snake&nl;guarding the Master room.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "I'm so scared...", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+P_Str3::
+	DB "Species reveal:&nl;", DLG_WKEY,"I'm a human!!!", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+P_Str4::
+	DB "You can check the highscore&nl;table in this room to see", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "your time record for each&nl;sliding puzzle.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+P_Str5::
+	DB "2+2=5. It's not a mistake,&nl;it's called a synergy.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+P_Str6::
+	DB "Why do I always stay in this&nl;corner, you ask?", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "Because I feel like in a prison.&nl;I don't know how long it is since", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "I arrived here, but being&nl; awake feels like a vague,", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "distant memory.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+P_Str7::
+	DB "This is without doubt a dream,&nl;but for some reason the", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "experience feels too real.", DLG_WKEY, " Am&nl;I having a lucid dream?", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+P_Str8::
+	DB "I hope you know the Greek&nl;alphabet.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn
+	
+

@@ -74,8 +74,7 @@ _mAction_Inforoom_HighScoreRead::
 	
 	xor a
 	ld [OffsetX], a
-	call RestoreVRAMSnapshot
-	ret
+	jp RestoreVRAMSnapshot
 
 TableLeft::
 	ld a, [wHSTableSelected]
@@ -181,7 +180,6 @@ _mAction_EnterPuzzleRoomE::
 	
 	ld de, MovQInstr_Down
 	jp MovQueueLaunch
-	ret
 
 SECTION "mActions Enter Medium", ROMX, BANK[4]
 _mAction_EnterPuzzleRoomM::
@@ -251,7 +249,6 @@ _mAction_EnterPuzzleRoomM::
 	
 	ld de, MovQInstr_Down
 	jp MovQueueLaunch
-	ret
 	
 SECTION "mActions Enter Hard", ROMX, BANK[4]
 _mAction_EnterPuzzleRoomH::
@@ -322,7 +319,6 @@ _mAction_EnterPuzzleRoomH::
 	
 	ld de, MovQInstr_Down
 	jp MovQueueLaunch
-	ret
 	
 SECTION "mActions Enter Master", ROMX, BANK[4]
 _mAction_EnterPuzzleRoomX::
@@ -456,6 +452,7 @@ _mAction_Snake::
 .negative
 	PlayDialog SnakeNot20	
 	
+SECTION "Snake pos", ROM0
 __snakeSetFront::
 	ld b, $58
 	jr __snakeUpdate
@@ -489,6 +486,55 @@ __snakeCheckOnMapExnter::
 	or a
 	ret z
 	jp SnakeClear
+	
+SECTION "NPC P", ROMX, BANK[4]
+
+_mAction_Inforoom_SpeakToP::
+	; reseed rand
+	ld hl, rSeed1
+	ldh a, [$FF04]
+	ld [hli], a
+	call rtcGetMinutes
+	ld [hli], a
+	call rtcGetHours
+	ld [hli], a
+	ld a, $47
+	ld [hl], a
+	; check the column where the player is to set the snake's orientation accordingly
+	ldh a, [hMMCX]
+	cp $03
+	call z, __pSetBack
+	cp $04
+	call z, __pSetRight
+	;ld b,b
+	; pick a random line from Str0 to Str3
+	ld b, 9
+	call rand
+	rlca
+	ld c, a
+	ld b, 0
+	ld hl, P_StrAddresses
+	add hl, bc
+	
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	
+	ld a, h
+	ld [StrAddr], a
+	ld a, l
+	ld [StrAddr + 1], a	
+	jp Tilemap_DialogRender
+
+SECTION "NPC P Place", ROMX, BANK[4]
+__pSetBack::
+	ld b, $68
+	jp __snakeUpdate ; it's the same code
+	
+__pSetRight::
+	ld b, $64
+	jp __snakeUpdate
+	
 	
 SECTION "Puzzle room loading vars", WRAM0
 

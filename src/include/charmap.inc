@@ -28,6 +28,7 @@ CHARMAP "\"", $2B
 CHARMAP ":", $2C
 CHARMAP "<", $2D
 CHARMAP ">", $2E
+CHARMAP "=", $2F
 
 LOWER_BASE EQU $30
 
@@ -38,6 +39,7 @@ REPT STRLEN("{LCHARS}")
 LCHAR = LCHAR + 1
 ENDR
 
+CHARMAP "+", $4A
 
 CHARMAP "&nl;", $F2
 CHARMAP "&key;", $F3
