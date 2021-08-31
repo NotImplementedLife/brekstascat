@@ -356,10 +356,25 @@ _mAction_EnterPuzzleRoomX::
 	ldh [rBGP], a
 	ldh [rOBP0], a
 	
+	; check CatCoinsReward!=0 to see if player completed
+	; the puzzle or just pressed B to exit
+	ld a, [wCCReward]
+	or a
+	jr z, .notCompleted
+	
 	; The game is practically finished
 	; run the ending
-	
+	pop af ; fake ret
 	jp EndingMain
+.notCompleted:
+	; restore VRAM$8800, Tilemap$9800 & OAM and continue map execution
+	call RestoreVRAMSnapshot
+	
+	xor a
+	ld [hIsValidStep], a
+	
+	ld de, MovQInstr_Down
+	jp MovQueueLaunch
 	
 
 _mAction_ExitPuzzleRoomE::

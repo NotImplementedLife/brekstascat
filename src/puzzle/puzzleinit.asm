@@ -173,6 +173,8 @@ Puzzle_Init::
 	xor a
 	ld [hl], a
 	
+	; comment this if don't want to solve the puzzle and just test some
+	; after-puzzle functionality
 	call PuzzleShuffle
 	
 	; update empty index

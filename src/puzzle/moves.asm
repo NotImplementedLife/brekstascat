@@ -1203,6 +1203,11 @@ PuzzleCheckComplete::
 	cp 5
 	call z, give3Coins
 	
+	; actually comepleting Master puzzle doesn't give coins,
+	; but set reward anyway for coding reasons
+	cp 6
+	call z, give3Coins
+	
 	ld a, b
 	ld [wCCReward], a
 	
@@ -1354,6 +1359,7 @@ give3Coins:: ; 3^2
 	ld b, 9
 	ret
 
+	
 SECTION "Puzzle Moves Vars", WRAM0
 
 wEmptyIndex::

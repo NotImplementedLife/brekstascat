@@ -123,16 +123,16 @@ SnakeNot20::
 	DW Tilemap_DialogReturn
 	
 Snake20::
-	;DB "Do you have 20 coins kiddo'?", DLG_WKEY, DLG_CLR0, DLG_CLR1
-	;DB "Oh! Excellent! Gim'me that&nl; and I'll let you enter in this", DLG_WKEY, DLG_CLR0, DLG_CLR1
-	;DB "Master room. ", DLG_WKEY, "My boss told me&nl;not to let anyone in there, ", DLG_WKEY, DLG_CLR0, DLG_CLR1
-	;DB "but my wage is trash and,&nl;seriously, ", DLG_WKEY, "the hell with him!", DLG_WKEY, DLG_CLR0, DLG_CLR1
-	;DB "I'm not his puppet!  Plus,&nl;I'm desperate. Tomorrow is", DLG_WKEY, DLG_CLR0, DLG_CLR1
-	;DB "my wife's birthday and I didn't&nl;find a gift cheaper than 20.", DLG_WKEY, DLG_CLR0, DLG_CLR1
-	;DB "20 coins and I'll give you&nl;permanent access to the", DLG_WKEY, DLG_CLR0, DLG_CLR1
-	;DB "Master's room. ", DLG_WKEY, "20 coins and&nl;you'll never see me again.", DLG_WKEY, DLG_CLR0, DLG_CLR1
-	;DB "That's right, I have no dignity.&nl;But guess what?", DLG_WKEY, DLG_CLR0, DLG_CLR1	
-	;DB "I'm a snake!&nl;Snakes don't have dignity.", DLG_WKEY, DLG_CLR0, DLG_CLR1	
+	DB "Do you have 20 coins kiddo'?", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "Oh! Excellent! Gim'me that&nl; and I'll let you enter in this", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "Master room. ", DLG_WKEY, "My boss told me&nl;not to let anyone in there, ", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "but my wage is trash and,&nl;seriously, ", DLG_WKEY, "the hell with him!", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "I'm not his puppet!  Plus,&nl;I'm desperate. Tomorrow is", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "my wife's birthday and I didn't&nl;find a gift cheaper than 20.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "20 coins and I'll give you&nl;permanent access to the", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "Master's room. ", DLG_WKEY, "20 coins and&nl;you'll never see me again.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "That's right, I have no dignity.&nl;But guess what?", DLG_WKEY, DLG_CLR0, DLG_CLR1	
+	DB "I'm a snake!&nl;Snakes don't have dignity.", DLG_WKEY, DLG_CLR0, DLG_CLR1	
 	DB "HAHAHAHAHAHA!!!", DLG_WKEY, DLG_CLR0, DLG_CLR1	
 	DB DLG_EXEC
 	DW SnakeRun

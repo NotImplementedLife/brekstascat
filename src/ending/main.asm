@@ -5,6 +5,13 @@ SECTION "Ending Main", ROM0
 EndingMain::
 	call clearVRAM
 	
+	ldh a, [rLCDC]
+	res 1, a
+	ldh [rLCDC], a
+	
+	xor a
+	ldh [rSCY], a
+	
 	setBank 7
 	
 	; Ok, this is tricky
@@ -349,14 +356,27 @@ EndingNextRow2::
 SECTION "End Game", ROM0
 
 endGame:
+	; disable STAT
+	
+	ldh a, [rSTAT]
+	and $BF
+	ldh [rSTAT], a
+	
+	ld a, [rIE]
+	and $F7
+	ld [rIE], a ; Enable STAT interrupt
+
 	ld c, 100
 .loop
 	call waitForVBlank
 	dec c
 	jr nz, .loop
 	; this marks the end of game
-	; nothing is done rn
-	ld b,b
+	; return to start
+	call TileMap_Init
+	setBank MAPS_BANK
+	jp Start.comeBackPoint
+	;ld b,b
 	jr @
 	
 SECTION "Ending Vars", WRAM0
