@@ -63,11 +63,9 @@ Limitations:
 <img src="README_Resources/ss01.png"></img>
 <img src="README_Resources/ss02.png"></img>
 <img src="README_Resources/ss03.png"></img>
-
 <img src="README_Resources/ss04.png"></img>
 <img src="README_Resources/ss05.png"></img>
 <img src="README_Resources/ss06.png"></img>
-
 <img src="README_Resources/ss07.png"></img>
 <img src="README_Resources/ss08.png"></img>
 <img src="README_Resources/ss09.png"></img>
