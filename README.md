@@ -63,11 +63,9 @@ Limitations:
 <img src="README_Resources/ss01.png"></img>
 <img src="README_Resources/ss02.png"></img>
 <img src="README_Resources/ss03.png"></img>
-
 <img src="README_Resources/ss04.png"></img>
 <img src="README_Resources/ss05.png"></img>
 <img src="README_Resources/ss06.png"></img>
-
 <img src="README_Resources/ss07.png"></img>
 <img src="README_Resources/ss08.png"></img>
 <img src="README_Resources/ss09.png"></img>
@@ -75,7 +73,7 @@ Limitations:
 ## Credits
 
 - [Optix™](https://github.com/Hacktix) who created the GB Compo 2021 logo
-- Calindro, [Daid](https://github.com/daid), [Eievui](https://github.com/GreenAndEievui), [ISSOtm](https://github.com/ISSOtm), [martendo](https://github.com/martendo), [nitro2k01](https://github.com/nitro2k01), [PinoBatch](https://github.com/pinobatch) from the [GBDev Community](https://gbdev.io/) for helping me figure out hardware-related issues and showing me methods and code I needed at a certain point in my project
+- [Calindro](https://github.com/Calindro), [Daid](https://github.com/daid), [Eievui](https://github.com/GreenAndEievui), [ISSOtm](https://github.com/ISSOtm), [martendo](https://github.com/martendo), [nitro2k01](https://github.com/nitro2k01), [PinoBatch](https://github.com/pinobatch) from the [GBDev Community](https://gbdev.io/) for helping me figure out hardware-related issues and showing me methods and code I needed at a certain point in my project
 - Some of the pictures I used for the puzzles come from the internet. This applies for [DS Lite](https://www.trustedreviews.com/wp-content/uploads/sites/54/2006/06/3051-4-1.jpg), [Mona Lisa](https://upload.wikimedia.org/wikipedia/commons/6/6a/Mona_Lisa.jpg) (obviously not mine), [Clock](https://www.etsy.com/listing/1042550112/vintage-slava-desk-clock-mechanical?ga_order=most_relevant&ga_search_type=all&ga_view_type=gallery&ga_search_query=slava+11+jewels&ref=sr_gallery-1-26), [Creeper](https://i.redd.it/wpz1hfn49fi41.png), [Klein bottle](https://www.dummies.com/education/science/physics/string-theory-and-three-dimensions-of-space/) and [Triforce](https://zelda.fandom.com/wiki/Triforce).
 
 ## Linked
