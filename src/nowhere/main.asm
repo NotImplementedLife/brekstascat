@@ -67,6 +67,14 @@ Nowhere_Main::
 	call waitForVBlank
 	ld a, LCDCF_ON | LCDCF_BGON | LCDCF_OBJ16; | LCDCF_OBJON
 	ldh [rLCDC], a	
+	
+	; init sound
+	xor a
+	ld [wNowhereMusicOffset], a
+	ld [wNowhereFreq], a
+	ld a, 2
+	ld [wNowhereCoolDown], a
+	
 	call waitForVBlank
 	
 	; "nowhere" main loop	
@@ -213,6 +221,70 @@ Nowhere_Main::
 	ld a, [BackupPalette]
 	ldh [rBGP], a
 	
+	;xor a
+	;ldh [rNR30], a ; sound 1 channel off
+	;ld a, $80
+	;ldh [rNR30], a ; sound 1 channel on
+	;ld a, $40
+	;ldh [rNR31], a
+	;ld a, %01000000
+	;ldh [rNR32], a
+	;ld a, c
+	;add $10
+	;ld c, a
+	;ldh [rNR33], a
+	;ld a, %11000111
+	;ldh [rNR34], a
+	ld a, [wNowhereCoolDown]
+	or a
+	jr nz, .skipmusic
+	
+.readNote:
+	ld h, HIGH(NowhereMusic)
+	ld a, [wNowhereMusicOffset]
+	ld l, a
+	inc a
+	ld [wNowhereMusicOffset], a
+	ld a, [hl]
+	
+	cp $FF
+	jr z, .pauseinmusic
+	
+	ld l, a
+	
+	ld a, $80
+	ldh [rNR52], a
+		
+	ld a, $22
+	ldh [rNR51], a
+		
+	ld a, $77
+	ldh [rNR50], a
+	
+	ld  a, $82
+	ldh [rNR21], a
+	ld  a, $a4
+	ldh [rNR22], a
+	
+	ld h, HIGH(MusicalNotes)
+	inc l
+	ld a, [hld]
+	ldh [rNR23], a
+	
+	ld a, [hl]
+	or $80
+	ldh [rNR24], a
+	
+.pauseinmusic:
+	ld a, 7
+	ld [wNowhereCoolDown], a
+	jr .musicend
+.skipmusic:
+	ld a, [wNowhereCoolDown]
+	dec a
+	ld [wNowhereCoolDown], a
+
+.musicend:
 	burn 16
 	
 	; another vBlank

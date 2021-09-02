@@ -15,12 +15,14 @@ Maps_Main::
 	; init dialog
 	ld [TMDialogActive], a
 	ld [DownArr], a
+	;init sound
+	ld [wMapsMusicOffset], a
+	ld [wMapsCoolDown], a
 	; init dialog Down Arr address
 	ld a, $9C
 	ld [ArrAddress], a
 	ld a, $72
 	ld [ArrAddress + 1], a
-
 	
 	
 	ld a, [rLCDC]

@@ -194,6 +194,7 @@ arrEventDownStepOn::
 	xor a
 	ld d, a
 	
+	call TileMap_Execute_OnlyMovQ.processMusic
 	call waitForVBlank
 	ld hl, $99CD ; VRAM offset for block tiles
 	add hl, de
@@ -289,26 +290,35 @@ arrEventDownStepOn::
 	ld [hl], e
 	
 	initOAM ShadowOAM
-	
 	;ld b,b
 	pop af
 	
 	ld hl, ShadowOAM + 32*4
 	
-	ld b, 16
+	ld b, 8
 .moveLoop
 	call waitForVBlank
 	push hl
 	
 REPT(3)
 	inc [hl]
+	inc [hl]
 	REPT(4)
 	inc hl
 	ENDR
 ENDR
 	inc [hl]
+	inc [hl]
 	
 	initOAM ShadowOAM
+	
+	push bc
+	push af
+	call waitForVBlank
+	call TileMap_Execute_OnlyMovQ.processMusic
+	pop af
+	pop bc
+	
 	pop hl
 	
 	dec b
@@ -443,6 +453,8 @@ arrEventUpStepOn::
 	xor a
 	ld d, a
 	
+	call TileMap_Execute_OnlyMovQ.processMusic
+	
 	call waitForVBlank
 	ld hl, $99CD ; VRAM offset for block tiles
 	add hl, de
@@ -545,20 +557,30 @@ arrEventUpStepOn::
 	
 	ld hl, ShadowOAM + 32*4
 	
-	ld b, 16
+	ld b, 8
 .moveLoop
 	call waitForVBlank
 	push hl
 	
 REPT(3)
 	dec [hl]
+	dec [hl]
 	REPT(4)
 	inc hl
 	ENDR
 ENDR
 	dec [hl]
+	dec [hl]
 	
 	initOAM ShadowOAM
+	
+	push bc
+	push af
+	call waitForVBlank
+	call TileMap_Execute_OnlyMovQ.processMusic
+	pop af
+	pop bc
+	
 	pop hl
 	
 	dec b
@@ -694,6 +716,8 @@ arrEventRightStepOn::
 	xor a
 	ld d, a
 	
+	call TileMap_Execute_OnlyMovQ.processMusic
+	
 	call waitForVBlank
 	ld hl, $99CD ; VRAM offset for block tiles
 	add hl, de
@@ -796,20 +820,30 @@ arrEventRightStepOn::
 	
 	ld hl, ShadowOAM + 32*4 + 1
 	
-	ld b, 16
+	ld b, 8
 .moveLoop
 	call waitForVBlank
 	push hl
 	
 REPT(3)
 	inc [hl]
+	inc [hl]
 	REPT(4)
 	inc hl
 	ENDR
 ENDR
 	inc [hl]
+	inc [hl]
 	
 	initOAM ShadowOAM
+	
+	push bc
+	push af
+	call waitForVBlank
+	call TileMap_Execute_OnlyMovQ.processMusic
+	pop af
+	pop bc
+	
 	pop hl
 	
 	dec b
@@ -945,6 +979,7 @@ arrEventLeftStepOn::
 	xor a
 	ld d, a
 	
+	call TileMap_Execute_OnlyMovQ.processMusic
 	call waitForVBlank
 	ld hl, $99CD ; VRAM offset for block tiles
 	add hl, de
@@ -1047,20 +1082,30 @@ arrEventLeftStepOn::
 	
 	ld hl, ShadowOAM + 32*4 + 1
 	
-	ld b, 16
+	ld b, 8
 .moveLoop
 	call waitForVBlank
 	push hl
 	
 REPT(3)
 	dec [hl]
+	dec [hl]
 	REPT(4)
 	inc hl
 	ENDR
 ENDR
 	dec [hl]
+	dec [hl]
 	
 	initOAM ShadowOAM
+	
+	push bc
+	push af
+	call waitForVBlank
+	call TileMap_Execute_OnlyMovQ.processMusic
+	pop af
+	pop bc
+	
 	pop hl
 	
 	dec b
@@ -1115,7 +1160,7 @@ arrEventDownStepOut::
 	ret z
 	xor a
 	ld [wPlayerOnArrow], a
-	call waitForVBlank
+	wait_vram
 	ld a, $94
 	ld [$9951], a
 	ld [$9971], a
@@ -1131,7 +1176,7 @@ arrEventUpStepOut::
 	ret z
 	xor a
 	ld [wPlayerOnArrow], a
-	call waitForVBlank
+	wait_vram
 	ld a, $94
 	ld [$9AD1], a
 	ld [$9AF1], a
@@ -1147,7 +1192,7 @@ arrEventRightStepOut::
 	ret z
 	xor a
 	ld [wPlayerOnArrow], a
-	call waitForVBlank
+	wait_vram
 	ld a, $94
 	ld [$9A0B], a
 	ld [$9A2B], a
@@ -1163,7 +1208,7 @@ arrEventLeftStepOut::
 	ret z
 	xor a
 	ld [wPlayerOnArrow], a
-	call waitForVBlank
+	wait_vram
 	ld a, $94
 	ld [$9A17], a
 	ld [$9A37], a

@@ -418,6 +418,11 @@ TileMap_Execute::
 	
 .skipCurrentPosEventCheck:
 	
+	
+	;
+	call TileMap_Execute_OnlyMovQ.processMusic
+	;
+	
 	call waitForVBlank
 	
 	;ld hl, ShadowOAM
@@ -501,6 +506,7 @@ TileMap_Execute::
 	pop bc
 	dec b
 	jr nz, .createOamFromNpcLoop
+	
 .finOam
 	; copy CatCoin OAM display
 	ld hl, ShadowOAM+37*4
@@ -648,6 +654,8 @@ TileMap_Execute_OnlyMovQ::
 	
 	; don't check events
 	
+	call TileMap_Execute_OnlyMovQ.processMusic
+	
 	call waitForVBlank
 	
 	;ld hl, ShadowOAM
@@ -749,6 +757,60 @@ TileMap_Execute_OnlyMovQ::
 	add $70
 	ld [ShadowOAM+38*4+2], a
 	initOAM ShadowOAM
+	ret
+	
+.processMusic::
+	;ld b,b
+	ld a, [wMapsCoolDown]
+	or a
+	jr nz, .skipmusic
+	
+.readNote:
+	ld h, HIGH(MapsMusic)
+	ld a, [wMapsMusicOffset]
+	ld l, a
+	inc a
+	ld [wMapsMusicOffset], a
+	ld a, [hl]
+	
+	cp $FF
+	jr z, .pauseinmusic
+	
+	ld l, a
+	
+	ld a, $80
+	ldh [rNR52], a
+		
+	ld a, $22
+	ldh [rNR51], a
+		
+	ld a, $77
+	ldh [rNR50], a
+	
+	ld  a, $82
+	ldh [rNR21], a
+	ld  a, $a4
+	ldh [rNR22], a
+	
+	ld h, HIGH(MusicalNotes)
+	inc l
+	ld a, [hld]
+	ldh [rNR23], a
+	
+	ld a, [hl]
+	or $80
+	ldh [rNR24], a
+	
+.pauseinmusic:
+	ld a, 7
+	ld [wMapsCoolDown], a
+	jr .musicend
+.skipmusic:
+	ld a, [wMapsCoolDown]
+	dec a
+	ld [wMapsCoolDown], a
+.musicend:
+	
 	ret
 
 SECTION "Tilemap Pixel Position Solver", ROM0

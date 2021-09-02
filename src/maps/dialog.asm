@@ -1,11 +1,16 @@
 INCLUDE "src/include/macros.inc"
 
-SECTION "TileMap Dialog", ROMX, BANK[4]
+SECTION "TileMap Dialog", ROM0
 
 ; hl = text source
 Tilemap_DialogRender::
 	; move everything up 48px to make room for the dialog Window (animate)
 	ld hl, rWY
+	
+	ld a, [wMapsCoolDown]
+	sla a
+	ld [wMapsCoolDown], a
+	
 	ldh a, [rSCY]
 	ld b, 16
 .showDialogLoop:
@@ -13,7 +18,7 @@ Tilemap_DialogRender::
 	call waitForVBlank
 	
 	ld a, [hl]
-	sub 3	
+	sub 3
 	ld [hl], a
 	
 	pop af	
@@ -35,6 +40,14 @@ Tilemap_DialogRender::
 	pop af
 	pop hl
 	
+	push hl
+	push bc
+	push af
+	call ProcessMusicDoubleCooldown
+	pop af
+	pop bc
+	pop hl
+	
 	dec b	
 	jp nz, .showDialogLoop	
 	
@@ -44,6 +57,8 @@ Tilemap_DialogRender::
 .dialogLoop
 	call waitForVBlank
 	call NextChar
+	
+	call ProcessMusicDoubleCooldown
 	
 	ld a, [TMDialogActive]
 	or a
@@ -60,7 +75,7 @@ Tilemap_DialogRender::
 	call waitForVBlank
 	
 	ld a, [hl]
-	add 3	
+	add 3
 	ld [hl], a
 	
 	pop af
@@ -82,8 +97,20 @@ Tilemap_DialogRender::
 	pop af
 	pop hl
 	
+	push hl
+	push bc
+	push af
+	call ProcessMusicDoubleCooldown
+	pop af
+	pop bc
+	pop hl
+	
 	dec b	
 	jp nz, .hideDialogLoop	
+	
+	ld a, [wMapsCoolDown]
+	srl a
+	ld [wMapsCoolDown], a
 	
 	ret
 
