@@ -10,6 +10,11 @@ sCatCoins:: DS 1
 
 sSnakeCleared:: DS 1
 
+; when player completes the tutorial (places the stones in 
+; the playground room in reverse order), he receives some coins
+; this byte controls the bonus to be given only once
+sTutorialBonusGiven:: DS 1
+
 ; the free matrix in the Playground map
 sTutorialMatrix::
 	DS 9  ; 3x3, 1..8, 0 = free square
@@ -44,6 +49,7 @@ SRAM_Init::
 	ld [sNowhereIntroComplete], a
 	ld [sCatCoins], a
 	ld [sSnakeCleared], a
+	ld [sTutorialBonusGiven], a
 	; init all the high score tables
 	; place an 08 on hours place to know that 
 	; the respective puzzle was never solved

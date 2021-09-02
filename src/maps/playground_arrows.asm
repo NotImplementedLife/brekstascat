@@ -1,4 +1,5 @@
 INCLUDE "src/include/macros.inc"
+INCLUDE "src/include/charmap.inc"
 
 
 SECTION "Playground Block Top Tiles", ROMX, BANK[4], ALIGN[4]
@@ -354,7 +355,8 @@ ENDR
 	call waitForVBlank
 	initOAM ShadowOAM
 	
-	ret
+	jp CheckBonus
+	;ret
 	
 	
 ;-------------------------------------------------------------------------------------------------------------
@@ -603,7 +605,8 @@ ENDR
 	call waitForVBlank
 	initOAM ShadowOAM
 	
-	ret
+	jp CheckBonus
+	;ret
 	
 ;-------------------------------------------------------------------------------------------------------------
 arrEventRightStepOn::
@@ -853,7 +856,8 @@ ENDR
 	call waitForVBlank
 	initOAM ShadowOAM
 	
-	ret
+	jp CheckBonus
+	;ret
 	
 ;-------------------------------------------------------------------------------------------------------------
 arrEventLeftStepOn::
@@ -1103,7 +1107,8 @@ ENDR
 	call waitForVBlank
 	initOAM ShadowOAM
 	
-	ret
+	jp CheckBonus
+	;ret
 	
 arrEventDownStepOut::
 	ld a, [wPlayerOnArrow]
@@ -1200,7 +1205,80 @@ Div3::
 	ld l, a          ; 1
 	ld a, [hl]       ; 2
 	ret              ; 4
+	
+SECTION "Playground arrows check bonus", ROM0
 
+CheckBonus::
+	ld a, [sTutorialBonusGiven]
+	or a
+	ret nz
+	
+	ld a, [sTutorialMatrix]
+	or a
+	ret nz
+	
+	ld hl, sTutorialMatrix+1
+	ld b, 8
+.loop
+	ld a, [hli]
+	cp b
+	ret nz
+	dec b
+	jr nz, .loop
+	
+	
+	ld a, 1
+	ld [sTutorialBonusGiven], a
+	
+	ld a, 10
+	ld [wCCReward], a
+	
+	ld a, HIGH( BonusAwardedString )
+	ld [StrAddr], a
+	ld a, LOW( BonusAwardedString )	
+	ld [StrAddr + 1], a	
+	call Tilemap_DialogRender
+	
+	ld c, 10
+.loopCoins
+	push bc
+	call TileMap_Execute_OnlyMovQ
+	call TileMap_Execute_OnlyMovQ
+	call TileMap_Execute_OnlyMovQ
+	pop bc
+	ld hl, sCatCoins
+	ld a, [hl]
+	add 1
+	daa
+	cp $51
+	jr nc, .pocketsFull
+	ld [hl], a
+	dec c
+	jr nz, .loopCoins
+	
+	xor a
+	ld [wCCReward], a
+	ret
+	
+.pocketsFull
+	; executes if players attempt to get more than 50 Cat Coins
+	ld a, $50
+	ld [sCatCoins], a
+	
+	ld a, HIGH( PocketsFullNotice )
+	ld [StrAddr], a
+	ld a, LOW( PocketsFullNotice )	
+	ld [StrAddr + 1], a	
+	call Tilemap_DialogRender
+	
+	xor a
+	ld [wCCReward], a
+	
+	ret
+
+BonusAwardedString::
+	DB "You received 10 Cat Coins!", $F3, $F0, $F1, $F4
+	DW Tilemap_DialogReturn
 
 
 SECTION "Playground Arrows Vars", WRAM0, ALIGN[3]
