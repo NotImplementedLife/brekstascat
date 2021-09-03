@@ -241,7 +241,8 @@ Nowhere_Main::
 	ld a, $80
 	ldh [rNR52], a
 		
-	ld a, $22
+	ldh a, [rNR51]
+	or $22
 	ldh [rNR51], a
 		
 	ld a, $77

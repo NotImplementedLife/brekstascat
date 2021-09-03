@@ -1,6 +1,6 @@
 ; Thanks : Eievui
 
-SECTION "Shift", ROM0
+SECTION "Shift Left BA", ROM0
 
 ; Do a = b << a [(12 + a) cycles]
 ShiftLeftBA::
@@ -10,7 +10,8 @@ ShiftLeftBA::
 	ld h, HIGH(ShiftLeftBlock) ; 2
 	ld a, b                    ; 1
 	jp hl                      ; 1
-	
+
+SECTION "Shift Right BA", ROM0	
 ; Do a = b >> a [(13 + 2*a) cycles]
 ShiftRightBA::
 	cpl                          ; 1

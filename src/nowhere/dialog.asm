@@ -326,10 +326,6 @@ dialog_waitkey:
 	ld [hl], a
 	
 	; play a pop sound when key prssed
-	
-	
-	ld a, $80
-	ldh [rNR52], a
 		
 	ld a, $23
 	ldh [rNR51], a

@@ -30,21 +30,8 @@ SECTION "Save Key", ROM0, ALIGN[8]
 SRAM_Key:
 DW $1771, $7528, $6725, $0042, $31C5, $B141, $D0D3, $EE00
 
+SECTION "Save init", ROM0
 SRAM_Init::
-	; copy key to SRAM
-	ld b, HIGH(SRAM_Key)
-	ld h, $A0
-	xor a
-	ld c, a
-	ld l, a
-.loop
-	ld a, [bc]
-	ld [hli], a
-	inc c
-	ld a, c
-	and 15
-	jr nz, .loop
-	; now that SRAM key is written, init the save data
 	xor a
 	ld [sNowhereIntroComplete], a
 	ld [sCatCoins], a
@@ -66,8 +53,24 @@ SRAM_Init::
 	ld hl, _6x6_PuzzlesList
 	call SRAM_InitPuzzleList
 	
+	call SRAM_InitTutorialMatrix
 	
-	
+	; copy key to SRAM
+	; to prevent data corruption (e.g. turning off the Gameboy before SRAM
+	; initialization completes), write the SRAM key at the end
+	ld b, HIGH(SRAM_Key)
+	ld h, $A0
+	xor a
+	ld c, a
+	ld l, a
+.loop
+	ld a, [bc]
+	ld [hli], a
+	inc c
+	ld a, c
+	and 15
+	jr nz, .loop
+	ret
 	
 SRAM_InitTutorialMatrix::
 	xor a	
@@ -82,6 +85,8 @@ SRAM_InitTutorialMatrix::
 	
 	ret
 	
+SECTION "Save init puzzle list", ROM0
+
 SRAM_InitPuzzleList::
 	ld a, [hli] ; get puzzle count
 	ld c, a
@@ -112,6 +117,7 @@ SRAM_InitPuzzleList::
 	setBank 1
 	ret
 	
+SECTION "Save check written", ROM0
 
 SRAM_CheckWritten::
 	ld b, HIGH(SRAM_Key)

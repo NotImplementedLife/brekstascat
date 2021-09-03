@@ -2,7 +2,7 @@ INCLUDE "src/include/macros.inc"
 INCLUDE "src/include/charmap.inc"
 
 
-SECTION "Playground Block Top Tiles", ROMX, BANK[4], ALIGN[4]
+SECTION "Playground Block Top Tiles", ROM0, ALIGN[4]
 BlockTop::
 ;DB $A9, $AA, $B9, $BA, 128, 112, $00, $00  ; Moving Block 1
 	DB $A9, $AA  ; Moving Block 1
@@ -657,7 +657,8 @@ ENDR
 	jp CheckBonus
 	;ret
 	
-SECTION "ARR RIGHT EVENT", ROMX, BANK[4]
+;SECTION "ARR RIGHT EVENT", ROMX, BANK[4]
+SECTION "arrEventRightStepOn", ROMX, BANK[4]
 ;-------------------------------------------------------------------------------------------------------------
 arrEventRightStepOn::
 	; don't fire the event if player already on tile
@@ -1273,7 +1274,7 @@ arrEventLeftStepOut::
 	ret
 	
 	
-	
+SECTION "arr Locate0", ROMX, BANK[4]
 ; a = position of 0 in TutorialMatrix
 arrLocate0::
 	ld b, 0
@@ -1374,6 +1375,7 @@ CheckBonus::
 	
 	ret
 	
+SECTION "Bonus Awarded String", ROM0
 BonusAwardedString::
 	DB "You received 10 Cat Coins!", $F3, $F0, $F1, $F4
 	DW Tilemap_DialogReturn

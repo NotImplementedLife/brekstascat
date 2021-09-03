@@ -13,7 +13,7 @@ SECTION "VRAM Backup OAM", WRAMX
 wVBackup_OAM::
 	DS 160
 
-SECTION "BRAM Backup Procedure", ROMX, BANK[4]
+SECTION "VRAM Backup Procedure", ROMX, BANK[4]
 
 TakeVRAMSnapshot::
 	ld hl, wVBackup_Tileset
@@ -34,6 +34,7 @@ TakeVRAMSnapshot::
 	ldh [rLCDC], a
 	ret
 	
+SECTION "VRAM Restore Procedure", ROMX, BANK[4]
 RestoreVRAMSnapshot::
 	ld de, wVBackup_Tileset
 	ld hl, $8800

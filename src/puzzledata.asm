@@ -9,7 +9,7 @@ MACRO DefPuzzle
 	DW SLP_\2_HighScore
 ENDM
 
-SECTION "Sliding Puzzle Data", ROM0
+SECTION "Sliding Puzzle Data3x3", ROM0
 
 _3x3_PuzzlesList::
 	
@@ -20,6 +20,8 @@ _3x3_PuzzlesList::
 	DefPuzzle 5, creeper  
 	DefPuzzle 5, DSL 
 	DefPuzzle 5, triforce
+	
+SECTION "Sliding Puzzle Data 4x4", ROM0
 
 _4x4_PuzzlesList::
 	DB 3
@@ -28,19 +30,21 @@ _4x4_PuzzlesList::
 	DefPuzzle 6, blackrose
 	DefPuzzle 6, clock
 
+SECTION "Sliding Puzzle Data 5x5", ROM0
 _5x5_PuzzlesList::
 	DB 1  
 
 	DefPuzzle 6, alphabet
 
-
+SECTION "Sliding Puzzle Data 6x6", ROM0
 _6x6_PuzzlesList::
 	DB 1
 	
 	DefPuzzle 6, confusion
 
-SECTION "Sliding Puzzle Data Handling", ROM0
+;SECTION "Sliding Puzzle Data Handling", ROM0
 
+SECTION "PuzzleLoadDataTilesetNoBorder", ROM0
 PuzzleLoadDataTilesetNoBorder::
 	; need to obtain hl manually
 	ld hl, wPuzzleListAddress
@@ -62,6 +66,7 @@ PuzzleLoadDataTilesetNoBorder::
 	setBank 4
 	jp PuzzleCopyTileset
 
+SECTION "PuzzleLoadDataTileset", ROM0
 ; hl = puzzle list data address
 PuzzleLoadDataTileset::
 	; load ROMX bank
@@ -109,23 +114,27 @@ PuzzleLoadDataTileset::
 	
 	ret
 	
+SECTION "PuzzleLoadBorder3", ROM0
 PuzzleLoadBorder3::
 	ld b, HIGH(BorderMask3)
-	jr PuzzleCopyTilesetWithBorder
+	jp PuzzleCopyTilesetWithBorder
 	
+SECTION "PuzzleLoadBorder4", ROM0	
 PuzzleLoadBorder4::
 	ld b, HIGH(BorderMask4)
-	jr PuzzleCopyTilesetWithBorder
+	jp PuzzleCopyTilesetWithBorder
 	
+SECTION "PuzzleLoadBorder5", ROM0
 PuzzleLoadBorder5::
 	ld b, HIGH(BorderMask5)
-	jr PuzzleCopyTilesetWithBorder
+	jp PuzzleCopyTilesetWithBorder
 	
+SECTION "PuzzleLoadBorder6", ROM0
 PuzzleLoadBorder6::
 	ld b, HIGH(BorderMask6)
-	jr PuzzleCopyTilesetWithBorder
+	jp PuzzleCopyTilesetWithBorder
 	
-	
+SECTION "PuzzleCopyTileset", ROM0	
 ; copy tiles from wPuzzleOnTilemap to VRAM$9000=>$8800
 PuzzleCopyTileset::
 	; get first 128 tiles
@@ -146,6 +155,7 @@ PuzzleCopyTileset::
 	
 ; copy tileset but put the puzzle pieces in evidence
 ; b  = border address HIGH byte
+SECTION "PuzzleCopyTilesetWithBorder", ROM0	
 PuzzleCopyTilesetWithBorder::
 	ld de, wPuzzleOnTilemap
 	ld c, 0
@@ -244,13 +254,14 @@ PuzzleCopyTilesetWithBorder::
 	
 	ret
 	
-	
+SECTION "PuzzleDisplayFull", ROM0	
 PuzzleDisplayFull::
 	ld a, [wPuzzle_Size]
 	cp 5
 	jp z, PuzzleDisplayFull5
 	jp PuzzleDisplayFull346	
 	
+SECTION "PuzzleDisplayFull346", ROM0	
 PuzzleDisplayFull346:
 	call waitForVBlank
 	ld hl, $9884
@@ -268,7 +279,8 @@ PuzzleDisplayFull346:
 	dec b
 	jr nz, .loopRow	
 	ret
-	
+
+SECTION "PuzzleDisplayFull5", ROM0	
 PuzzleDisplayFull5:
 	call waitForVBlank
 	ld hl, $98A5
@@ -287,9 +299,9 @@ PuzzleDisplayFull5:
 	jr nz, .loopRow
 	ret
 	
-SECTION "Sliding puzzle renderer", ROM0
+;SECTION "Sliding puzzle renderer", ROM0
 
-
+SECTION "Sliding puzzle renderer From Matrix 3x3", ROM0
 PuzzleRenderFromMatrix3::	
 	xor a
 	ld hl, wSPMatrix
@@ -309,6 +321,7 @@ PuzzleRenderFromMatrix3::
 	jr nz, .loop
 	ret
 	
+SECTION "Puzzle put piece 3", ROM0
 ; b = piece position in matrix (0-8)
 ; c = piece id (1-9, 0=empty)
 PuzzlePutPiece3::
@@ -375,6 +388,7 @@ ENDR
 	
 	ret
 	
+SECTION "Sliding puzzle renderer From Matrix 4x4", ROM0
 PuzzleRenderFromMatrix4::
 	xor a
 	ld hl, wSPMatrix
@@ -394,6 +408,7 @@ PuzzleRenderFromMatrix4::
 	jr nz, .loop
 	ret
 	
+SECTION "Puzzle put piece 4", ROM0
 ; b = piece position in matrix (0-15)
 ; c = piece id (1-16, 0=empty)
 PuzzlePutPiece4::
@@ -460,6 +475,7 @@ ENDR
 	
 	ret
 	
+SECTION "Sliding puzzle renderer From Matrix 5x5", ROM0
 PuzzleRenderFromMatrix5::
 	xor a
 	ld hl, wSPMatrix
@@ -479,6 +495,7 @@ PuzzleRenderFromMatrix5::
 	jr nz, .loop
 	ret
 	
+SECTION "Puzzle put piece 5", ROM0
 ; b = piece position in matrix (0-24)
 ; c = piece id (1-25, 0=empty)
 PuzzlePutPiece5::
@@ -540,6 +557,7 @@ PuzzlePutPiece5::
 	
 	ret
 
+SECTION "Sliding puzzle renderer From Matrix 6x6", ROM0
 PuzzleRenderFromMatrix6::
 	xor a
 	ld hl, wSPMatrix
@@ -559,6 +577,7 @@ PuzzleRenderFromMatrix6::
 	jr nz, .loop
 	ret
 
+SECTION "Puzzle put piece 6", ROM0
 ; b = piece position in matrix (0-35)
 ; c = piece id (1-36, 0=empty)
 PuzzlePutPiece6::

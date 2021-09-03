@@ -16,7 +16,7 @@ wMC_ScreenY::
 wMC_ScreenX::
 	DS 1
 	
-SECTION "MC Logic", ROMX, BANK[4]
+SECTION "MC init", ROMX, BANK[4]
 
 MC_Init::
 	xor a
@@ -27,13 +27,15 @@ MC_Init::
 	ld [wMC_ScreenX], a	
 	ret
 
+SECTION "MC Load tiles", ROMX, BANK[4]
 MC_LoadTiles::
 	ld hl, $8400
 	ld de, MCTiles
 	ld bc, MCTilesEnd
 	call loadMemoryDOUBLE
 	ret
-	
+
+SECTION "MC DISPLAY", ROMX, BANK[4]
 MC_Display::	
 	ld a, [wMC_Preset]
 	; a*=16; a <= 11 < 16, therefore

@@ -1,4 +1,4 @@
-SECTION "RTC", ROM0
+SECTION "RTC reset", ROM0
 
 rtcReset::
 	xor a
@@ -24,6 +24,7 @@ REPT(4)
 ENDR
 	ret
 	
+SECTION "RTC seconds", ROM0
 rtcGetSeconds::
 	ld a, 0
 	ld [$6000], a
@@ -46,6 +47,7 @@ rtcGetSeconds::
 	pop bc
 	ret
 	
+SECTION "RTC minutes", ROM0
 rtcGetMinutes::
 	ld a, 0
 	ld [$6000], a
@@ -68,6 +70,7 @@ rtcGetMinutes::
 	pop bc
 	ret
 	
+SECTION "RTC hours", ROM0
 rtcGetHours::
 	ld a, 0
 	ld [$6000], a

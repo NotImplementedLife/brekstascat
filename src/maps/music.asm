@@ -69,11 +69,10 @@ ProcessMusicDoubleCooldown::
 .pauseinmusic:
 	ld a, 14
 	ld [wMapsCoolDown], a
-	jr .musicend
+	ret
 .skipmusic:
 	ld a, [wMapsCoolDown]
 	dec a
 	ld [wMapsCoolDown], a
-.musicend:
 	
 	ret

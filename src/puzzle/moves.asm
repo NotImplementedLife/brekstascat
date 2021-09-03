@@ -202,6 +202,9 @@ SpritifyRegion3x3::
 	inc l
 	
 	push hl
+	call ProcessMusicPuzzle
+	pop hl
+	push hl
 	call waitForVBlank
 	call SpritifyTile
 	pop hl
@@ -253,7 +256,40 @@ SpritifyRegion3x3::
 SpritifyRegion4x4::
 	ld e, 0
 	
-REPT(4)
+	;push hl
+	;call waitForVBlank
+	;call SpritifyTile
+	;pop hl
+	;inc l	
+	
+	;push hl	
+	;call SpritifyTile
+	;initOAM ShadowOAM	
+	;pop hl	
+	;inc l
+	
+	;push hl
+	;call waitForVBlank
+	;call SpritifyTile
+	;pop hl
+	;inc l
+	
+	;push hl	
+	;call SpritifyTile
+	;initOAM ShadowOAM	
+	;pop hl	
+	
+	;ld bc, $20-3
+	;add hl, bc
+
+	;push hl
+	;call ProcessMusicPuzzle
+	;pop hl
+	
+	ld b, 4
+.loop
+	push bc
+;REPT(2)
 	push hl
 	call waitForVBlank
 	call SpritifyTile
@@ -265,6 +301,10 @@ REPT(4)
 	initOAM ShadowOAM	
 	pop hl	
 	inc l
+	
+	push hl
+	call ProcessMusicPuzzle
+	pop hl
 	
 	push hl
 	call waitForVBlank
@@ -279,9 +319,40 @@ REPT(4)
 	
 	ld bc, $20-3
 	add hl, bc
-ENDR
 	
-ret
+	pop bc
+	dec b
+	jr nz, .loop
+;ENDR
+
+	;push hl
+	;call ProcessMusicPuzzle
+	;pop hl
+
+	;push hl
+	;call waitForVBlank
+	;call SpritifyTile
+	;pop hl
+	;inc l	
+	
+	;push hl	
+	;call SpritifyTile
+	;initOAM ShadowOAM	
+	;pop hl	
+	;inc l
+	
+	;push hl
+	;call waitForVBlank
+	;;call SpritifyTile
+	;pop hl
+	;inc l
+	
+	;push hl	
+	;call SpritifyTile
+	;initOAM ShadowOAM	
+	;pop hl	
+	
+	ret
 
 
 SECTION "Puzzle Move Executer", ROM0
@@ -363,7 +434,6 @@ EmptyIndexToHL3x3::
 ; in affirmative case, update the Puzzle Matrix & perform animation
 
 MoveFinish3x3::
-	call waitForVBlank
 	call PuzzleRenderFromMatrix3	
 	pop af ; fake return
 	ret ; return from caller function
@@ -388,6 +458,7 @@ MoveValidateDown3x3::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, 4
 	ld c, 0
@@ -418,6 +489,7 @@ MoveValidateUp3x3::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, -4
 	ld c, 0
@@ -448,6 +520,7 @@ MoveValidateLeft3x3::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, 0
 	ld c, -4
@@ -478,6 +551,7 @@ MoveValidateRight3x3::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, 0
 	ld c, 4
@@ -537,7 +611,6 @@ EmptyIndexToHL4x4::
 ; in affirmative case, update the Puzzle Matrix & perform animation
 
 MoveFinish4x4::
-	call waitForVBlank
 	call PuzzleRenderFromMatrix4
 	pop af ; fake return
 	ret ; return from caller function
@@ -564,6 +637,7 @@ MoveValidateDown4x4::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, 3
 	ld c, 0
@@ -596,6 +670,7 @@ MoveValidateUp4x4::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, -3
 	ld c, 0
@@ -628,6 +703,7 @@ MoveValidateLeft4x4::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, 0
 	ld c, -3
@@ -660,6 +736,7 @@ MoveValidateRight4x4::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, 0
 	ld c, 3
@@ -714,7 +791,6 @@ EmptyIndexToHL5x5::
 ; in affirmative case, update the Puzzle Matrix & perform animation
 
 MoveFinish5x5::
-	call waitForVBlank
 	call PuzzleRenderFromMatrix5
 	pop af ; fake return
 	ret ; return from caller function
@@ -743,6 +819,7 @@ MoveValidateDown5x5::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, 2
 	ld c, 0
@@ -777,6 +854,7 @@ MoveValidateUp5x5::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, -2
 	ld c, 0
@@ -811,6 +889,7 @@ MoveValidateLeft5x5::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, 0
 	ld c, -2
@@ -845,6 +924,7 @@ MoveValidateRight5x5::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, 0
 	ld c, 2
@@ -899,7 +979,6 @@ EmptyIndexToHL6x6::
 ; in affirmative case, update the Puzzle Matrix & perform animation
 
 MoveFinish6x6::
-	call waitForVBlank
 	call PuzzleRenderFromMatrix6
 	pop af ; fake return
 	ret ; return from caller function
@@ -966,6 +1045,7 @@ MoveValidateUp6x6::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, -2
 	ld c, 0
@@ -1002,6 +1082,7 @@ MoveValidateLeft6x6::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, 0
 	ld c, -2
@@ -1038,6 +1119,7 @@ MoveValidateRight6x6::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, 0
 	ld c, 2

@@ -61,9 +61,6 @@ DialogString_PlaygroundInstructions::
 	DB "bottom-right corner of the&nl;table.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB "Good luck!&nl;", DLG_WKEY, "- Valnyssa the Breksta's Cat", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	
-	;DB "Try to step on the arrows.", DLG_WKEY, DLG_CLR0, DLG_CLR1
-	;DB "", DLG_WKEY, DLG_CLR0, DLG_CLR1
-	
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
 	
@@ -73,16 +70,22 @@ DialogString_HighScoreMessage::
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
 	
-SECTION "Highscore Table string", ROM0
+SECTION "Highscore Table string Easy", ROM0
 	
 HighScore_Easy::
 	DB "  Highscores  < Easy >", $F0
+
+SECTION "Highscore Table string Medium", ROM0
 	
 HighScore_Medium::
 	DB "Highscores  < Medium >", $F0
 	
+SECTION "Highscore Table string Hard", ROM0
+	
 HighScore_Hard::
 	DB " Highscores  < Hard >", $F0
+	
+SECTION "Highscore Table string Master", ROM0
 	
 HighScore_Master::
 	DB "Highscores  < Master >", $F0
@@ -95,23 +98,27 @@ RewardMessage::
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
 	
-SECTION "Room payments", ROM0
+SECTION "Medium puzzle payment notice", ROM0;, BANK[4]
 
 MediumPaymentNotice::
 	DB "2 Cat Coins will be spent for this action.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
 	
+SECTION "Hard puzzle payment notice", ROM0;, BANK[4]
+	
 HardPaymentNotice::
 	DB "4 Cat Coins will be spent for this action.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
 	
+SECTION "NotEnough money notice", ROM0;, BANK[4]
 NotEnoughMoneyNotice::
 	DB "You don't have enough money.&nl;Go solve more sliding puzzles.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
 	
+SECTION "Pockets full notice", ROM0;, BANK[4]
 PocketsFullNotice::
 	DB "Your pockets can't hold more&nl;than 50 Cat Coins.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB "You dropped the extra coins.", DLG_WKEY, DLG_CLR0, DLG_CLR1
@@ -125,7 +132,7 @@ SnakeNot20::
 	DB "I see... Then there's nothing to discuss with you.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
-	
+
 Snake20::
 	DB "Do you have 20 coins kiddo'?", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB "Oh! Excellent! Gim'me that&nl; and I'll let you enter in this", DLG_WKEY, DLG_CLR0, DLG_CLR1
@@ -145,7 +152,7 @@ Snake20::
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
 	
-	
+SECTION "Snake Run", ROM0
 SnakeRun::
 	ld hl, rLCDC
 	res 5, [hl]	
@@ -185,7 +192,7 @@ SnakeRun::
 	ld a, [sCatCoins]
 	sub $20
 	ld [sCatCoins], a
-	
+
 SnakeClear::
 	; remove snake
 	xor a
@@ -197,6 +204,7 @@ SnakeClear::
 	
 	ret
 	
+SECTION "Snake Move right", ROM0
 SnakeMoveRight::
 	; set snake right
 	ld b, $5C
@@ -224,17 +232,20 @@ SnakeMoveRight::
 ; a character that explains things
 ; when speaking to her, she picks one random line
 ; from below and tells it to the player 
-SECTION "P_Lines", ROM0
+SECTION "P_Lines Addresses", ROMX, BANK[4]
 
 P_StrAddresses::
 	DW P_Str0, P_Str1, P_Str2, P_Str3, P_Str4, P_Str5, P_Str6, P_Str7, P_Str8
 
+SECTION "P_Lines 0", ROM0
 P_Str0::
 	DB "So you were also chosen by&nl;Valnyssa to save this crappy", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB "world? I failed... and now&nl;I'm just stuck here.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB "My sister must be worried.&nl;I want to get out of here!", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
+	
+SECTION "P_Lines 1", ROM0
 P_Str1::
 	DB "You can enter the easy room&nl;for free. However, you must", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB "pay for playing at other&nl;difficulties.", DLG_WKEY, DLG_CLR0, DLG_CLR1
@@ -244,24 +255,29 @@ P_Str1::
 	DB "to give up.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
+SECTION "P_Lines 2", ROM0
 P_Str2::
 	DB "There's a terrifying snake&nl;guarding the Master room.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB "I'm so scared...", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
+SECTION "P_Lines 3", ROMX, BANK[4]
 P_Str3::
 	DB "Species reveal:&nl;", DLG_WKEY,"I'm a human!!!", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
+SECTION "P_Lines 4", ROM0
 P_Str4::
 	DB "You can check the highscore&nl;table in this room to see", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB "your time record for each&nl;sliding puzzle.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
+SECTION "P_Lines 5", ROM0
 P_Str5::
 	DB "2+2=5. It's not a mistake,&nl;it's called a synergy.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
+SECTION "P_Lines 6", ROM0
 P_Str6::
 	DB "Why do I always stay in this&nl;corner, you ask?", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB "Because I feel like in a prison.&nl;I don't know how long it is since", DLG_WKEY, DLG_CLR0, DLG_CLR1
@@ -269,11 +285,13 @@ P_Str6::
 	DB "distant memory.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
+SECTION "P_Lines 7", ROM0
 P_Str7::
 	DB "This is without doubt a dream,&nl;but for some reason the", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB "experience feels too real.", DLG_WKEY, " Am&nl;I having a lucid dream?", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
+SECTION "P_Lines 8", ROM0
 P_Str8::
 	DB "I hope you know the Greek&nl;alphabet.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC

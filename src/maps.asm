@@ -814,7 +814,7 @@ TileMap_Execute_OnlyMovQ::
 	
 	ret
 
-SECTION "Tilemap Pixel Position Solver", ROM0
+SECTION "Tilemap Pixel Position Solver Y<64", ROM0
 	
 TileMap_SolveForYUnder64:
 	add 16
@@ -823,12 +823,16 @@ TileMap_SolveForYUnder64:
 	ld [rSCY], a
 	ret
 	
+SECTION "Tilemap Pixel Position Solver Y>64", ROM0
+	
 TileMap_SolveForYOver64:
 	sub 64
 	ldh [rSCY], a
 	ld a, $50
 	ld [wMC_ScreenY], a
 	ret
+	
+SECTION "Tilemap Pixel Position Solver Y>178", ROM0
 
 TileMap_SolveForYOver178:
 	sub 96
@@ -836,6 +840,8 @@ TileMap_SolveForYOver178:
 	ld a, 112
 	ld [rSCY], a
 	ret
+	
+SECTION "Tilemap Pixel Position Solver X<72", ROM0
 
 TileMap_SolveForXUnder72:
 	add 8
@@ -844,6 +850,8 @@ TileMap_SolveForXUnder72:
 	ld [rSCX], a
 	ret
 	
+SECTION "Tilemap Pixel Position Solver X>72", ROM0
+	
 TileMap_SolveForXOver72:
 	sub 72
 	ldh [rSCX], a
@@ -851,12 +859,15 @@ TileMap_SolveForXOver72:
 	ld [wMC_ScreenX], a
 	ret
 
+SECTION "Tilemap Pixel Position Solver X>168", ROM0
 TileMap_SolveForXOver168:
 	sub 88
 	ld [wMC_ScreenX], a
 	ld a, 96
 	ld [rSCX], a
 	ret
+
+SECTION "Get tile data", ROM0
 	
 TileMap_GetLookingAtMetadata:
 	; get index of position LookingAt(Y,X)

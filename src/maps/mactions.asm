@@ -107,7 +107,7 @@ TableRight::
 	setBank 4
 	jp _mAction_Inforoom_HighScoreRead.viewTable
 	
-SECTION "HighScore tables list", ROMX, BANK[4], ALIGN[8]
+SECTION "HighScore tables list", ROM0, ALIGN[8]
 HSTablesList:
 DW _3x3_PuzzlesList, _4x4_PuzzlesList, _5x5_PuzzlesList, _6x6_PuzzlesList
 	
@@ -131,6 +131,9 @@ _mAction_EnterPuzzleRoomE::
 	call TileMap_Execute_OnlyMovQ
 	ENDR
 	
+	xor a
+	ld [wPuzMusicOffset], a
+	ld [wPuzCoolDown], a
 	
 	; backup VRAM$8800, Tilemap$9800 and OAM and prepare to run the Game room
 	call TakeVRAMSnapshot
@@ -150,6 +153,7 @@ _mAction_EnterPuzzleRoomE::
 	; so I guess there's no problem after all?
 	call rtcReset
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	call RenderTimer
 	
@@ -215,6 +219,11 @@ _mAction_EnterPuzzleRoomM::
 	sub 2
 	daa
 	ld [sCatCoins], a
+	
+	xor a
+	ld [wPuzMusicOffset], a
+	ld [wPuzCoolDown], a
+	
 	; backup VRAM$8800, Tilemap$9800 and OAM and prepare to run the Game room
 	call TakeVRAMSnapshot
 	
@@ -226,6 +235,7 @@ _mAction_EnterPuzzleRoomM::
 	call Puzzle_Init
 	
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	call RenderTimer
 	
@@ -285,6 +295,10 @@ _mAction_EnterPuzzleRoomH::
 	daa
 	ld [sCatCoins], a
 	
+	xor a
+	ld [wPuzMusicOffset], a
+	ld [wPuzCoolDown], a
+	
 	; backup VRAM$8800, Tilemap$9800 and OAM and prepare to run the Game room
 	call TakeVRAMSnapshot
 	
@@ -296,6 +310,7 @@ _mAction_EnterPuzzleRoomH::
 	call Puzzle_Init
 	
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	call RenderTimer
 	
@@ -326,6 +341,10 @@ _mAction_EnterPuzzleRoomX::
 	call TileMap_Execute_OnlyMovQ
 	ENDR
 	
+	xor a
+	ld [wPuzMusicOffset], a
+	ld [wPuzCoolDown], a
+	
 	; backup VRAM$8800, Tilemap$9800 and OAM and prepare to run the Game room
 	call TakeVRAMSnapshot
 	
@@ -337,6 +356,7 @@ _mAction_EnterPuzzleRoomX::
 	call Puzzle_Init
 	
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	call RenderTimer
 	
@@ -373,6 +393,7 @@ _mAction_EnterPuzzleRoomX::
 	jp MovQueueLaunch
 	
 
+SECTION "Action exit puzzle", ROMX, BANK[4]
 _mAction_ExitPuzzleRoomE::
 _mAction_ExitPuzzleRoomM::
 _mAction_ExitPuzzleRoomH::
@@ -432,6 +453,7 @@ _mAction_ExitPuzzleRoomH::
 _mAction_ExitPuzzleRoomX::
 	ret
 	
+SECTION "Action Snake", ROM0;, BANK[4]
 _mAction_Snake::	
 	; check the column where the player is to set the snake's orientation accordingly
 	ldh a, [hMMCX]

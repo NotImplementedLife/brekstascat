@@ -1,8 +1,9 @@
 INCLUDE "src/include/macros.inc"
 
 
-SECTION "Dialog Logic", ROM0
+;SECTION "Dialog Logic", ROM0
 
+SECTION "Dialog Init", ROM0
 ; to be caleed in vBlank/ before game loop
 DialogInit::
 	; load border
@@ -21,6 +22,7 @@ DialogInit::
 	ldh [Iterator], a
 	ret
 	
+SECTION "Dialog Init Window", ROM0
 DialogInitWindow::
 	; load border
 	; load border
@@ -43,7 +45,7 @@ DialogInitWindow::
 	ret
 	
 
-
+SECTION "Copy char left", ROM0
 ; hl = destination tile + 2
 ; de = source tile     
 ; c  = offset (left margin-c)
@@ -72,6 +74,7 @@ CopyCharLeft::
 	jr nz, .loop               ; 3 | 2
 	ret                        ; 4
 	
+SECTION "Copy char right", ROM0
 ; hl = destination tile + 2
 ; de = source tile 
 ; c  = offset (left margin-c)
@@ -98,7 +101,7 @@ CopyCharRight::
 	jr nz, .loop
 	ret
 
-
+SECTION "Dialog put char", ROM0
 ; a = id of mapped character
 DialogPutChar::
 	; save id for later [3 cyc]
@@ -187,7 +190,7 @@ DialogPutChar::
 	inc hl
 	
 	pop de
-	jr CopyCharRight
+	jp CopyCharRight
 .affectSingleTile
 	; hl = Position where char should be drawn
 	; = $8000 + (OffsetX div 8)*16
