@@ -71,7 +71,6 @@ Nowhere_Main::
 	; init sound
 	xor a
 	ld [wNowhereMusicOffset], a
-	ld [wNowhereFreq], a
 	ld a, 2
 	ld [wNowhereCoolDown], a
 	
@@ -221,20 +220,7 @@ Nowhere_Main::
 	ld a, [BackupPalette]
 	ldh [rBGP], a
 	
-	;xor a
-	;ldh [rNR30], a ; sound 1 channel off
-	;ld a, $80
-	;ldh [rNR30], a ; sound 1 channel on
-	;ld a, $40
-	;ldh [rNR31], a
-	;ld a, %01000000
-	;ldh [rNR32], a
-	;ld a, c
-	;add $10
-	;ld c, a
-	;ldh [rNR33], a
-	;ld a, %11000111
-	;ldh [rNR34], a
+	; play music
 	ld a, [wNowhereCoolDown]
 	or a
 	jr nz, .skipmusic
@@ -246,8 +232,8 @@ Nowhere_Main::
 	inc a
 	ld [wNowhereMusicOffset], a
 	ld a, [hl]
-	
-	cp $FF
+	;ld b,b
+	cp $FF ; ___ = pause
 	jr z, .pauseinmusic
 	
 	ld l, a

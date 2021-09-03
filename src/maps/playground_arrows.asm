@@ -110,6 +110,7 @@ arrLoadTutorialMap::
 	
 	ret
 
+SECTION "ARR DOWN EVENT", ROMX, BANK[4]
 ;-------------------------------------------------------------------------------------------------------------
 arrEventDownStepOn::
 	; don't fire the event if player already on tile
@@ -294,6 +295,20 @@ arrEventDownStepOn::
 	pop af
 	
 	ld hl, ShadowOAM + 32*4
+
+		
+	ld a, $2A
+	ldh [rNR51], a
+	
+	ld  a, $00
+	ldh [rNR41], a
+	ld  a, $f3
+	ldh [rNR42], a
+	ld  a, $04
+	ldh [rNR43], a
+	ld  a, $80
+	ldh [rNR44], a
+
 	
 	ld b, 8
 .moveLoop
@@ -368,7 +383,7 @@ ENDR
 	jp CheckBonus
 	;ret
 	
-	
+SECTION "ARR UP EVENT", ROMX, BANK[4]
 ;-------------------------------------------------------------------------------------------------------------
 arrEventUpStepOn::
 	; don't fire the event if player already on tile
@@ -557,6 +572,18 @@ arrEventUpStepOn::
 	
 	ld hl, ShadowOAM + 32*4
 	
+	ld a, $2A
+	ldh [rNR51], a
+	
+	ld  a, $00
+	ldh [rNR41], a
+	ld  a, $f3
+	ldh [rNR42], a
+	ld  a, $04
+	ldh [rNR43], a
+	ld  a, $80
+	ldh [rNR44], a
+	
 	ld b, 8
 .moveLoop
 	call waitForVBlank
@@ -630,6 +657,7 @@ ENDR
 	jp CheckBonus
 	;ret
 	
+SECTION "ARR RIGHT EVENT", ROMX, BANK[4]
 ;-------------------------------------------------------------------------------------------------------------
 arrEventRightStepOn::
 	; don't fire the event if player already on tile
@@ -820,6 +848,18 @@ arrEventRightStepOn::
 	
 	ld hl, ShadowOAM + 32*4 + 1
 	
+	ld a, $2A
+	ldh [rNR51], a
+	
+	ld  a, $00
+	ldh [rNR41], a
+	ld  a, $f3
+	ldh [rNR42], a
+	ld  a, $04
+	ldh [rNR43], a
+	ld  a, $80
+	ldh [rNR44], a
+	
 	ld b, 8
 .moveLoop
 	call waitForVBlank
@@ -893,6 +933,7 @@ ENDR
 	jp CheckBonus
 	;ret
 	
+SECTION "ARR LEFT EVENT", ROMX, BANK[4]
 ;-------------------------------------------------------------------------------------------------------------
 arrEventLeftStepOn::
 	; don't fire the event if player already on tile
@@ -1082,6 +1123,18 @@ arrEventLeftStepOn::
 	
 	ld hl, ShadowOAM + 32*4 + 1
 	
+	ld a, $2A
+	ldh [rNR51], a
+	
+	ld  a, $00
+	ldh [rNR41], a
+	ld  a, $f3
+	ldh [rNR42], a
+	ld  a, $04
+	ldh [rNR43], a
+	ld  a, $80
+	ldh [rNR44], a
+	
 	ld b, 8
 .moveLoop
 	call waitForVBlank
@@ -1237,7 +1290,7 @@ arrLocate0::
 	ld a, b
 	ret
 	
-SECTION "Div 3 Table", ROMX, BANK[4], ALIGN[4]
+SECTION "Div 3 Table", ROM0, ALIGN[4];, BANK[4], ALIGN[4]
 
 Div3Table:
 
@@ -1320,7 +1373,7 @@ CheckBonus::
 	ld [wCCReward], a
 	
 	ret
-
+	
 BonusAwardedString::
 	DB "You received 10 Cat Coins!", $F3, $F0, $F1, $F4
 	DW Tilemap_DialogReturn

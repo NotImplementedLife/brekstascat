@@ -223,7 +223,6 @@ DisplayLine::
 	ld [HighScoreLine_Offset], a
 	ld a, l
 	ld [HighScoreLine_Offset + 1], a
-	
 	ret
 	
 ; hl = puzzle list address
@@ -307,6 +306,7 @@ DisplayPuzzleListHighScore::
 
 	ld e, $88
 	call CopyVRAMLine
+	
 	call waitForVBlank
 	call NextChar ; clear
 
@@ -336,6 +336,22 @@ DisplayPuzzleListHighScore::
 	call HS_RenderPuzzleData
 	pop bc
 	call DisplayLine
+	ld a, $23
+	ldh [rNR51], a
+		
+	ld a, $75
+	ldh [rNR50], a
+	
+	ld  a, $35
+	ldh [rNR10], a
+	ld  a, $b0
+	ldh [rNR11], a
+	ld  a, $f7
+	ldh [rNR12], a
+	ld  a, $29
+	ldh [rNR13], a
+	ld  a, $c7
+	ldh [rNR14], a
 	pop hl
 	
 	inc b

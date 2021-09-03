@@ -8,18 +8,20 @@ DLG_WKEY EQU $F3
 DLG_EXEC EQU $F4
 DLG_STOP EQU $FF ; debug
 
-SECTION "Sign Strings", ROMX, BANK[4]
+SECTION "DialogString_ToInfoRoom", ROMX, BANK[4]
 
 DialogString_ToInfoRoom::
 	DB "Info room", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
 	
+SECTION "DialogString_ToPlayground", ROMX, BANK[4]
 DialogString_ToPlayground::
 	DB "Playground", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
 	
+SECTION "DialogString_SacredStone", ROMX, BANK[4]
 DialogString_SacredStone::
 	DB "A sacred text in a forgotten&nl;language is graved here.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB "Pretty unreadable.", DLG_WKEY, " Oh, wait...&nl;", DLG_WKEY, "For God's sake, you're in a", DLG_WKEY, DLG_CLR0, DLG_CLR1
@@ -37,6 +39,7 @@ DialogString_SacredStoneWrongView::
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
 	
+SECTION "Dialog string Playground Instructions", ROMX, BANK[4]
 DialogString_PlaygroundInstructions::
 	DB "There are three halls in the&nl;top-left corner of this room.", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB "Each of them leads to a game&nl;room where you'll have to",DLG_WKEY, DLG_CLR0, DLG_CLR1
@@ -64,6 +67,7 @@ DialogString_PlaygroundInstructions::
 	DB DLG_EXEC
 	DW Tilemap_DialogReturn
 	
+SECTION "Dialog string High scroe message", ROM0
 DialogString_HighScoreMessage::
 	DB "High score table", DLG_WKEY, DLG_CLR0, DLG_CLR1
 	DB DLG_EXEC

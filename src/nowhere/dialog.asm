@@ -324,6 +324,30 @@ dialog_waitkey:
 	
 	ld a, $30
 	ld [hl], a
+	
+	; play a pop sound when key prssed
+	
+	
+	ld a, $80
+	ldh [rNR52], a
+		
+	ld a, $23
+	ldh [rNR51], a
+		
+	ld a, $75
+	ldh [rNR50], a
+	
+	ld  a, $35
+	ldh [rNR10], a
+	ld  a, $b0
+	ldh [rNR11], a
+	ld  a, $f7
+	ldh [rNR12], a
+	ld  a, $29
+	ldh [rNR13], a
+	ld  a, $c7
+	ldh [rNR14], a
+	
 	ret
 
 dialog_stop:
