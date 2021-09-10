@@ -3,7 +3,7 @@
 _Don't be like me. Plan things ahead until the very last detail. This ROM is a result of disobeying the golden rule of planning._
 
 This repo is part of [HomebrewOwl.GB](https://github.com/NotImplementedLife/HomebrewOwl.GB "HomebrewOwl") projects collection.
-This is a [GB Compo 2021](https://gbdev.io/gbcompo21/) game entry. Download the latest version [here](https://github.com/NotImplementedLife/brekstascat/releases/download/1.1/brekstascat_1_1.gb).
+This is a [GB Compo 2021](https://gbdev.io/gbcompo21/) game entry. Download the latest version [here](https://github.com/NotImplementedLife/brekstascat/releases/download/1.2/brekstascat_1_2.gb).
 
 ## The idea
 
@@ -80,3 +80,4 @@ Limitations:
 
 - [HomebrewOwl.GB](https://github.com/NotImplementedLife/HomebrewOwl.GB "HomebrewOwl.GB") - check out my other Gameboy projects
 - [GB Compo 2021](https://itch.io/jam/gbcompo21) itch.io page
+- [Breksta's Cat](https://notimplementedlife.itch.io/brekstascat) itch.io page

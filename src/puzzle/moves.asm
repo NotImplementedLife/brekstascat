@@ -166,10 +166,16 @@ ENDR
 SpritifyRegion2x2::
 	ld e, 0
 	push hl
+	call ProcessMusicPuzzle
+	pop hl
+	push hl
 	call waitForVBlank
 	call SpritifyTile	
 	pop hl
 	inc l
+	push hl
+	call ProcessMusicPuzzle
+	pop hl
 	push hl	
 	call SpritifyTile
 	initOAM ShadowOAM
@@ -177,17 +183,25 @@ SpritifyRegion2x2::
 	ld bc, $20-1
 	add hl, bc
 	push hl
+	call ProcessMusicPuzzle
+	pop hl
+	push hl
 	call waitForVBlank
 	call SpritifyTile
 	pop hl
 	inc l	
 	call SpritifyTile
+
+	call ProcessMusicPuzzle	
 	initOAM ShadowOAM	
 	ret
 
 SpritifyRegion3x3::
 	ld e, 0
 	
+	push hl
+	call ProcessMusicPuzzle
+	pop hl
 	; first row
 	push hl
 	call waitForVBlank
@@ -234,6 +248,10 @@ SpritifyRegion3x3::
 	add hl, bc
 	
 	push hl
+	call ProcessMusicPuzzle
+	pop hl
+	
+	push hl
 	call waitForVBlank
 	call SpritifyTile
 	pop hl
@@ -246,6 +264,10 @@ SpritifyRegion3x3::
 	inc l
 	
 	push hl
+	call ProcessMusicPuzzle
+	pop hl
+	
+	push hl
 	call waitForVBlank
 	call SpritifyTile
 	initOAM ShadowOAM
@@ -254,42 +276,16 @@ SpritifyRegion3x3::
 	ret
 
 SpritifyRegion4x4::
-	ld e, 0
-	
-	;push hl
-	;call waitForVBlank
-	;call SpritifyTile
-	;pop hl
-	;inc l	
-	
-	;push hl	
-	;call SpritifyTile
-	;initOAM ShadowOAM	
-	;pop hl	
-	;inc l
-	
-	;push hl
-	;call waitForVBlank
-	;call SpritifyTile
-	;pop hl
-	;inc l
-	
-	;push hl	
-	;call SpritifyTile
-	;initOAM ShadowOAM	
-	;pop hl	
-	
-	;ld bc, $20-3
-	;add hl, bc
-
-	;push hl
-	;call ProcessMusicPuzzle
-	;pop hl
+	ld e, 0	
 	
 	ld b, 4
 .loop
 	push bc
-;REPT(2)
+
+	push hl
+	call ProcessMusicPuzzle
+	pop hl
+	
 	push hl
 	call waitForVBlank
 	call SpritifyTile
@@ -323,34 +319,6 @@ SpritifyRegion4x4::
 	pop bc
 	dec b
 	jr nz, .loop
-;ENDR
-
-	;push hl
-	;call ProcessMusicPuzzle
-	;pop hl
-
-	;push hl
-	;call waitForVBlank
-	;call SpritifyTile
-	;pop hl
-	;inc l	
-	
-	;push hl	
-	;call SpritifyTile
-	;initOAM ShadowOAM	
-	;pop hl	
-	;inc l
-	
-	;push hl
-	;call waitForVBlank
-	;;call SpritifyTile
-	;pop hl
-	;inc l
-	
-	;push hl	
-	;call SpritifyTile
-	;initOAM ShadowOAM	
-	;pop hl	
 	
 	ret
 
@@ -387,7 +355,19 @@ MoveStepOAM::
 	jr nz, .loop
 	ret
 	
+	
+	ld a, [wEmptyIndex]	
+	
+	ld b, a
+	sub 1
+	ld [wEmptyIndex], a
+	ld c, a
+	
+	call PuzMatrixSwapEntries
+	
 ; swap entries [b] and [c] in PuzzleMatrix
+; note that b = initial Empty index = wRecoverIndex
+; c is the old piece position aka the new empty index
 PuzMatrixSwapEntries::
 	ld hl, wSPMatrix
 	ld l, b
@@ -397,6 +377,9 @@ PuzMatrixSwapEntries::
 	ld [hl], d
 	ld l, b
 	ld [hl], e
+	
+	ld hl, wRecoverPiece
+	ld [hl], e ; get the piece id
 	ret
 	
 ; works in the following combo:
@@ -434,18 +417,24 @@ EmptyIndexToHL3x3::
 ; in affirmative case, update the Puzzle Matrix & perform animation
 
 MoveFinish3x3::
-	call PuzzleRenderFromMatrix3	
+	;call PuzzleRenderFromMatrix3	
+	
+	ld hl, wRecoverIndex
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	call PuzzlePutPiece3
+	
 	pop af ; fake return
 	ret ; return from caller function
 
 MoveValidateDown3x3::
 	ld a, [wEmptyIndex]
-	cp 0
-	jp z, IllegalMove
-	cp 1
-	jp z, IllegalMove
-	cp 2
-	jp z, IllegalMove
+	; space saving mission: if a<3 instead of checking every value
+	cp 3
+	jp c, IllegalMove
+	
+	ld [wRecoverIndex], a
 	
 	ld b, a
 	sub 3
@@ -456,27 +445,31 @@ MoveValidateDown3x3::
 	call EmptyIndexToHL3x3	
 	call SpritifyRegion4x4
 	
-	ld e, 8
+	ld e, 6
 .loop
 	call ProcessMusicPuzzle
 	call waitForVBlank
-	ld b, 4
+	ld b, 5
 	ld c, 0
 	call MoveStepOAM
 	initOAM ShadowOAM
 	dec e
 	jr nz, .loop
 	
+	ld b, 2
+	ld c, 0
+	call MoveStepOAM
+	initOAM ShadowOAM
+	
 	jp MoveFinish3x3
 	
 MoveValidateUp3x3::
 	ld a, [wEmptyIndex]
+	; space saving mission: if a>=6 instead of checking every value
 	cp 6
-	jp z, IllegalMove
-	cp 7
-	jp z, IllegalMove
-	cp 8
-	jp z, IllegalMove
+	jp nc, IllegalMove
+	
+	ld [wRecoverIndex], a
 	
 	ld b, a
 	add 3
@@ -487,16 +480,21 @@ MoveValidateUp3x3::
 	call EmptyIndexToHL3x3	
 	call SpritifyRegion4x4
 	
-	ld e, 8
+	ld e, 6
 .loop
 	call ProcessMusicPuzzle
 	call waitForVBlank
-	ld b, -4
+	ld b, -5
 	ld c, 0
 	call MoveStepOAM
 	initOAM ShadowOAM
 	dec e
 	jr nz, .loop
+	
+	ld b, -2
+	ld c, 0
+	call MoveStepOAM
+	initOAM ShadowOAM
 	
 	jp MoveFinish3x3
 	
@@ -509,6 +507,8 @@ MoveValidateLeft3x3::
 	cp 8
 	jp z, IllegalMove
 	
+	ld [wRecoverIndex], a
+	
 	ld b, a
 	add 1
 	ld [wEmptyIndex], a
@@ -518,16 +518,21 @@ MoveValidateLeft3x3::
 	call EmptyIndexToHL3x3	
 	call SpritifyRegion4x4
 	
-	ld e, 8
+	ld e, 6
 .loop
 	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, 0
-	ld c, -4
+	ld c, -5
 	call MoveStepOAM
 	initOAM ShadowOAM
 	dec e
 	jr nz, .loop
+	
+	ld b, 0
+	ld c, -2
+	call MoveStepOAM
+	initOAM ShadowOAM
 	
 	jp MoveFinish3x3
 	
@@ -540,6 +545,8 @@ MoveValidateRight3x3::
 	cp 6
 	jp z, IllegalMove
 	
+	ld [wRecoverIndex], a
+	
 	ld b, a
 	sub 1
 	ld [wEmptyIndex], a
@@ -549,16 +556,21 @@ MoveValidateRight3x3::
 	call EmptyIndexToHL3x3	
 	call SpritifyRegion4x4
 	
-	ld e, 8
+	ld e, 6
 .loop
 	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, 0
-	ld c, 4
+	ld c, 5
 	call MoveStepOAM
 	initOAM ShadowOAM
 	dec e
 	jr nz, .loop
+	
+	ld b, 0
+	ld c, 2
+	call MoveStepOAM
+	initOAM ShadowOAM
 	
 	jp MoveFinish3x3
 	
@@ -609,22 +621,26 @@ EmptyIndexToHL4x4::
 	
 ; routines to check if the input move is legal
 ; in affirmative case, update the Puzzle Matrix & perform animation
-
 MoveFinish4x4::
-	call PuzzleRenderFromMatrix4
+	;call PuzzleRenderFromMatrix4
+	
+	ld hl, wRecoverIndex
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	call PuzzlePutPiece4
+	
 	pop af ; fake return
 	ret ; return from caller function
 
 MoveValidateDown4x4::
 	ld a, [wEmptyIndex]
-	cp 0
-	jp z, IllegalMove
-	cp 1
-	jp z, IllegalMove
-	cp 2
-	jp z, IllegalMove
-	cp 3
-	jp z, IllegalMove
+	
+	; space saving mission: if a<4 instead of checking every value
+	cp 4
+	jp c, IllegalMove
+	
+	ld [wRecoverIndex], a
 	
 	ld b, a
 	sub 4
@@ -650,14 +666,12 @@ MoveValidateDown4x4::
 	
 MoveValidateUp4x4::
 	ld a, [wEmptyIndex]
+	
+	; space saving mission: if a>=12 instead of checking every value
 	cp 12
-	jp z, IllegalMove
-	cp 13
-	jp z, IllegalMove
-	cp 14
-	jp z, IllegalMove
-	cp 15
-	jp z, IllegalMove
+	jp nc, IllegalMove
+	
+	ld [wRecoverIndex], a
 	
 	ld b, a
 	add 4
@@ -692,6 +706,8 @@ MoveValidateLeft4x4::
 	cp 15
 	jp z, IllegalMove
 	
+	ld [wRecoverIndex], a
+	
 	ld b, a
 	add 1
 	ld [wEmptyIndex], a
@@ -724,6 +740,8 @@ MoveValidateRight4x4::
 	jp z, IllegalMove
 	cp 12
 	jp z, IllegalMove
+	
+	ld [wRecoverIndex], a
 	
 	ld b, a
 	sub 1
@@ -791,7 +809,14 @@ EmptyIndexToHL5x5::
 ; in affirmative case, update the Puzzle Matrix & perform animation
 
 MoveFinish5x5::
-	call PuzzleRenderFromMatrix5
+	;call PuzzleRenderFromMatrix5
+	
+	ld hl, wRecoverIndex
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	call PuzzlePutPiece5
+	
 	pop af ; fake return
 	ret ; return from caller function
 
@@ -807,6 +832,8 @@ MoveValidateDown5x5::
 	jp z, IllegalMove
 	cp 4
 	jp z, IllegalMove
+	
+	ld [wRecoverIndex], a
 	
 	ld b, a
 	sub 5
@@ -843,6 +870,8 @@ MoveValidateUp5x5::
 	cp 24
 	jp z, IllegalMove
 	
+	ld [wRecoverIndex], a
+	
 	ld b, a
 	add 5
 	ld [wEmptyIndex], a
@@ -878,6 +907,8 @@ MoveValidateLeft5x5::
 	cp 24
 	jp z, IllegalMove
 	
+	ld [wRecoverIndex], a
+	
 	ld b, a
 	add 1
 	ld [wEmptyIndex], a
@@ -912,6 +943,8 @@ MoveValidateRight5x5::
 	jp z, IllegalMove
 	cp 20
 	jp z, IllegalMove
+	
+	ld [wRecoverIndex], a
 	
 	ld b, a
 	sub 1
@@ -979,24 +1012,22 @@ EmptyIndexToHL6x6::
 ; in affirmative case, update the Puzzle Matrix & perform animation
 
 MoveFinish6x6::
-	call PuzzleRenderFromMatrix6
+	ld hl, wRecoverIndex
+	ld b, [hl]
+	inc hl
+	ld c, [hl]
+	call PuzzlePutPiece6
 	pop af ; fake return
 	ret ; return from caller function
 
 MoveValidateDown6x6::
 	ld a, [wEmptyIndex]
-	cp 0
-	jp z, IllegalMove
-	cp 1
-	jp z, IllegalMove
-	cp 2
-	jp z, IllegalMove
-	cp 3
-	jp z, IllegalMove
-	cp 4
-	jp z, IllegalMove
-	cp 5
-	jp z, IllegalMove
+	
+	; space saving mission: if a<6 instead of checking every value
+	cp 6
+	jp c, IllegalMove	
+	
+	ld [wRecoverIndex], a
 	
 	ld b, a
 	sub 6
@@ -1009,6 +1040,7 @@ MoveValidateDown6x6::
 	
 	ld e, 8
 .loop
+	call ProcessMusicPuzzle
 	call waitForVBlank
 	ld b, 2
 	ld c, 0
@@ -1021,18 +1053,13 @@ MoveValidateDown6x6::
 	
 MoveValidateUp6x6::
 	ld a, [wEmptyIndex]	
+	
+	; space saving mission: if a>=30 instead of checking every value
+	; not (a<30)
 	cp 30
-	jp z, IllegalMove
-	cp 31
-	jp z, IllegalMove
-	cp 32
-	jp z, IllegalMove
-	cp 33
-	jp z, IllegalMove
-	cp 34
-	jp z, IllegalMove
-	cp 35
-	jp z, IllegalMove
+	jp nc, IllegalMove	
+	
+	ld [wRecoverIndex], a
 	
 	ld b, a
 	add 6
@@ -1071,6 +1098,8 @@ MoveValidateLeft6x6::
 	cp 35
 	jp z, IllegalMove
 	
+	ld [wRecoverIndex], a
+	
 	ld b, a
 	add 1
 	ld [wEmptyIndex], a
@@ -1107,6 +1136,8 @@ MoveValidateRight6x6::
 	jp z, IllegalMove
 	cp 30
 	jp z, IllegalMove
+	
+	ld [wRecoverIndex], a
 	
 	ld b, a
 	sub 1
@@ -1459,5 +1490,11 @@ wSpritifyY::
 	DS 1
 	
 wSpritifyX::
+	DS 1
+	
+wRecoverIndex::
+	DS 1
+	
+wRecoverPiece::
 	DS 1
 	

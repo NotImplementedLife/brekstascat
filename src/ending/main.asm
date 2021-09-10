@@ -11,6 +11,7 @@ EndingMain::
 	
 	xor a
 	ldh [rSCY], a
+	ldh [rNR52], a ; disable sound for this portion
 	
 	setBank 7
 	
@@ -365,6 +366,10 @@ endGame:
 	ld a, [rIE]
 	and $F7
 	ld [rIE], a ; Enable STAT interrupt
+	
+	ld hl, rSCY
+	inc [hl]
+	inc [hl]
 
 	ld c, 100
 .loop
@@ -376,8 +381,6 @@ endGame:
 	call TileMap_Init
 	setBank MAPS_BANK
 	jp Start.comeBackPoint
-	;ld b,b
-	jr @
 	
 SECTION "Ending Vars", WRAM0
 	
