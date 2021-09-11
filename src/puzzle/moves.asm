@@ -173,9 +173,6 @@ SpritifyRegion2x2::
 	call SpritifyTile	
 	pop hl
 	inc l
-	push hl
-	call ProcessMusicPuzzle
-	pop hl
 	push hl	
 	call SpritifyTile
 	initOAM ShadowOAM
@@ -192,7 +189,6 @@ SpritifyRegion2x2::
 	inc l	
 	call SpritifyTile
 
-	call ProcessMusicPuzzle	
 	initOAM ShadowOAM	
 	ret
 
@@ -232,6 +228,9 @@ SpritifyRegion3x3::
 	pop hl
 	inc l	
 	
+	push hl
+	call ProcessMusicPuzzle
+	pop hl
 	push hl
 	call waitForVBlank
 	call SpritifyTile
@@ -822,16 +821,10 @@ MoveFinish5x5::
 
 MoveValidateDown5x5::
 	ld a, [wEmptyIndex]
-	cp 0
-	jp z, IllegalMove
-	cp 1
-	jp z, IllegalMove
-	cp 2
-	jp z, IllegalMove
-	cp 3
-	jp z, IllegalMove
-	cp 4
-	jp z, IllegalMove
+	
+	; space saving mission: if a<5 instead of checking every value
+	cp 5
+	jp c, IllegalMove
 	
 	ld [wRecoverIndex], a
 	
@@ -859,16 +852,10 @@ MoveValidateDown5x5::
 	
 MoveValidateUp5x5::
 	ld a, [wEmptyIndex]	
+	
+	; space saving mission: if a>=20 instead of checking every value
 	cp 20
-	jp z, IllegalMove
-	cp 21
-	jp z, IllegalMove
-	cp 22
-	jp z, IllegalMove
-	cp 23
-	jp z, IllegalMove
-	cp 24
-	jp z, IllegalMove
+	jp nc, IllegalMove
 	
 	ld [wRecoverIndex], a
 	

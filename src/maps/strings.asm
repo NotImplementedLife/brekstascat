@@ -298,3 +298,12 @@ P_Str8::
 	DW Tilemap_DialogReturn
 	
 
+SECTION "Level Dialog", ROMX, BANK[5]
+LeverDialog::
+	DB "Pulling this lever causes the&nl;reset of the game.", DLG_WKEY, DLG_CLR0, DLG_CLR1
+	DB "Do you really want to reset?", DLG_WKEY, "             Yes              No"
+	DB DLG_EXEC
+	DW LeverResetChoose
+	DB DLG_CLR0, DLG_CLR1
+	DB DLG_EXEC
+	DW Tilemap_DialogReturn

@@ -558,6 +558,262 @@ __pSetRight::
 	jp __snakeUpdate
 	
 	
+SECTION "mAction Lever", ROM0
+
+_mAction_Lever::
+	; calls lever routine from bank 5 because banks 0,4 are full
+	setBank 5
+	
+	call LeverAction
+	
+	setBank 4
+	ret
+	
+SECTION "Lever Action 5", ROMX, BANK[5]
+
+LeverAction::
+	ldh a, [hMMCY]
+	cp $09
+	jr z, .skipPhide
+	
+	ld hl, ShadowOAM+17
+	ld bc, 4
+	ld d, 32
+	ld e, 4
+.hidePloop
+	ld a, [hl]
+	sub d
+	ld [hl], a
+	add hl, bc
+	dec e
+	jr nz, .hidePloop
+	
+	call ProcessMusicDoubleCooldown
+	call waitForVBlank
+	initOAM ShadowOAM
+	
+.skipPhide
+	
+	ld a, HIGH( LeverDialog )
+	ld [StrAddr], a
+	ld a, LOW( LeverDialog )	
+	ld [StrAddr + 1], a	
+	call Tilemap_DialogRender
+	
+	ldh a, [hMMCY]
+	cp $09
+	jr z, .skipPshow
+
+	ld hl, ShadowOAM+17
+	ld bc, 4
+	ld d, 32
+	ld e, 4
+.showPloop
+	ld a, [hl]
+	add d
+	ld [hl], a
+	add hl, bc
+	dec e
+	jr nz, .showPloop
+	
+	call ProcessMusicDoubleCooldown
+	call waitForVBlank
+	initOAM ShadowOAM
+	
+.skipPshow
+	
+	ld a, [wReset]
+	or a
+	ret z
+	
+	; in this point, we prepare the game reset
+	
+	ld a, $93
+	ld [$9A0F], a
+	ld a, $F9
+	ld [$9A10], a
+	inc a
+	ld [$9A2F], a
+	inc a
+	ld [$9A30], a
+	
+	call waitForVBlank
+	
+	; alter the SRAM key so the .sav file will be invalid at next check
+	xor a
+	ld hl, $A000
+	ld b, 16
+.resetSavLoop
+	ld [hli], a
+	dec b
+	jr nz, .resetSavLoop
+	
+	ld hl, ShadowOAM + 16
+	ld b, 144
+	xor a
+.clearSprites
+	ld [hli], a
+	dec b
+	jr nz, .clearSprites
+	
+	call waitForVBlank
+	initOAM ShadowOAM
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	ld a, %10100100
+	ldh [rBGP], a
+	
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	ld a, %10100100
+	ldh [rBGP], a
+	
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	ld a, %10010100
+	ldh [rBGP], a
+	
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	ld a, %01010100
+	ldh [rBGP], a
+	
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	ld a, %01010000
+	ldh [rBGP], a
+	
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	ld a, %01000000
+	ldh [rBGP], a
+	
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	call waitForVBlank
+	xor a
+	ldh [rBGP], a
+	
+	REPT(20)
+	call waitForVBlank
+	ENDR
+
+	ld hl, $FFFE
+	ld sp, hl
+	jp Start
+	ret
+	
+LeverResetChoose::
+	xor a
+	ld [wReset], a
+	ld a, $F8
+	ld [$9C6C], a
+	
+.loop
+	call updateJoypadState
+	call ProcessMusicDoubleCooldown
+	call waitForVBlank
+	ld a, [wJoypadPressed]
+	
+	push af
+	and PADF_LEFT
+	call nz, LeverResetPressedLeft
+	pop af
+	
+	push af
+	and PADF_RIGHT
+	call nz, LeverResetPressedRight
+	pop af
+	
+	push af
+	and PADF_A
+	call nz, LeverResetCheck
+	pop af
+	
+	and PADF_B
+	jr z, .loop
+	
+	ld a, $13
+	ld [$9C65], a
+	
+	ld a, $1A
+	ld [$9C6C], a
+	
+	ret
+	
+LeverResetPressedLeft::
+	ld a, 1
+	ld [wReset], a
+	
+	ld a, $F8
+	ld [$9C65], a
+	
+	ld a, $93
+	ld [$9C6C], a
+	
+	ret
+	
+LeverResetPressedRight::
+	xor a
+	ld [wReset], a
+	
+	ld a, $93
+	ld [$9C65], a
+	
+	ld a, $F8
+	ld [$9C6C], a
+
+	ret
+	
+LeverResetCheck::
+	pop af ; reply to push af when A pressed with was never popped
+	pop af ; fake return from LeverResetChoose
+	ld a, $13
+	ld [$9C65], a
+	ld a, $1A
+	ld [$9C6C], a
+	ret
+	
 SECTION "Puzzle room loading vars", WRAM0
 
 wEnterEasy::
@@ -565,4 +821,7 @@ wEnterEasy::
 	
 ; WRAM copy of sSnakeCleared
 wSnakeCleared:: 
+	DS 1
+	
+wReset::
 	DS 1

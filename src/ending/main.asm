@@ -36,10 +36,17 @@ EndingMain::
 	ld [hli], a
 	ld a, [de]
 	inc e
-	REPT(16)
+	
+	push bc
+	ld b, 16
+.loopHLi	
 	ld [hli], a
 	inc a
-	ENDR
+	dec b
+	jr nz, .loopHLi
+	pop bc
+	
+	
 	ld a, $FF
 	ld [hli], a
 	ld [hli], a
