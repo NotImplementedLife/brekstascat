@@ -782,7 +782,7 @@ LeverResetChoose::
 	ret
 	
 LeverResetPressedLeft::
-	ld a, 1
+	xor a
 	ld [wReset], a
 	
 	ld a, $F8
@@ -806,12 +806,22 @@ LeverResetPressedRight::
 	ret
 	
 LeverResetCheck::
-	pop af ; reply to push af when A pressed with was never popped
+	pop af ; reply to push af when A pressed which was never popped
 	pop af ; fake return from LeverResetChoose
+	
+	ld a, [$9C65]
+	ld b, a
+	
 	ld a, $13
 	ld [$9C65], a
 	ld a, $1A
 	ld [$9C6C], a
+	
+	ld a, b
+	cp $F8
+	ret nz
+	ld a, 1
+	ld [wReset], a	
 	ret
 	
 SECTION "Puzzle room loading vars", WRAM0
