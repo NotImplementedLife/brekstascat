@@ -571,6 +571,10 @@ _mAction_Lever::
 	
 SECTION "Lever Action 5", ROMX, BANK[5]
 
+
+; logic for the reset lever in the info room
+; main idea: show a dialog and let the user choose
+; whether or not to reset the game
 LeverAction::
 	ldh a, [hMMCY]
 	cp $09
@@ -782,9 +786,11 @@ LeverResetChoose::
 	ret
 	
 LeverResetPressedLeft::
+	; wReset = 0 is not necessary, but I'm too afraid to remove it :))
 	xor a
 	ld [wReset], a
 	
+	; dialog shows "   >Yes    _No    "
 	ld a, $F8
 	ld [$9C65], a
 	
@@ -797,6 +803,8 @@ LeverResetPressedRight::
 	xor a
 	ld [wReset], a
 	
+	
+	; dialog shows "   _Yes    >No    "
 	ld a, $93
 	ld [$9C65], a
 	
@@ -817,6 +825,7 @@ LeverResetCheck::
 	ld a, $1A
 	ld [$9C6C], a
 	
+	; if dialog shows "  >Yes   _No", reset the game [I don't have a better idea and this works so yee]
 	ld a, b
 	cp $F8
 	ret nz
