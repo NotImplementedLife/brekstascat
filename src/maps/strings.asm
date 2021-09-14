@@ -167,7 +167,7 @@ SnakeRun::
 	initOAM ShadowOAM
 	ld e, 80
 	.loop
-	ld hl, ShadowOAM+$10
+	ld hl, ShadowOAM+$20
 	REPT(4)
 	inc [hl]
 	inc [hl]
@@ -215,7 +215,7 @@ SnakeMoveRight::
 	
 	ld e, 16
 .loop
-	ld hl, ShadowOAM+$11
+	ld hl, ShadowOAM+$21
 	REPT(4)
 	inc [hl]
 	inc l

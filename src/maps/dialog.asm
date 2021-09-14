@@ -5,6 +5,9 @@ SECTION "TileMap Dialog", ROM0
 ; hl = text source
 Tilemap_DialogRender::
 	; move everything up 48px to make room for the dialog Window (animate)
+	; I read that I could have used a LYC interrupt to disable sprites on the lines
+	; that are covered by dialog but that's a too complicated change for the point 
+	; I reached with this project
 	ld hl, rWY
 	
 	ld a, [wMapsCoolDown]
@@ -34,6 +37,13 @@ Tilemap_DialogRender::
 	add hl, de
 	dec c
 	jr nz, .oamUpLoop
+	
+	; [patch] CatCoins Sprites must be static :))
+	ld hl, ShadowOAM+16
+	REPT(3)
+	inc [hl]
+	add hl, de
+	ENDR
 	
 	push af
 	initOAM ShadowOAM
@@ -91,6 +101,13 @@ Tilemap_DialogRender::
 	add hl, de
 	dec c
 	jr nz, .oamDownLoop
+	
+	; [patch] CatCoins Sprites must be static :))
+	ld hl, ShadowOAM+16
+	REPT(3)
+	dec [hl]
+	add hl, de
+	ENDR
 	
 	push af
 	initOAM ShadowOAM

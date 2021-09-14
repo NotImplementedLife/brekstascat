@@ -488,7 +488,7 @@ __snakeSetRight::
 	jr __snakeUpdate
 	
 __snakeUpdate::
-	ld hl, ShadowOAM + $12
+	ld hl, ShadowOAM + $22
 	ld c, 4
 .loop
 	ld [hl], b

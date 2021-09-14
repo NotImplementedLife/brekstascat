@@ -278,7 +278,7 @@ TileMap_Load::
 	ld a, [hli] ; now hl = wMnpcCount + 1 = wMnpcData
 	ld b, a
 	ld c, 4
-	ld de, ShadowOAM+18
+	ld de, ShadowOAM+34
 	
 .createOamFromNpcLoop
 	REPT(4)
@@ -435,8 +435,8 @@ TileMap_Execute::
 	or a
 	jr z, .finOam
 	ld b, a
-	ld de, ShadowOAM+16
-	
+	ld de, ShadowOAM+32
+
 .createOamFromNpcLoop
 	push bc
 	REPT(4)
@@ -509,7 +509,7 @@ TileMap_Execute::
 	
 .finOam
 	; copy CatCoin OAM display
-	ld hl, ShadowOAM+37*4
+	ld hl, ShadowOAM + 4*4
 	ld de, CatCoinsSprite
 	ld bc, 12
 	call loadMemory
@@ -518,12 +518,12 @@ TileMap_Execute::
 	ld b, a
 	and $0F
 	add $70
-	ld [ShadowOAM+39*4+2], a
+	ld [ShadowOAM+6*4+2], a
 	ld a, b
 	swap a
 	and $0F
 	add $70
-	ld [ShadowOAM+38*4+2], a
+	ld [ShadowOAM+5*4+2], a
 	
 	initOAM ShadowOAM
 	
@@ -668,7 +668,7 @@ TileMap_Execute_OnlyMovQ::
 	or a
 	jr z, .finOam
 	ld b, a
-	ld de, ShadowOAM+16
+	ld de, ShadowOAM+32
 	
 .createOamFromNpcLoop
 	push bc
@@ -741,7 +741,7 @@ TileMap_Execute_OnlyMovQ::
 	jr nz, .createOamFromNpcLoop
 .finOam
 	; copy CatCoin OAM display
-	ld hl, ShadowOAM+37*4
+	ld hl, ShadowOAM+4*4
 	ld de, CatCoinsSprite
 	ld bc, 12
 	call loadMemory
@@ -750,12 +750,12 @@ TileMap_Execute_OnlyMovQ::
 	ld b, a
 	and $0F
 	add $70
-	ld [ShadowOAM+39*4+2], a
+	ld [ShadowOAM+6*4+2], a
 	ld a, b
 	swap a
 	and $0F
 	add $70
-	ld [ShadowOAM+38*4+2], a
+	ld [ShadowOAM+5*4+2], a
 	initOAM ShadowOAM
 	ret
 	
