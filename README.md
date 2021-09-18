@@ -3,7 +3,7 @@
 _Don't be like me. Plan things ahead until the very last detail. This ROM is a result of disobeying the golden rule of planning._
 
 This repo is part of [HomebrewOwl.GB](https://github.com/NotImplementedLife/HomebrewOwl.GB "HomebrewOwl") projects collection.
-This is a [GB Compo 2021](https://gbdev.io/gbcompo21/) game entry. Download the latest version [here](https://github.com/NotImplementedLife/brekstascat/releases/download/1.2/brekstascat_1_2.gb).
+This is a [GB Compo 2021](https://gbdev.io/gbcompo21/) game entry. Download the latest version [here](https://github.com/NotImplementedLife/brekstascat/releases/download/1.3/brekstascat_1_3.gb).
 
 ## The idea
 
