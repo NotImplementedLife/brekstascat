@@ -28,7 +28,7 @@ SECTION "Save Key", ROM0, ALIGN[8]
 ; previously written
 ; compare this SRAMKey to $A000-$A00F region
 SRAM_Key:
-DW $1771, $7528, $6725, $0042, $31C5, $B141, $D0D3, $EE00
+DW $1771, $7528, $6725, $1B42, $31C5, $B141, $D0D3, $EE00
 
 SECTION "Save init", ROM0
 SRAM_Init::

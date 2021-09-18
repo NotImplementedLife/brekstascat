@@ -13,28 +13,30 @@ SECTION "Sliding Puzzle Data3x3", ROM0
 
 _3x3_PuzzlesList::
 	
-	DB 5  ; # of puzzles
+	DB 6  ; # of puzzles
 	
 	DefPuzzle 5, MonaLisa
 	DefPuzzle 5, kitty
 	DefPuzzle 5, creeper  
 	DefPuzzle 5, DSL 
 	DefPuzzle 5, triforce
+	DefPuzzle 3, abstractcat
 	
 SECTION "Sliding Puzzle Data 4x4", ROM0
 
 _4x4_PuzzlesList::
-	DB 3
+	DB 4
 	
 	DefPuzzle 5, klein
 	DefPuzzle 6, blackrose
 	DefPuzzle 6, clock
+	DefPuzzle 3, ChessBoard
 
 SECTION "Sliding Puzzle Data 5x5", ROM0
 _5x5_PuzzlesList::
-	DB 1  
-
+	DB 2 
 	DefPuzzle 6, alphabet
+	DefPuzzle 2, MagicGirl
 
 SECTION "Sliding Puzzle Data 6x6", ROM0
 _6x6_PuzzlesList::
