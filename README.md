@@ -58,6 +58,46 @@ Limitations:
 - If you spend more then 8 hours in a puzzle room, you'll be kicked out and you'll lose the game (and coins). But, seriously, I believe _no one_ is willing to do that on purpose. I put this limitation just in case someone forgets the game running on an emulator (or maybe a Gameboy powered by [nuclear batteries](https://www.youtube.com/watch?v=1LljlYJU1gY)).
 - Please avoid pressing the `B` button while solving a puzzle. This ends your puzzle solving session and returns you to the map, so you'll have to enter again and start a new puzzle. If time is on my side, I'll probably add a prompt message to prevent such annoying incidents.
 
+## Propose a new puzzle
+
+Anyone can propose a new sliding puzzle to be added in this game. The puzzle will replace one of the 13 original puzzles (which are listed [here](https://github.com/NotImplementedLife/brekstascat/blob/e15b0bee9eca20fc5183d18acc2aafcc999d3a09/src/puzzledata.asm#L16-L45)). This is because the original puzzles are more like placeholder data to prove the mechanics of the game. That means some of the puzzles could be a bit too hard to solve.
+
+### Proposing a puzzle
+
+Open a new issue and write the puzzle name, the puzzle type (3x3, 4x4, 5x5, 6x6) and attach an picture of the puzzle. You can also mention the name of the puzzle you want to replace. The list of available puzzles is displayed below. I'll take care of adding the puzzle in the game. If your proposed puzzle appears in the game, your username will be mentioned in the credits section both in the game and this GitHub page. If your puzzle is inspired from another artist's work, you are encouraged to specify that source too.
+
+### Puzzle name requirements
+
+- No more than 14 characters
+- Must contain only letters from the English alphabet (a-zA-z)
+
+### Puzzle image requirements
+
+- Size: 96x96px (for 3x3,4x4,6x6 puzzles), 80x80px (for 5x5 puzzles)
+- 4 colors, preferably White, White Gray, Dark Gray, Black. Any 4-color combination is accepted if it is clear which color is darker than the other so that it can be assigned the correct Gameboy palette shade.
+- The puzzle's tiles must be distinct and easily distinguishable (note that the tile's edges are covered in-game with a 1px black border, therefore the middle of the tile is the one that must give it an _identity_)
+- Keep it cute, nice and safe for work!
+
+### Choosing a puzzle to replace
+
+This is the list of the puzzles available for replacement proposal. It would be appreciated if you choose to replace a puzzle with a higher replacement priority.
+
+| Type | Name           | Replaced by   | Priority |
+|------|----------------|---------------|----------|
+| 3x3  | Abstract Cat   | -             | Low      |
+| 3x3  | Creeper        | -             | High     |
+| 3x3  | DS Lite        | -             | Medium   |
+| 3x3  | Kitty          | -             | Low      |
+| 3x3  | Mona Lisa      | -             | Medium   |
+| 3x3  | Triforce       | -             | High     |
+| 4x4  | Black Rose     | -             | Medium   |
+| 4x4  | Chess board    | -             | High     |
+| 4x4  | clock          | -             | Low      |
+| 4x4  | Klein bottle   | -             | Medium   |
+| 5x5  | Alphabet       | -             | High     |
+| 5x5  | Magic Girl     | -             | High     |
+| 6x6  | Confusion      | -             | High     |
+
 ## Screenshots
 
 <img src="README_Resources/ss01.png"></img>
